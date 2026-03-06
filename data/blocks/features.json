@@ -1,0 +1,90 @@
+{
+  "slug": "features",
+  "name": "Features",
+  "blockType": "BlobSection",
+  "template": {
+    "id": "section-problem",
+    "blockType": "BlobSection",
+    "data": {
+      "paddingY": "7xl",
+      "separator": true,
+      "separatorPosition": "bottom",
+      "containerWidth": "wide"
+    },
+    "innerBlocks": [
+      {
+        "id": "block-problem-header",
+        "blockType": "BlobBlock",
+        "data": {
+          "title": "Comment votre entreprise contribue",
+          "subtitle": "",
+          "eyebrow": "",
+          "eyebrowTheme": "red",
+          "layout": "stack",
+          "align": "center",
+          "size": "3xl",
+          "actions": "before",
+          "buttons": [],
+          "gutter": "10xl"
+        },
+        "innerBlocks": [
+          {
+            "id": "block-problem-points",
+            "blockType": "BlobIterator",
+            "data": {
+              "layout": "stack",
+              "size": "md",
+              "markerType": "text",
+              "markerStyle": "ghost",
+              "appearance": "outlined",
+              "paddingX": "3xl",
+              "paddingY": "3xl",
+              "iteratorLayout": "grid-3",
+              "iteratorGutter": "xl",
+              "itemFields": [
+                "eyebrow",
+                "title",
+                "content",
+                "markerContent",
+                "subtitle",
+                "contentText"
+              ],
+              "items": [
+                {
+                  "eyebrow": "",
+                  "title": "Réduction",
+                  "content": "La mesure se limite à la réduction de l'empreinte carbone, ignorant toutes les autres formes de contribution climatique.",
+                  "markerContent": "01",
+                  "contentText": "Décarboner ses opérations et sa chaîne de valeur (Scopes 1-2-3, plans de transition, gouvernance, engagement fournisseurs/clients)",
+                  "subtitle": "Décarboner ses opérations et sa chaîne de valeur (Scopes 1-2-3, plans de transition, gouvernance, engagement fournisseurs/clients)"
+                },
+                {
+                  "eyebrow": "",
+                  "title": "Développement",
+                  "content": "SBTi, ACT, EU Taxonomy, ICVCM… des standards utiles mais déconnectés, impossibles à lire ensemble.",
+                  "markerContent": "02",
+                  "subtitle": "Déployer des solutions qui permettent à d'autres de réduire leurs émissions (revenus verts, émissions évitées, technologies bas-carbone)"
+                },
+                {
+                  "eyebrow": "",
+                  "title": "Financement",
+                  "content": "Impossible de comparer les efforts climatiques d'une banque avec ceux d'un sidérurgiste. Le contexte sectoriel est ignoré.",
+                  "markerContent": "03",
+                  "subtitle": "Orienter des capitaux vers des projets climatiques au-delà de sa chaîne de valeur (crédits carbone, mécénat, fonds dédiés, obligations vertes)"
+                }
+              ],
+              "showContent": false,
+              "contentType": "text",
+              "fontSize": "lg"
+            },
+            "innerBlocks": []
+          }
+        ]
+      }
+    ]
+  },
+  "meta": {
+    "createdAt": "2026-03-04T08:50:42.159Z",
+    "updatedAt": "2026-03-04T08:50:42.160Z"
+  }
+}

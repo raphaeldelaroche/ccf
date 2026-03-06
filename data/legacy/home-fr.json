@@ -1,0 +1,736 @@
+{
+  "version": "1.0",
+  "slug": "home-fr",
+  "title": "Climate Contribution Framework - Accueil",
+  "blocks": [
+    {
+      "id": "hero-section",
+      "blockType": "BlobSection",
+      "data": {
+        "paddingY": "8xl",
+        "containerWidth": "center"
+      },
+      "innerBlocks": [
+        {
+          "id": "hero-blob",
+          "blockType": "BlobBlock",
+          "data": {
+            "title": "Les entreprises contribuent au net zéro de multiples façons. // Il y a maintenant un cadre qui les mesure toutes.",
+            "subtitle": "Le CCF traduit 50+ standards climatiques existants en un score unique et comparable — ajusté par secteur, sans reporting supplémentaire.",
+            "eyebrow": "Climate Contribution Framework",
+            "eyebrowTheme": "accent",
+            "layout": "stack",
+            "align": "center",
+            "size": "8xl",
+            "buttons": [
+              {
+                "label": "Évaluer votre potentiel",
+                "href": "/benchmark",
+                "variant": "primary",
+                "size": "xl"
+              },
+              {
+                "label": "Télécharger le White Paper",
+                "href": "/resources/white-paper",
+                "variant": "secondary",
+                "size": "xl"
+              }
+            ],
+            "buttonsPosition": "center",
+            "paddingX": "6xl",
+            "gutter": "3xl",
+            "content": "Un méta-cadre qui révèle votre contribution climatique complète : réduction, amplification et financement."
+          },
+          "innerBlocks": [],
+          "meta": {}
+        },
+        {
+          "id": "hero-credibility",
+          "blockType": "BlobBlock",
+          "data": {
+            "layout": "bar",
+            "align": "center",
+            "size": "sm",
+            "theme": "neutral",
+            "appearance": "ghost",
+            "content": "Intégré à l'Action Agenda de la COP30 • 100+ sous-secteurs couverts • Testé par 10 leaders mondiaux"
+          },
+          "innerBlocks": [],
+          "meta": {}
+        }
+      ],
+      "meta": {}
+    },
+    {
+      "id": "problem-section",
+      "blockType": "BlobSection",
+      "data": {
+        "backgroundTheme": "neutral-subtle",
+        "paddingY": "6xl",
+        "containerWidth": "center"
+      },
+      "innerBlocks": [
+        {
+          "id": "problem-intro",
+          "blockType": "BlobBlock",
+          "data": {
+            "title": "Le système actuel de mesure climatique est défaillant",
+            "subtitle": "Et il freine la transition",
+            "eyebrow": "Le Problème",
+            "eyebrowTheme": "warning",
+            "layout": "stack",
+            "align": "center",
+            "size": "3xl",
+            "gutter": "4xl"
+          },
+          "innerBlocks": [],
+          "meta": {}
+        },
+        {
+          "id": "problem-grid",
+          "blockType": "BlobIterator",
+          "data": {
+            "layout": "stack",
+            "align": "left",
+            "size": "lg",
+            "markerType": "number",
+            "markerStyle": "filled",
+            "markerTheme": "error",
+            "markerShape": "rounded",
+            "theme": "neutral",
+            "appearance": "outline",
+            "paddingX": "2xl",
+            "paddingY": "2xl",
+            "iteratorLayout": "grid-3",
+            "iteratorGutter": "2xl",
+            "itemFields": [
+              "title",
+              "content",
+              "markerContent"
+            ],
+            "items": [
+              {
+                "markerContent": "1",
+                "title": "Récit incomplet",
+                "content": "Les entreprises qui innovent, déploient des solutions bas-carbone ou financent la transition ne sont pas reconnues pour ces contributions. Seule l'empreinte carbone compte."
+              },
+              {
+                "markerContent": "2",
+                "title": "Standards fragmentés",
+                "content": "50+ référentiels utiles mais incompatibles (SBTi, ACT, CDP, TPI…). Chacun mesure un angle. Aucun ne donne la vue d'ensemble."
+              },
+              {
+                "markerContent": "3",
+                "title": "Comparaison impossible",
+                "content": "Sans ajustement sectoriel, comparer les efforts climatiques d'un énergéticien et d'un éditeur de logiciels n'a pas de sens."
+              }
+            ]
+          },
+          "innerBlocks": [],
+          "meta": {}
+        },
+        {
+          "id": "problem-consequence",
+          "blockType": "BlobBlock",
+          "data": {
+            "title": "La conséquence",
+            "layout": "stack",
+            "align": "center",
+            "size": "xl",
+            "markerType": "icon",
+            "markerStyle": "ghost",
+            "markerTheme": "warning",
+            "theme": "warning",
+            "appearance": "outline",
+            "paddingX": "3xl",
+            "paddingY": "2xl",
+            "gutter": "xl",
+            "content": "Les entreprises les plus actives ne sont pas nécessairement les mieux évaluées. Les capitaux ne s'orientent pas vers les bons acteurs. L'élan climatique stagne malgré des engagements net zéro généralisés.",
+            "markerIcon": "alert-triangle"
+          },
+          "innerBlocks": [],
+          "meta": {}
+        }
+      ],
+      "meta": {}
+    },
+    {
+      "id": "pillars-section",
+      "blockType": "BlobSection",
+      "data": {
+        "paddingY": "7xl",
+        "containerWidth": "wide"
+      },
+      "innerBlocks": [
+        {
+          "id": "pillars-intro",
+          "blockType": "BlobBlock",
+          "data": {
+            "title": "Trois piliers non-substituables de l'action climatique",
+            "subtitle": "Le CCF mesure ce que les autres oublient : votre contribution complète au net zéro mondial",
+            "eyebrow": "La Solution",
+            "eyebrowTheme": "success",
+            "layout": "stack",
+            "align": "center",
+            "size": "4xl",
+            "gutter": "5xl"
+          },
+          "innerBlocks": [],
+          "meta": {}
+        },
+        {
+          "id": "pillars-grid",
+          "blockType": "BlobIterator",
+          "data": {
+            "layout": "stack",
+            "align": "left",
+            "size": "xl",
+            "markerType": "icon",
+            "markerStyle": "filled",
+            "markerShape": "rounded",
+            "theme": "neutral",
+            "appearance": "outline",
+            "paddingX": "3xl",
+            "paddingY": "3xl",
+            "iteratorLayout": "grid-3",
+            "iteratorGutter": "3xl",
+            "itemFields": [
+              "title",
+              "subtitle",
+              "content",
+              "markerIcon",
+              "markerTheme"
+            ],
+            "items": [
+              {
+                "markerIcon": "trending-down",
+                "markerTheme": "primary",
+                "title": "Pilier A — Réduire",
+                "subtitle": "Décarboner ses opérations et sa chaîne de valeur",
+                "content": "Émissions Scopes 1-2-3, plans de transition, gouvernance, engagement fournisseurs/clients, politique et influence. S'applique surtout à : sidérurgie, production d'énergie, industrie lourde."
+              },
+              {
+                "markerIcon": "zap",
+                "markerTheme": "brand",
+                "title": "Pilier B — Amplifier",
+                "subtitle": "Déployer des solutions permettant à d'autres de réduire",
+                "content": "Revenus verts, émissions évitées, technologies bas-carbone. C'est le pilier le plus différenciant du CCF. S'applique surtout à : énergies renouvelables, batteries, cleantech."
+              },
+              {
+                "markerIcon": "dollar-sign",
+                "markerTheme": "success",
+                "title": "Pilier C — Financer",
+                "subtitle": "Orienter des capitaux vers des projets climatiques au-delà de sa chaîne de valeur",
+                "content": "Crédits carbone, mécénat climatique, fonds dédiés, obligations vertes, investissements à impact secondaire. S'applique surtout à : institutions financières, entreprises à fortes marges."
+              }
+            ]
+          },
+          "innerBlocks": [],
+          "meta": {}
+        },
+        {
+          "id": "pillars-principle",
+          "blockType": "BlobBlock",
+          "data": {
+            "title": "Principe de non-substitution",
+            "subtitle": "Performer sur un pilier ne compense pas un autre. Les trois comptent.",
+            "layout": "bar",
+            "align": "center",
+            "size": "md",
+            "markerType": "icon",
+            "markerStyle": "ghost",
+            "markerTheme": "info",
+            "theme": "info",
+            "appearance": "outline",
+            "paddingX": "2xl",
+            "paddingY": "lg",
+            "markerIcon": "info"
+          },
+          "innerBlocks": [],
+          "meta": {}
+        }
+      ],
+      "meta": {}
+    },
+    {
+      "id": "weighting-section",
+      "blockType": "BlobSection",
+      "data": {
+        "backgroundTheme": "neutral-subtle",
+        "paddingY": "6xl",
+        "containerWidth": "center"
+      },
+      "innerBlocks": [
+        {
+          "id": "weighting-intro",
+          "blockType": "BlobBlock",
+          "data": {
+            "title": "Une comparaison équitable commence par le contexte",
+            "subtitle": "Chaque secteur a un rôle différent dans la transition. Le CCF ajuste l'évaluation en conséquence.",
+            "eyebrow": "Pondération sectorielle",
+            "eyebrowTheme": "accent",
+            "layout": "stack",
+            "align": "center",
+            "size": "3xl",
+            "gutter": "4xl",
+            "content": "100+ sous-secteurs couverts. Votre entreprise est évaluée sur les leviers les plus pertinents pour son activité — pas un modèle unique."
+          },
+          "innerBlocks": [],
+          "meta": {}
+        },
+        {
+          "id": "weighting-concept",
+          "blockType": "BlobBlock",
+          "data": {
+            "title": "Potentiel de Contribution",
+            "subtitle": "Le maximum que votre secteur peut contribuer",
+            "layout": "row",
+            "align": "left",
+            "size": "xl",
+            "markerType": "icon",
+            "markerStyle": "filled",
+            "markerTheme": "brand",
+            "figureWidth": "1/2",
+            "figureType": "image",
+            "figureImage": "/placeholder-chart-potential.png",
+            "theme": "neutral",
+            "appearance": "outline",
+            "paddingX": "3xl",
+            "paddingY": "3xl",
+            "gutter": "2xl",
+            "content": "La somme des pondérations sectorielles (α + β + γ) définit le potentiel maximum de votre secteur — de 10 à 100. Ce n'est pas un jugement. C'est un cadre de comparaison équitable.",
+            "markerIcon": "target"
+          },
+          "innerBlocks": [],
+          "meta": {}
+        },
+        {
+          "id": "weighting-examples",
+          "blockType": "BlobIterator",
+          "data": {
+            "layout": "stack",
+            "align": "left",
+            "size": "md",
+            "markerType": "number",
+            "markerStyle": "outline",
+            "markerTheme": "brand",
+            "theme": "neutral",
+            "appearance": "ghost",
+            "iteratorLayout": "grid-2",
+            "iteratorGutter": "xl",
+            "itemFields": [
+              "title",
+              "content",
+              "markerContent"
+            ],
+            "items": [
+              {
+                "markerContent": "96",
+                "title": "Production d'électricité",
+                "content": "α=55 (émissions élevées) • β=35 (déploiement d'énergies renouvelables) • γ=6 (capacité de financement modérée)"
+              },
+              {
+                "markerContent": "94",
+                "title": "Fabrication de batteries",
+                "content": "α=39 (émissions industrielles) • β=51 (solutions habilitantes) • γ=4 (intensité capitalistique)"
+              },
+              {
+                "markerContent": "62",
+                "title": "Édition de logiciels",
+                "content": "α=27 (faibles émissions directes) • β=27 (solutions numériques) • γ=8 (marges élevées)"
+              },
+              {
+                "markerContent": "31",
+                "title": "Conseil en entreprise",
+                "content": "α=8 (empreinte minimale) • β=18 (influence conseil) • γ=5 (modèle service)"
+              }
+            ]
+          },
+          "innerBlocks": [],
+          "meta": {}
+        }
+      ],
+      "meta": {}
+    },
+    {
+      "id": "results-section",
+      "blockType": "BlobSection",
+      "data": {
+        "paddingY": "7xl",
+        "containerWidth": "wide"
+      },
+      "innerBlocks": [
+        {
+          "id": "results-intro",
+          "blockType": "BlobBlock",
+          "data": {
+            "title": "Trois livrables actionnables pour chaque entreprise",
+            "subtitle": "Un diagnostic climatique complet en trois métriques complémentaires",
+            "eyebrow": "Ce que vous obtenez",
+            "eyebrowTheme": "primary",
+            "layout": "stack",
+            "align": "center",
+            "size": "3xl",
+            "gutter": "4xl"
+          },
+          "innerBlocks": [],
+          "meta": {}
+        },
+        {
+          "id": "results-outputs",
+          "blockType": "BlobIterator",
+          "data": {
+            "layout": "stack",
+            "align": "center",
+            "size": "lg",
+            "markerType": "number",
+            "markerStyle": "filled",
+            "markerTheme": "success",
+            "markerShape": "circle",
+            "theme": "neutral",
+            "appearance": "outline",
+            "paddingX": "2xl",
+            "paddingY": "3xl",
+            "iteratorLayout": "grid-3",
+            "iteratorGutter": "2xl",
+            "itemFields": [
+              "title",
+              "subtitle",
+              "content",
+              "markerContent"
+            ],
+            "items": [
+              {
+                "markerContent": "1",
+                "title": "Potentiel de Contribution",
+                "subtitle": "Échelle 0–100",
+                "content": "Ce que votre entreprise pourrait contribuer au maximum, compte tenu de son secteur. C'est votre cadre, pas un jugement."
+              },
+              {
+                "markerContent": "2",
+                "title": "Contribution Réelle",
+                "subtitle": "Performance actuelle",
+                "content": "Ce que votre entreprise contribue effectivement aujourd'hui, mesuré sur les trois piliers."
+              },
+              {
+                "markerContent": "3",
+                "title": "Performance de Contribution",
+                "subtitle": "Pourcentage",
+                "content": "Le ratio entre les deux. Votre indicateur d'effort : les secteurs à faible potentiel peuvent atteindre 90% ; les secteurs à fort potentiel peuvent scorer 30%."
+              }
+            ]
+          },
+          "innerBlocks": [],
+          "meta": {}
+        },
+        {
+          "id": "results-insight",
+          "blockType": "BlobBlock",
+          "data": {
+            "title": "La double lecture",
+            "layout": "stack",
+            "align": "center",
+            "size": "xl",
+            "markerType": "icon",
+            "markerStyle": "ghost",
+            "markerTheme": "brand",
+            "theme": "brand",
+            "appearance": "outline",
+            "paddingX": "3xl",
+            "paddingY": "2xl",
+            "gutter": "xl",
+            "content": "Le CCF répond à 'Que faites-vous ?' ET 'Que pourriez-vous faire ?' — vous donnant une feuille de route, pas seulement un classement.",
+            "markerIcon": "lightbulb"
+          },
+          "innerBlocks": [],
+          "meta": {}
+        }
+      ],
+      "meta": {}
+    },
+    {
+      "id": "credibility-section",
+      "blockType": "BlobSection",
+      "data": {
+        "backgroundTheme": "neutral-subtle",
+        "paddingY": "6xl",
+        "containerWidth": "center"
+      },
+      "innerBlocks": [
+        {
+          "id": "credibility-intro",
+          "blockType": "BlobBlock",
+          "data": {
+            "title": "Construit par des experts, testé par des leaders, supervisé par les meilleurs",
+            "eyebrow": "Crédibilité & Écosystème",
+            "eyebrowTheme": "success",
+            "layout": "stack",
+            "align": "center",
+            "size": "3xl",
+            "gutter": "4xl"
+          },
+          "innerBlocks": [],
+          "meta": {}
+        },
+        {
+          "id": "credibility-founders",
+          "blockType": "BlobBlock",
+          "data": {
+            "title": "Co-fondateurs",
+            "layout": "stack",
+            "align": "center",
+            "size": "lg",
+            "theme": "neutral",
+            "appearance": "ghost",
+            "gutter": "2xl",
+            "content": "Sweep (Plateforme de gestion de données de durabilité) • Mirova Research Center (Recherche en investissement durable)"
+          },
+          "innerBlocks": [],
+          "meta": {}
+        },
+        {
+          "id": "credibility-sponsors",
+          "blockType": "BlobBlock",
+          "data": {
+            "eyebrow": "Testé par 10 entreprises mondiales",
+            "eyebrowTheme": "brand",
+            "layout": "stack",
+            "align": "center",
+            "size": "md",
+            "theme": "neutral",
+            "appearance": "outline",
+            "paddingX": "3xl",
+            "paddingY": "2xl",
+            "gutter": "xl",
+            "content": "Accor • EDF • Equans • Eramet • Klépierre • LVMH • Orange • Renault • Schneider Electric • Veolia"
+          },
+          "innerBlocks": [],
+          "meta": {}
+        },
+        {
+          "id": "credibility-observers",
+          "blockType": "BlobBlock",
+          "data": {
+            "eyebrow": "Comité d'observateurs",
+            "eyebrowTheme": "accent",
+            "layout": "stack",
+            "align": "center",
+            "size": "md",
+            "theme": "neutral",
+            "appearance": "ghost",
+            "gutter": "xl",
+            "content": "WBCSD • SBTi • Ceres • Oxford Net Zero • Stockholm Environment Institute • ICROA • Exponential Roadmap Initiative • World Benchmarking Alliance • GHG Management Institute • Forest Integrity"
+          },
+          "innerBlocks": [],
+          "meta": {}
+        },
+        {
+          "id": "credibility-cop",
+          "blockType": "BlobBlock",
+          "data": {
+            "title": "Intégré à l'Action Agenda de la COP30",
+            "subtitle": "Novembre 2025 • Reconnu comme initiative clé de redevabilité climatique",
+            "layout": "bar",
+            "align": "center",
+            "size": "lg",
+            "markerType": "icon",
+            "markerStyle": "filled",
+            "markerTheme": "success",
+            "theme": "success",
+            "appearance": "outline",
+            "paddingX": "2xl",
+            "paddingY": "xl",
+            "markerIcon": "award"
+          },
+          "innerBlocks": [],
+          "meta": {}
+        },
+        {
+          "id": "credibility-testimonial",
+          "blockType": "BlobBlock",
+          "data": {
+            "subtitle": "— Responsable climat, entreprise Fortune 500",
+            "layout": "stack",
+            "align": "center",
+            "size": "lg",
+            "markerType": "icon",
+            "markerStyle": "ghost",
+            "markerTheme": "brand",
+            "theme": "neutral",
+            "appearance": "outline",
+            "paddingX": "3xl",
+            "paddingY": "2xl",
+            "gutter": "lg",
+            "content": "Le CCF ne nous demande pas de repartir de zéro. Il capitalise sur nos certifications et publications existantes. Zéro duplication.",
+            "markerIcon": "quote"
+          },
+          "innerBlocks": [],
+          "meta": {}
+        }
+      ],
+      "meta": {}
+    },
+    {
+      "id": "audiences-section",
+      "blockType": "BlobSection",
+      "data": {
+        "paddingY": "7xl",
+        "containerWidth": "wide"
+      },
+      "innerBlocks": [
+        {
+          "id": "audiences-intro",
+          "blockType": "BlobBlock",
+          "data": {
+            "title": "Valeur pour chaque partie prenante de l'écosystème climatique",
+            "eyebrow": "Pour qui ?",
+            "eyebrowTheme": "accent",
+            "layout": "stack",
+            "align": "center",
+            "size": "3xl",
+            "gutter": "4xl"
+          },
+          "innerBlocks": [],
+          "meta": {}
+        },
+        {
+          "id": "audiences-grid",
+          "blockType": "BlobIterator",
+          "data": {
+            "layout": "stack",
+            "align": "left",
+            "size": "lg",
+            "markerType": "icon",
+            "markerStyle": "filled",
+            "markerShape": "rounded",
+            "theme": "neutral",
+            "appearance": "outline",
+            "paddingX": "2xl",
+            "paddingY": "3xl",
+            "iteratorLayout": "grid-3",
+            "iteratorGutter": "2xl",
+            "itemFields": [
+              "title",
+              "subtitle",
+              "content",
+              "buttons",
+              "markerIcon"
+            ],
+            "items": [
+              {
+                "markerIcon": "briefcase",
+                "markerTheme": "primary",
+                "title": "Pour les Entreprises",
+                "subtitle": "Un outil stratégique de planification",
+                "content": "Planifiez, priorisez et valorisez votre contribution climatique au-delà de la seule empreinte carbone. Le CCF révèle votre potentiel contributif et trace la feuille de route pour l'atteindre. Zéro reporting supplémentaire requis.",
+                "buttons": [
+                  {
+                    "label": "Évaluer votre potentiel",
+                    "href": "/benchmark",
+                    "variant": "primary",
+                    "size": "md"
+                  }
+                ]
+              },
+              {
+                "markerIcon": "trending-up",
+                "markerTheme": "success",
+                "title": "Pour les Investisseurs",
+                "subtitle": "Un benchmark robuste",
+                "content": "Différenciez les vrais leaders climatiques, guidez l'engagement actionnarial et allouez le capital vers un impact mesurable — avec une granularité que les ratings ESG ne fournissent pas.",
+                "buttons": [
+                  {
+                    "label": "Télécharger le White Paper",
+                    "href": "/resources/white-paper",
+                    "variant": "secondary",
+                    "size": "md"
+                  }
+                ]
+              },
+              {
+                "markerIcon": "globe",
+                "markerTheme": "info",
+                "title": "Pour l'Écosystème",
+                "subtitle": "Infrastructure de marché transparente",
+                "content": "Un cadre qui complète les exigences réglementaires existantes (CSRD, ISSB) et donne de la visibilité sur les leaders comme les retardataires. Construit pour la collaboration, pas la compétition.",
+                "buttons": [
+                  {
+                    "label": "Explorer la méthode",
+                    "href": "/method",
+                    "variant": "ghost",
+                    "size": "md"
+                  }
+                ]
+              }
+            ]
+          },
+          "innerBlocks": [],
+          "meta": {}
+        }
+      ],
+      "meta": {}
+    },
+    {
+      "id": "cta-section",
+      "blockType": "BlobSection",
+      "data": {
+        "backgroundTheme": "gradient-brand",
+        "paddingY": "8xl",
+        "containerWidth": "center"
+      },
+      "innerBlocks": [
+        {
+          "id": "cta-main",
+          "blockType": "BlobBlock",
+          "data": {
+            "title": "Découvrez ce que votre entreprise peut contribuer au net zéro mondial",
+            "subtitle": "Obtenez votre potentiel contributif indicatif en 3 minutes",
+            "layout": "stack",
+            "align": "center",
+            "size": "6xl",
+            "buttons": [
+              {
+                "label": "Démarrer le benchmark",
+                "href": "/benchmark",
+                "variant": "primary",
+                "size": "xl",
+                "icon": "arrow-right",
+                "iconPosition": "right"
+              },
+              {
+                "label": "Télécharger le White Paper",
+                "href": "/resources/white-paper",
+                "variant": "ghost",
+                "size": "xl"
+              }
+            ],
+            "buttonsPosition": "center",
+            "theme": "brand-inverse",
+            "gutter": "3xl"
+          },
+          "innerBlocks": [],
+          "meta": {}
+        },
+        {
+          "id": "cta-reassurance",
+          "blockType": "BlobBlock",
+          "data": {
+            "layout": "bar",
+            "align": "center",
+            "size": "sm",
+            "theme": "brand-inverse",
+            "appearance": "ghost",
+            "paddingY": "md",
+            "content": "Évaluation indicative • Confidentiel • Pas de publication des résultats • Données non partagées"
+          },
+          "innerBlocks": [],
+          "meta": {}
+        }
+      ],
+      "meta": {}
+    }
+  ],
+  "meta": {
+    "updatedAt": "2026-03-04T09:50:17.209Z"
+  }
+}

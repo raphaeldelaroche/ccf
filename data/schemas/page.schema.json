@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "page.schema.json",
+  "title": "PageData",
+  "description": "Une page complète dans BlobUI",
+  "type": "object",
+  "required": ["version", "slug", "title", "blocks"],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Version du format de données",
+      "minLength": 1
+    },
+    "slug": {
+      "type": "string",
+      "description": "Slug de la page (utilisé pour le nom de fichier)",
+      "pattern": "^[a-z0-9-]+$",
+      "minLength": 1
+    },
+    "title": {
+      "type": "string",
+      "description": "Titre de la page",
+      "minLength": 1
+    },
+    "blocks": {
+      "type": "array",
+      "description": "Blocs de la page",
+      "items": { "$ref": "./block.schema.json" }
+    },
+    "meta": {
+      "type": "object",
+      "description": "Métadonnées de la page",
+      "properties": {
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" },
+        "author": { "type": "string" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

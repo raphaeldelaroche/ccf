@@ -1,0 +1,497 @@
+/* =================================================================
+   BLOB — CLASSES COMPOSÉES
+   ================================================================= */
+
+
+/* ─────────────────────────────────────────────────────────────────
+  STACK
+──────────────────────────────────────────────────────────────────── */
+
+@utility blob-stack-marker-left {
+  /* figure pleine largeur en haut, marker à gauche + header à droite, content en bas */
+  --blob-areas: "figure figure" "marker header" "actions actions" "content content";
+  --blob-columns: auto 1fr;
+  --blob-rows: auto;
+  align-content: start;
+
+  &:where(:not(:has(> [data-slot="marker"])))                                               { --blob-areas: "figure" "header" "actions" "content"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="blob-actions"])))                                         { --blob-areas: "figure figure" "marker header" "content content"; }
+  &:where(:not(:has(> [data-slot="blob-content"])))                                         { --blob-areas: "figure figure" "marker header" "actions actions"; }
+  &:where(:not(:has(> [data-slot="blob-figure"])))                                          { --blob-areas: "marker header" "actions actions" "content content"; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])))         { --blob-areas: "figure" "header" "content"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-content"])))         { --blob-areas: "figure" "header" "actions"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"])))   { --blob-areas: "figure figure" "marker header"; }
+  &:where(:not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"])))    { --blob-areas: "marker header" "actions actions"; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-figure"])))          { --blob-areas: "header" "actions" "content"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-figure"])))    { --blob-areas: "marker header" "content content"; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"])))    { --blob-areas: "figure" "header"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-figure"])))     { --blob-areas: "header" "content"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"])))     { --blob-areas: "header" "actions"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"]))) { --blob-areas: "marker header"; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"]))) { --blob-areas: "header"; --blob-columns: 1fr; }
+}
+
+@utility blob-stack-marker-left-actions-after {
+  /* figure pleine largeur en haut, marker à gauche + header à droite, content au milieu, actions en bas */
+  --blob-areas: "figure figure" "marker header" "content content" "actions actions";
+  --blob-columns: auto 1fr;
+  --blob-rows: auto;
+  align-content: start;
+
+  & [data-slot="blob-actions"] { align-self: end; }
+
+  &:where(:not(:has(> [data-slot="marker"])))                                               { --blob-areas: "figure" "header" "content" "actions"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="blob-actions"])))                                         { --blob-areas: "figure figure" "marker header" "content content"; }
+  &:where(:not(:has(> [data-slot="blob-content"])))                                         { --blob-areas: "figure figure" "marker header" "actions actions"; }
+  &:where(:not(:has(> [data-slot="blob-figure"])))                                          { --blob-areas: "marker header" "content content" "actions actions"; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])))         { --blob-areas: "figure" "header" "content"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-content"])))         { --blob-areas: "figure" "header" "actions"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"])))   { --blob-areas: "figure figure" "marker header"; }
+  &:where(:not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"])))    { --blob-areas: "marker header" "actions actions"; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-figure"])))          { --blob-areas: "header" "content" "actions"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-figure"])))    { --blob-areas: "marker header" "content content"; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"])))    { --blob-areas: "figure" "header"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-figure"])))     { --blob-areas: "header" "content"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"])))     { --blob-areas: "header" "actions"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"]))) { --blob-areas: "marker header"; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"]))) { --blob-areas: "header"; --blob-columns: 1fr; }
+}
+
+@utility blob-stack-marker-right {
+  /* figure pleine largeur en haut, header à gauche + marker à droite, content en bas */
+  --blob-areas: "figure figure" "header marker" "actions actions" "content content";
+  --blob-columns: 1fr auto;
+  --blob-rows: auto;
+  align-content: start;
+
+  &:where(:not(:has(> [data-slot="marker"])))                                               { --blob-areas: "figure" "header" "actions" "content"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="blob-actions"])))                                         { --blob-areas: "figure figure" "header marker" "content content"; }
+  &:where(:not(:has(> [data-slot="blob-content"])))                                         { --blob-areas: "figure figure" "header marker" "actions actions"; }
+  &:where(:not(:has(> [data-slot="blob-figure"])))                                          { --blob-areas: "header marker" "actions actions" "content content"; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])))         { --blob-areas: "figure" "header" "content"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-content"])))         { --blob-areas: "figure" "header" "actions"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"])))   { --blob-areas: "figure figure" "header marker"; }
+  &:where(:not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"])))    { --blob-areas: "header marker" "actions actions"; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-figure"])))          { --blob-areas: "header" "actions" "content"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-figure"])))    { --blob-areas: "header marker" "content content"; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"])))    { --blob-areas: "figure" "header"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-figure"])))     { --blob-areas: "header" "content"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"])))     { --blob-areas: "header" "actions"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"]))) { --blob-areas: "header marker"; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"]))) { --blob-areas: "header"; --blob-columns: 1fr; }
+}
+
+@utility blob-stack-marker-right-actions-after {
+  /* figure pleine largeur en haut, header à gauche + marker à droite, content au milieu, actions en bas */
+  --blob-areas: "figure figure" "header marker" "content content" "actions actions";
+  --blob-columns: 1fr auto;
+  --blob-rows: auto auto 1fr auto;
+
+  & [data-slot="blob-actions"] { align-self: end; }
+
+  &:where(:not(:has(> [data-slot="marker"])))                                               { --blob-areas: "figure" "header" "content" "actions"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="blob-actions"])))                                         { --blob-areas: "figure figure" "header marker" "content content"; }
+  &:where(:not(:has(> [data-slot="blob-content"])))                                         { --blob-areas: "figure figure" "header marker" "actions actions"; }
+  &:where(:not(:has(> [data-slot="blob-figure"])))                                          { --blob-areas: "header marker" "content content" "actions actions"; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])))         { --blob-areas: "figure" "header" "content"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-content"])))         { --blob-areas: "figure" "header" "actions"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"])))   { --blob-areas: "figure figure" "header marker"; }
+  &:where(:not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"])))    { --blob-areas: "header marker" "actions actions"; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-figure"])))          { --blob-areas: "header" "content" "actions"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-figure"])))    { --blob-areas: "header marker" "content content"; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"])))    { --blob-areas: "figure" "header"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-figure"])))     { --blob-areas: "header" "content"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"])))     { --blob-areas: "header" "actions"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"]))) { --blob-areas: "header marker"; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"]))) { --blob-areas: "header"; --blob-columns: 1fr; }
+}
+
+@utility blob-stack {
+  --blob-areas: "figure" "marker" "header" "actions" "content";
+  --blob-columns: 1fr;
+  --blob-rows: auto auto auto auto 1fr;
+  align-content: start;
+
+  &:where(:not(:has(> [data-slot="marker"])))                                               { --blob-areas: "figure" "header" "actions" "content"; --blob-rows: auto auto auto 1fr; }
+  &:where(:not(:has(> [data-slot="blob-actions"])))                                         { --blob-areas: "figure" "marker" "header" "content"; --blob-rows: auto auto auto 1fr; }
+  &:where(:not(:has(> [data-slot="blob-content"])))                                         { --blob-areas: "figure" "marker" "header" "actions"; --blob-rows: auto auto auto 1fr; }
+  &:where(:not(:has(> [data-slot="blob-figure"])))                                          { --blob-areas: "marker" "header" "actions" "content"; --blob-rows: auto auto auto 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])))         { --blob-areas: "figure" "header" "content"; --blob-rows: auto auto 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-content"])))         { --blob-areas: "figure" "header" "actions"; --blob-rows: auto auto 1fr; }
+  &:where(:not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"])))   { --blob-areas: "figure" "marker" "header"; --blob-rows: auto auto 1fr; }
+  &:where(:not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"])))    { --blob-areas: "marker" "header" "actions"; --blob-rows: auto auto auto 1fr; }
+  /* Ni figure ni marker */
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-figure"])))         { --blob-areas: "header" "actions" "content"; --blob-rows: auto auto 1fr; }
+  &:where(:not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-figure"])))    { --blob-areas: "marker" "header" "content"; --blob-rows: auto auto 1fr; }
+  /* Ni figure ni actions ni marker */
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-figure"])))     { --blob-areas: "header" "content"; --blob-rows: auto 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"])))    { --blob-areas: "figure" "header"; --blob-rows: auto 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"])))     { --blob-areas: "header" "actions"; --blob-rows: auto 1fr; }
+  &:where(:not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"]))) { --blob-areas: "marker" "header"; --blob-rows: auto 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"]))) { --blob-areas: "header"; --blob-rows: 1fr; }
+}
+
+@utility blob-stack-actions-after {
+  --blob-areas: "figure" "marker" "header" "content" "actions";
+  --blob-columns: 1fr;
+  --blob-rows: auto auto auto 1fr auto;
+  align-content: start;
+
+  & [data-slot="blob-actions"] { align-self: end; }
+
+  &:where(:not(:has(> [data-slot="marker"])))                                               { --blob-areas: "figure" "header" "content" "actions"; --blob-rows: auto auto 1fr auto; }
+  &:where(:not(:has(> [data-slot="blob-actions"])))                                         { --blob-areas: "figure" "marker" "header" "content"; --blob-rows: auto auto auto 1fr; }
+  &:where(:not(:has(> [data-slot="blob-content"])))                                         { --blob-areas: "figure" "marker" "header" "actions"; --blob-rows: auto auto auto 1fr; }
+  &:where(:not(:has(> [data-slot="blob-figure"])))                                          { --blob-areas: "marker" "header" "content" "actions"; --blob-rows: auto auto 1fr auto; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])))         { --blob-areas: "figure" "header" "content"; --blob-rows: auto auto 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-content"])))         { --blob-areas: "figure" "header" "actions"; --blob-rows: auto auto 1fr; }
+  &:where(:not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"])))   { --blob-areas: "figure" "marker" "header"; --blob-rows: auto auto 1fr; }
+  &:where(:not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"])))    { --blob-areas: "marker" "header" "actions"; --blob-rows: auto auto auto 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-figure"])))          { --blob-areas: "header" "content" "actions"; --blob-rows: auto 1fr auto; }
+  &:where(:not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-figure"])))    { --blob-areas: "marker" "header" "content"; --blob-rows: auto auto 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"])))    { --blob-areas: "figure" "header"; --blob-rows: auto 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-figure"])))     { --blob-areas: "header" "content"; --blob-rows: auto 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"])))     { --blob-areas: "header" "actions"; --blob-rows: auto 1fr; }
+  &:where(:not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"]))) { --blob-areas: "marker" "header"; --blob-rows: auto 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"]))) { --blob-areas: "header"; --blob-rows: 1fr; }
+}
+
+/* ─────────────────────────────────────────────────────────────────
+  STACK-REVERSE
+──────────────────────────────────────────────────────────────────── */
+
+@utility blob-stack-reverse {
+  --blob-areas: "marker" "header" "actions" "content" "figure";
+  --blob-columns: 1fr;
+  --blob-rows: auto;
+  align-content: start;
+
+  &:where(:not(:has(> [data-slot="marker"])))                                               { --blob-areas: "header" "actions" "content" "figure"; }
+  &:where(:not(:has(> [data-slot="blob-actions"])))                                         { --blob-areas: "marker" "header" "content" "figure"; }
+  &:where(:not(:has(> [data-slot="blob-content"])))                                         { --blob-areas: "marker" "header" "actions" "figure"; }
+  &:where(:not(:has(> [data-slot="blob-figure"])))                                          { --blob-areas: "marker" "header" "actions" "content"; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])))         { --blob-areas: "header" "content" "figure"; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-content"])))         { --blob-areas: "header" "actions" "figure"; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-figure"])))          { --blob-areas: "header" "actions" "content"; }
+  &:where(:not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"])))   { --blob-areas: "marker" "header" "figure"; }
+  &:where(:not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-figure"])))    { --blob-areas: "marker" "header" "content"; }
+  &:where(:not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"])))    { --blob-areas: "marker" "header" "actions"; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"])))    { --blob-areas: "header" "figure"; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-figure"])))     { --blob-areas: "header" "content"; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"])))     { --blob-areas: "header" "actions"; }
+  &:where(:not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"]))) { --blob-areas: "marker" "header"; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"]))) { --blob-areas: "header"; }
+}
+
+@utility blob-stack-reverse-actions-after {
+  --blob-areas: "marker" "header" "content" "actions" "figure";
+  --blob-columns: 1fr;
+  --blob-rows: auto;
+  align-content: start;
+
+  &:where(:not(:has(> [data-slot="marker"])))                                               { --blob-areas: "header" "content" "actions" "figure"; }
+  &:where(:not(:has(> [data-slot="blob-actions"])))                                         { --blob-areas: "marker" "header" "content" "figure"; }
+  &:where(:not(:has(> [data-slot="blob-content"])))                                         { --blob-areas: "marker" "header" "actions" "figure"; }
+  &:where(:not(:has(> [data-slot="blob-figure"])))                                          { --blob-areas: "marker" "header" "content" "actions"; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])))         { --blob-areas: "header" "content" "figure"; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-content"])))         { --blob-areas: "header" "actions" "figure"; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-figure"])))          { --blob-areas: "header" "content" "actions"; }
+  &:where(:not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"])))   { --blob-areas: "marker" "header" "figure"; }
+  &:where(:not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-figure"])))    { --blob-areas: "marker" "header" "content"; }
+  &:where(:not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"])))    { --blob-areas: "marker" "header" "actions"; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"])))    { --blob-areas: "header" "figure"; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-figure"])))     { --blob-areas: "header" "content"; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"])))     { --blob-areas: "header" "actions"; }
+  &:where(:not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"]))) { --blob-areas: "marker" "header"; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"]))) { --blob-areas: "header"; }
+}
+
+@utility blob-stack-reverse-marker-left {
+  /* marker à gauche + header à droite, actions puis content, figure pleine largeur en bas */
+  --blob-areas: "marker header" "actions actions" "content content" "figure figure";
+  --blob-columns: auto 1fr;
+  --blob-rows: auto;
+  align-content: start;
+
+  &:where(:not(:has(> [data-slot="blob-actions"])))                                         { --blob-areas: "marker header" "content content" "figure figure"; }
+  &:where(:not(:has(> [data-slot="blob-content"])))                                         { --blob-areas: "marker header" "marker actions" "figure figure"; }
+  &:where(:not(:has(> [data-slot="blob-figure"])))                                          { --blob-areas: "marker header" "actions actions" "content content"; }
+  &:where(:not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"]))) { --blob-areas: "marker header" "figure figure"; }
+  &:where(:not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-figure"])))   { --blob-areas: "marker header" "content content"; }
+  &:where(:not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"])))   { --blob-areas: "marker header" "marker actions"; }
+  &:where(:not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"]))) { --blob-areas: "marker header"; }
+}
+
+@utility blob-stack-reverse-marker-left-actions-after {
+  /* marker à gauche + header à droite, content puis actions, figure pleine largeur en bas */
+  --blob-areas: "marker header" "content content" "actions actions" "figure figure";
+  --blob-columns: auto 1fr;
+  --blob-rows: auto;
+  align-content: start;
+
+  &:where(:not(:has(> [data-slot="blob-actions"])))                                         { --blob-areas: "marker header" "content content" "figure figure"; }
+  &:where(:not(:has(> [data-slot="blob-content"])))                                         { --blob-areas: "marker header" "actions actions" "figure figure"; }
+  &:where(:not(:has(> [data-slot="blob-figure"])))                                          { --blob-areas: "marker header" "content content" "actions actions"; }
+  &:where(:not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"]))) { --blob-areas: "marker header" "figure figure"; }
+  &:where(:not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-figure"])))   { --blob-areas: "marker header" "content content"; }
+  &:where(:not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"])))   { --blob-areas: "marker header" "actions actions"; }
+  &:where(:not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"]))) { --blob-areas: "marker header"; }
+}
+
+@utility blob-stack-reverse-marker-right {
+  /* header à gauche + marker à droite, actions puis content, figure pleine largeur en bas */
+  --blob-areas: "header marker" "actions actions" "content content" "figure figure";
+  --blob-columns: 1fr auto;
+  --blob-rows: auto;
+  align-content: start;
+
+  &:where(:not(:has(> [data-slot="blob-actions"])))                                         { --blob-areas: "header marker" "content content" "figure figure"; }
+  &:where(:not(:has(> [data-slot="blob-content"])))                                         { --blob-areas: "header marker" "actions marker" "figure figure"; }
+  &:where(:not(:has(> [data-slot="blob-figure"])))                                          { --blob-areas: "header marker" "actions actions" "content content"; }
+  &:where(:not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"]))) { --blob-areas: "header marker" "figure figure"; }
+  &:where(:not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-figure"])))   { --blob-areas: "header marker" "content content"; }
+  &:where(:not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"])))   { --blob-areas: "header marker" "actions marker"; }
+  &:where(:not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"]))) { --blob-areas: "header marker"; }
+}
+
+@utility blob-stack-reverse-marker-right-actions-after {
+  /* header à gauche + marker à droite, content puis actions, figure pleine largeur en bas */
+  --blob-areas: "header marker" "content content" "actions actions" "figure figure";
+  --blob-columns: 1fr auto;
+  --blob-rows: auto;
+  align-content: start;
+
+  &:where(:not(:has(> [data-slot="blob-actions"])))                                         { --blob-areas: "header marker" "content content" "figure figure"; }
+  &:where(:not(:has(> [data-slot="blob-content"])))                                         { --blob-areas: "header marker" "actions actions" "figure figure"; }
+  &:where(:not(:has(> [data-slot="blob-figure"])))                                          { --blob-areas: "header marker" "content content" "actions actions"; }
+  &:where(:not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"]))) { --blob-areas: "header marker" "figure figure"; }
+  &:where(:not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-figure"])))   { --blob-areas: "header marker" "content content"; }
+  &:where(:not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"])))   { --blob-areas: "header marker" "actions actions"; }
+  &:where(:not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"]))) { --blob-areas: "header marker"; }
+}
+
+/* ─────────────────────────────────────────────────────────────────
+  ROW
+──────────────────────────────────────────────────────────────────── */
+
+@utility blob-row {
+  --blob-areas: "figure ." "figure marker" "figure header" "figure actions" "figure content" "figure .";
+  --blob-columns: var(--blob-figure-columns-rtl, 1fr 1fr);
+  --blob-rows: 1fr auto auto auto auto 1fr;
+
+  [data-slot="blob-header"],
+  [data-slot="blob-actions"],
+  [data-slot="blob-content"],
+  [data-slot="marker"] { align-self: center; }
+
+  &:where(:not(:has(> [data-slot="marker"])))                                                 { --blob-areas: "figure ." "figure header" "figure actions" "figure content" "figure ."; --blob-rows: 1fr auto auto auto 1fr; }
+  &:where(:not(:has(> [data-slot="blob-actions"])))                                           { --blob-areas: "figure ." "figure marker" "figure header" "figure content" "figure ."; --blob-rows: 1fr auto auto auto 1fr; }
+  &:where(:not(:has(> [data-slot="blob-content"])))                                           { --blob-areas: "figure ." "figure marker" "figure header" "figure actions" "figure ."; --blob-rows: 1fr auto auto auto 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])))           { --blob-areas: "figure ." "figure header" "figure content" "figure ."; --blob-rows: 1fr auto auto 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-content"])))           { --blob-areas: "figure ." "figure header" "figure actions" "figure ."; --blob-rows: 1fr auto auto 1fr; }
+  &:where(:not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"])))     { --blob-areas: "figure ." "figure marker" "figure header" "figure ."; --blob-rows: 1fr auto auto 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"])))     { --blob-areas: "figure ." "figure header" "figure ."; --blob-rows: 1fr auto 1fr; }
+  &:where(:not(:has(> [data-slot="blob-figure"])))                                                                                  { --blob-areas: "marker" "header" "actions" "content"; --blob-columns: 1fr; --blob-rows: auto auto auto auto; }
+  &:where(:not(:has(> [data-slot="blob-figure"])):not(:has(> [data-slot="marker"])))                                               { --blob-areas: "header" "actions" "content"; --blob-columns: 1fr; --blob-rows: auto auto auto; }
+  &:where(:not(:has(> [data-slot="blob-figure"])):not(:has(> [data-slot="blob-actions"])))                                         { --blob-areas: "marker" "header" "content"; --blob-columns: 1fr; --blob-rows: auto auto auto; }
+  &:where(:not(:has(> [data-slot="blob-figure"])):not(:has(> [data-slot="blob-content"])))                                         { --blob-areas: "marker" "header" "actions"; --blob-columns: 1fr; --blob-rows: auto auto auto; }
+  &:where(:not(:has(> [data-slot="blob-figure"])):not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])))       { --blob-areas: "header" "content"; --blob-columns: 1fr; --blob-rows: auto auto; }
+  &:where(:not(:has(> [data-slot="blob-figure"])):not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-content"])))       { --blob-areas: "header" "actions"; --blob-columns: 1fr; --blob-rows: auto auto; }
+  &:where(:not(:has(> [data-slot="blob-figure"])):not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"]))) { --blob-areas: "marker" "header"; --blob-columns: 1fr; --blob-rows: auto auto; }
+  &:where(:not(:has(> [data-slot="blob-figure"])):not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"]))) { --blob-areas: "header"; --blob-columns: 1fr; --blob-rows: auto; }
+}
+
+@utility blob-row-actions-after {
+  --blob-areas: "figure ." "figure marker" "figure header" "figure content" "figure actions" "figure .";
+  --blob-columns: var(--blob-figure-columns-rtl, 1fr 1fr);
+  --blob-rows: 1fr auto auto auto auto 1fr;
+
+  [data-slot="blob-header"],
+  [data-slot="blob-actions"],
+  [data-slot="blob-content"],
+  [data-slot="marker"] { align-self: center; }
+
+  &:where(:not(:has(> [data-slot="marker"])))                                                 { --blob-areas: "figure ." "figure header" "figure content" "figure actions" "figure ."; --blob-rows: 1fr auto auto auto 1fr; }
+  &:where(:not(:has(> [data-slot="blob-actions"])))                                           { --blob-areas: "figure ." "figure marker" "figure header" "figure content" "figure ."; --blob-rows: 1fr auto auto auto 1fr; }
+  &:where(:not(:has(> [data-slot="blob-content"])))                                           { --blob-areas: "figure ." "figure marker" "figure header" "figure actions" "figure ."; --blob-rows: 1fr auto auto auto 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])))           { --blob-areas: "figure ." "figure header" "figure content" "figure ."; --blob-rows: 1fr auto auto 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-content"])))           { --blob-areas: "figure ." "figure header" "figure actions" "figure ."; --blob-rows: 1fr auto auto 1fr; }
+  &:where(:not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"])))     { --blob-areas: "figure ." "figure marker" "figure header" "figure ."; --blob-rows: 1fr auto auto 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"])))     { --blob-areas: "figure ." "figure header" "figure ."; --blob-rows: 1fr auto 1fr; }
+  &:where(:not(:has(> [data-slot="blob-figure"])))                                                                                  { --blob-areas: "marker" "header" "content" "actions"; --blob-columns: 1fr; --blob-rows: auto auto auto auto; }
+  &:where(:not(:has(> [data-slot="blob-figure"])):not(:has(> [data-slot="marker"])))                                               { --blob-areas: "header" "content" "actions"; --blob-columns: 1fr; --blob-rows: auto auto auto; }
+  &:where(:not(:has(> [data-slot="blob-figure"])):not(:has(> [data-slot="blob-actions"])))                                         { --blob-areas: "marker" "header" "content"; --blob-columns: 1fr; --blob-rows: auto auto auto; }
+  &:where(:not(:has(> [data-slot="blob-figure"])):not(:has(> [data-slot="blob-content"])))                                         { --blob-areas: "marker" "header" "actions"; --blob-columns: 1fr; --blob-rows: auto auto auto; }
+  &:where(:not(:has(> [data-slot="blob-figure"])):not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])))       { --blob-areas: "header" "content"; --blob-columns: 1fr; --blob-rows: auto auto; }
+  &:where(:not(:has(> [data-slot="blob-figure"])):not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-content"])))       { --blob-areas: "header" "actions"; --blob-columns: 1fr; --blob-rows: auto auto; }
+  &:where(:not(:has(> [data-slot="blob-figure"])):not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"]))) { --blob-areas: "marker" "header"; --blob-columns: 1fr; --blob-rows: auto auto; }
+  &:where(:not(:has(> [data-slot="blob-figure"])):not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"]))) { --blob-areas: "header"; --blob-columns: 1fr; --blob-rows: auto; }
+}
+
+/* ─────────────────────────────────────────────────────────────────
+  ROW-REVERSE
+──────────────────────────────────────────────────────────────────── */
+
+@utility blob-row-reverse {
+  --blob-areas: ". figure" "marker figure" "header figure" "actions figure" "content figure" ". figure";
+  --blob-columns: var(--blob-figure-columns-ltr, 1fr 1fr);
+  --blob-rows: 1fr auto auto auto auto 1fr;
+
+  [data-slot="blob-header"],
+  [data-slot="blob-actions"],
+  [data-slot="blob-content"],
+  [data-slot="marker"] { align-self: center; }
+
+  &:where(:not(:has(> [data-slot="marker"])))                                                 { --blob-areas: ". figure" "header figure" "actions figure" "content figure" ". figure"; --blob-rows: 1fr auto auto auto 1fr; }
+  &:where(:not(:has(> [data-slot="blob-actions"])))                                           { --blob-areas: ". figure" "marker figure" "header figure" "content figure" ". figure"; --blob-rows: 1fr auto auto auto 1fr; }
+  &:where(:not(:has(> [data-slot="blob-content"])))                                           { --blob-areas: ". figure" "marker figure" "header figure" "actions figure" ". figure"; --blob-rows: 1fr auto auto auto 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])))           { --blob-areas: ". figure" "header figure" "content figure" ". figure"; --blob-rows: 1fr auto auto 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-content"])))           { --blob-areas: ". figure" "header figure" "actions figure" ". figure"; --blob-rows: 1fr auto auto 1fr; }
+  &:where(:not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"])))     { --blob-areas: ". figure" "marker figure" "header figure" ". figure"; --blob-rows: 1fr auto auto 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"])))     { --blob-areas: ". figure" "header figure" ". figure"; --blob-rows: 1fr auto 1fr; }
+  &:where(:not(:has(> [data-slot="blob-figure"])))                                                                                  { --blob-areas: "marker" "header" "actions" "content"; --blob-columns: 1fr; --blob-rows: auto auto auto auto; }
+  &:where(:not(:has(> [data-slot="blob-figure"])):not(:has(> [data-slot="marker"])))                                               { --blob-areas: "header" "actions" "content"; --blob-columns: 1fr; --blob-rows: auto auto auto; }
+  &:where(:not(:has(> [data-slot="blob-figure"])):not(:has(> [data-slot="blob-actions"])))                                         { --blob-areas: "marker" "header" "content"; --blob-columns: 1fr; --blob-rows: auto auto auto; }
+  &:where(:not(:has(> [data-slot="blob-figure"])):not(:has(> [data-slot="blob-content"])))                                         { --blob-areas: "marker" "header" "actions"; --blob-columns: 1fr; --blob-rows: auto auto auto; }
+  &:where(:not(:has(> [data-slot="blob-figure"])):not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])))       { --blob-areas: "header" "content"; --blob-columns: 1fr; --blob-rows: auto auto; }
+  &:where(:not(:has(> [data-slot="blob-figure"])):not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-content"])))       { --blob-areas: "header" "actions"; --blob-columns: 1fr; --blob-rows: auto auto; }
+  &:where(:not(:has(> [data-slot="blob-figure"])):not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"]))) { --blob-areas: "marker" "header"; --blob-columns: 1fr; --blob-rows: auto auto; }
+  &:where(:not(:has(> [data-slot="blob-figure"])):not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"]))) { --blob-areas: "header"; --blob-columns: 1fr; --blob-rows: auto; }
+}
+
+@utility blob-row-reverse-actions-after {
+  --blob-areas: ". figure" "marker figure" "header figure" "content figure" "actions figure" ". figure";
+  --blob-columns: var(--blob-figure-columns-ltr, 1fr 1fr);
+  --blob-rows: 1fr auto auto auto auto 1fr;
+
+  [data-slot="blob-header"],
+  [data-slot="blob-actions"],
+  [data-slot="blob-content"],
+  [data-slot="marker"] { align-self: center; }
+
+  &:where(:not(:has(> [data-slot="marker"])))                                                 { --blob-areas: ". figure" "header figure" "content figure" "actions figure" ". figure"; --blob-rows: 1fr auto auto auto 1fr; }
+  &:where(:not(:has(> [data-slot="blob-actions"])))                                           { --blob-areas: ". figure" "marker figure" "header figure" "content figure" ". figure"; --blob-rows: 1fr auto auto auto 1fr; }
+  &:where(:not(:has(> [data-slot="blob-content"])))                                           { --blob-areas: ". figure" "marker figure" "header figure" "actions figure" ". figure"; --blob-rows: 1fr auto auto auto 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])))           { --blob-areas: ". figure" "header figure" "content figure" ". figure"; --blob-rows: 1fr auto auto 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-content"])))           { --blob-areas: ". figure" "header figure" "actions figure" ". figure"; --blob-rows: 1fr auto auto 1fr; }
+  &:where(:not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"])))     { --blob-areas: ". figure" "marker figure" "header figure" ". figure"; --blob-rows: 1fr auto auto 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"])))     { --blob-areas: ". figure" "header figure" ". figure"; --blob-rows: 1fr auto 1fr; }
+  &:where(:not(:has(> [data-slot="blob-figure"])))                                                                                  { --blob-areas: "marker" "header" "content" "actions"; --blob-columns: 1fr; --blob-rows: auto auto auto auto; }
+  &:where(:not(:has(> [data-slot="blob-figure"])):not(:has(> [data-slot="marker"])))                                               { --blob-areas: "header" "content" "actions"; --blob-columns: 1fr; --blob-rows: auto auto auto; }
+  &:where(:not(:has(> [data-slot="blob-figure"])):not(:has(> [data-slot="blob-actions"])))                                         { --blob-areas: "marker" "header" "content"; --blob-columns: 1fr; --blob-rows: auto auto auto; }
+  &:where(:not(:has(> [data-slot="blob-figure"])):not(:has(> [data-slot="blob-content"])))                                         { --blob-areas: "marker" "header" "actions"; --blob-columns: 1fr; --blob-rows: auto auto auto; }
+  &:where(:not(:has(> [data-slot="blob-figure"])):not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])))       { --blob-areas: "header" "content"; --blob-columns: 1fr; --blob-rows: auto auto; }
+  &:where(:not(:has(> [data-slot="blob-figure"])):not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-content"])))       { --blob-areas: "header" "actions"; --blob-columns: 1fr; --blob-rows: auto auto; }
+  &:where(:not(:has(> [data-slot="blob-figure"])):not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"]))) { --blob-areas: "marker" "header"; --blob-columns: 1fr; --blob-rows: auto auto; }
+  &:where(:not(:has(> [data-slot="blob-figure"])):not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])):not(:has(> [data-slot="blob-content"]))) { --blob-areas: "header"; --blob-columns: 1fr; --blob-rows: auto; }
+}
+
+
+/* ─────────────────────────────────────────────────────────────────
+  BAR
+──────────────────────────────────────────────────────────────────── */
+
+@utility blob-bar {
+  --blob-areas: "figure figure" "marker marker" "header actions" "content content";
+  --blob-columns: 1fr auto;
+  --blob-rows: auto;
+  align-content: start;
+
+  & [data-slot="blob-header"],
+  & [data-slot="blob-actions"] { align-self: end; }
+
+  &:where(:not(:has(> [data-slot="marker"])))                                                                      { --blob-areas: "figure figure" "header actions" "content content"; }
+  &:where(:not(:has(> [data-slot="blob-content"])))                                                                { --blob-areas: "figure figure" "marker marker" "header actions"; }
+  &:where(:not(:has(> [data-slot="blob-figure"])))                                                                 { --blob-areas: "marker marker" "header actions" "content content"; }
+  &:where(:not(:has(> [data-slot="blob-actions"])))                                                                { --blob-areas: "figure figure" "marker marker" "header header" "content content"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-content"])))                               { --blob-areas: "figure figure" "header actions"; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-figure"])))                               { --blob-areas: "header actions" "content content"; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])))                               { --blob-areas: "figure" "header" "content"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"])))                         { --blob-areas: "marker marker" "header actions"; }
+  &:where(:not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-actions"])))                        { --blob-areas: "figure figure" "marker marker" "header header"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="blob-figure"])):not(:has(> [data-slot="blob-actions"])))                         { --blob-areas: "marker" "header" "content"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"])))                                        { --blob-areas: "header actions"; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-actions"])))                                       { --blob-areas: "figure" "header"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-figure"])):not(:has(> [data-slot="blob-actions"])))                                        { --blob-areas: "header" "content"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"])):not(:has(> [data-slot="blob-actions"])))                                  { --blob-areas: "marker" "header"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"])):not(:has(> [data-slot="blob-actions"]))) { --blob-areas: "header"; --blob-columns: 1fr; }
+}
+
+@utility blob-bar-marker-left {
+  --blob-areas: "figure figure figure" "marker header actions" "content content content";
+  --blob-columns: auto 1fr auto;
+  --blob-rows: auto;
+  align-content: start;
+
+  & [data-slot="blob-header"] { align-self: center; }
+  & [data-slot="blob-actions"] { align-self: end; justify-self: end; }
+
+  &:where(:not(:has(> [data-slot="marker"])))                                               { --blob-areas: "figure figure figure" "header header actions" "content content content"; }
+  &:where(:not(:has(> [data-slot="blob-content"])))                                         { --blob-areas: "figure figure figure" "marker header actions"; }
+  &:where(:not(:has(> [data-slot="blob-figure"])))                                          { --blob-areas: "marker header actions" "content content content"; }
+  &:where(:not(:has(> [data-slot="blob-actions"])))                                         { --blob-areas: "figure figure figure" "marker header ." "content content content"; }
+  &:where(:not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"])))   { --blob-areas: "marker header actions"; }
+  &:where(:not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-actions"])))   { --blob-areas: "figure figure figure" "marker header ."; }
+  &:where(:not(:has(> [data-slot="blob-figure"])):not(:has(> [data-slot="blob-actions"])))   { --blob-areas: "marker header ." "content content content"; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-content"])))                                                                                { --blob-areas: "figure figure figure" "header header actions"; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-figure"])))                                                                                 { --blob-areas: "header header actions" "content content content"; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])))                                                                                { --blob-areas: "figure" "header" "content"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"])))                                          { --blob-areas: "header header actions"; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-actions"])))                                         { --blob-areas: "figure" "header"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-figure"])):not(:has(> [data-slot="blob-actions"])))                                          { --blob-areas: "header" "content"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"])):not(:has(> [data-slot="blob-actions"])))                                    { --blob-areas: "marker header ."; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"])):not(:has(> [data-slot="blob-actions"])))   { --blob-areas: "header"; --blob-columns: 1fr; }
+}
+
+@utility blob-bar-reverse {
+  --blob-areas: "content content" "marker marker" "header actions" "figure figure";
+  --blob-columns: 1fr auto;
+  --blob-rows: auto;
+  align-content: start;
+
+  & [data-slot="blob-header"],
+  & [data-slot="blob-actions"] { align-self: end; }
+
+  &:where(:not(:has(> [data-slot="marker"])))                                                                      { --blob-areas: "content content" "header actions" "figure figure"; }
+  &:where(:not(:has(> [data-slot="blob-content"])))                                                                { --blob-areas: "marker marker" "header actions" "figure figure"; }
+  &:where(:not(:has(> [data-slot="blob-figure"])))                                                                 { --blob-areas: "content content" "marker marker" "header actions"; }
+  &:where(:not(:has(> [data-slot="blob-actions"])))                                                                { --blob-areas: "content content" "marker marker" "header header" "figure figure"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-content"])))                               { --blob-areas: "header actions" "figure figure"; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-figure"])))                               { --blob-areas: "content content" "header actions"; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])))                               { --blob-areas: "content content" "header" "figure"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"])))                         { --blob-areas: "marker marker" "header actions"; }
+  &:where(:not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-actions"])))                        { --blob-areas: "marker marker" "header header" "figure figure"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="blob-figure"])):not(:has(> [data-slot="blob-actions"])))                         { --blob-areas: "content content" "marker" "header"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"])))                                        { --blob-areas: "header actions"; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-actions"])))                                       { --blob-areas: "header" "figure"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-figure"])):not(:has(> [data-slot="blob-actions"])))                                        { --blob-areas: "content" "header"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"])):not(:has(> [data-slot="blob-actions"])))                                  { --blob-areas: "marker" "header"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"])):not(:has(> [data-slot="blob-actions"]))) { --blob-areas: "header"; --blob-columns: 1fr; }
+}
+
+@utility blob-bar-reverse-marker-left {
+  --blob-areas: "content content content" "marker header actions" "figure figure figure";
+  --blob-columns: auto 1fr auto;
+  --blob-rows: auto;
+  align-content: start;
+
+  & [data-slot="blob-header"] { align-self: center; }
+  & [data-slot="blob-actions"] { align-self: end; }
+
+  &:where(:not(:has(> [data-slot="blob-content"])))                                         { --blob-areas: "marker header actions" "figure figure figure"; }
+  &:where(:not(:has(> [data-slot="blob-figure"])))                                          { --blob-areas: "content content content" "marker header actions"; }
+  &:where(:not(:has(> [data-slot="blob-actions"])))                                         { --blob-areas: "content content content" "marker header ." "figure figure figure"; }
+  &:where(:not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"])))   { --blob-areas: "marker header actions"; }
+  &:where(:not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-actions"])))   { --blob-areas: "marker header ." "figure figure figure"; }
+  &:where(:not(:has(> [data-slot="blob-figure"])):not(:has(> [data-slot="blob-actions"])))   { --blob-areas: "content content content" "marker header ."; }
+  &:where(:not(:has(> [data-slot="marker"])))                                                                                        { --blob-areas: "content content content" "header header actions" "figure figure figure"; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-content"])))                                                 { --blob-areas: "header header actions" "figure figure figure"; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-figure"])))                                                  { --blob-areas: "content content content" "header header actions"; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-actions"])))                                                 { --blob-areas: "content" "header" "figure"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"])))           { --blob-areas: "header header actions"; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-actions"])))          { --blob-areas: "header" "figure"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-figure"])):not(:has(> [data-slot="blob-actions"])))           { --blob-areas: "content" "header"; --blob-columns: 1fr; }
+  &:where(:not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"])):not(:has(> [data-slot="blob-actions"])))     { --blob-areas: "marker header ."; }
+  &:where(:not(:has(> [data-slot="marker"])):not(:has(> [data-slot="blob-content"])):not(:has(> [data-slot="blob-figure"])):not(:has(> [data-slot="blob-actions"]))) { --blob-areas: "header"; --blob-columns: 1fr; }
+}
+
