@@ -55,11 +55,18 @@ export function Inspector({ editor }: InspectorProps) {
     }
   }, [editor, setSelectedBlock, selectedIdRef])
 
-  // Props that affect compatibility state — always trigger a re-render so
-  // BlobInspector re-computes `computeCompatibility` and reflects which
-  // options/fields are disabled. These props are never free-text inputs,
-  // so the keystroke optimisation is not impacted.
-  const STRUCTURAL_PROPS = ["layout", "direction", "markerPosition", "actions"]
+  // Props that must trigger a React re-render when changed.
+  // Two categories — all are select/checkbox fields, never free-text inputs,
+  // so the keystroke optimisation is not impacted:
+  //   1. Structural: affect compatibility state (disabled options, etc.)
+  //   2. Gating: control conditional rendering of other fields in BlobInspector
+  //      (e.g. figureType "image" shows the image URL field)
+  const RERENDER_PROPS = [
+    // structural
+    "layout", "direction", "markerPosition", "actions",
+    // gating
+    "figureType", "markerType", "contentType", "backgroundType",
+  ]
 
   const handleUpdateProp = (propName: string, value: string | boolean) => {
     if (!selectedBlock) return
@@ -80,8 +87,8 @@ export function Inspector({ editor }: InspectorProps) {
     //   • the changed prop is structural (affects compatibility state of other fields).
     //     Text inputs never produce these values, so the keystroke optimisation is preserved.
     const isStringBoolean = value === "true" || value === "false"
-    const isStructural = STRUCTURAL_PROPS.includes(propName)
-    if (Object.keys(patch).length > 0 || isStringBoolean || isStructural) {
+    const triggersRerender = RERENDER_PROPS.includes(propName)
+    if (Object.keys(patch).length > 0 || isStringBoolean || triggersRerender) {
       setSelectedBlock({ ...selectedBlock, props: updatedProps as Record<string, string | boolean> })
     }
 

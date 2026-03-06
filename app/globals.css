@@ -91,7 +91,7 @@
   background: var(--background);
   padding-top: 24px;
   border-left: 1px solid var(--border);
-
+  height: calc(100vh - 53px);
 }
 
 .bn-editor > .bn-block-group > [data-node-type="blockOuter"] {
