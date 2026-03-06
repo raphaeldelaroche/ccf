@@ -59,7 +59,7 @@ export interface BlobFormData {
   }>
 
   // Content
-  showContent?: boolean
+  showContent?: boolean | string
   contentText?: string
   contentPosition?: string
   fontSize?: string
