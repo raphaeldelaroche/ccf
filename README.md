@@ -2,6 +2,45 @@
 
 Un système de composants ultra-modulable pour construire des sections de contenu flexibles et responsives dans Next.js.
 
+## Installation & Base de Données (Vercel & Redis)
+
+Ce projet utilise une base de données **Redis (Vercel KV / Upstash)** pour sauvegarder et synchroniser les pages et les presets entre votre environnement de développement local et votre environnement de production sur Vercel. 
+
+### Prérequis
+* Node.js & pnpm
+* Un compte Vercel (gratuit) avec un projet configuré
+* La CLI Vercel (`npm i -g vercel`)
+
+### Configuration du projet
+1. **Cloner le projet et installer les dépendances** :
+   ```bash
+   git clone <votre-repo>
+   cd blobui
+   pnpm install
+   ```
+
+2. **Créer la base de données sur Vercel** :
+   * Sur votre tableau de bord Vercel en ligne, allez dans l'onglet **Storage**.
+   * Cliquez sur **Create Database**, choisissez **KV (Redis)**, et validez.
+
+3. **Lier votre environnement local à Vercel** :
+   ```bash
+   npx vercel link
+   ```
+   *(Acceptez les options par défaut pour lier votre dossier au projet Vercel existant)*
+
+4. **Télécharger les variables d'environnement distantes** :
+   ```bash
+   npx vercel env pull .env.local
+   ```
+   *(Ceci créera un fichier `.env.local` et téléchargera automatiquement la variable `REDIS_URL` nécessaire à la base de données)*
+
+5. **Lancer le serveur de développement** :
+   ```bash
+   pnpm dev
+   ```
+   *Votre application tournera sur `http://localhost:3000`. Les pages créées ou modifiées seront instantanément synchronisées avec votre base de données distante Vercel.*
+
 ## Vue d'ensemble
 
 Blob UI offre trois systèmes principaux :
