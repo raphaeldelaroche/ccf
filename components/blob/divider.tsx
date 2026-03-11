@@ -46,7 +46,7 @@ function Divider({
         )}
         {...props}
       />
-      <div className="shrink-0">{children}</div>
+      <div className="shrink-0 uppercase text-xs tracking-widest text-foreground/60">{children}</div>
       <Separator
         decorative={decorative}
         orientation={orientation}

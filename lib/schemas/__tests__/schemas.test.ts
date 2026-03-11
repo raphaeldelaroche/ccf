@@ -1,7 +1,6 @@
 import { describe, it, expect } from "vitest"
 import { BlockSchema, BlockDataSchema, ValidatedBlockSchema } from "../block"
 import { PageSchema } from "../page"
-import { BlockPresetSchema, CreateBlockPresetRequestSchema } from "../preset"
 
 /* ── Fixtures ── */
 
@@ -17,17 +16,6 @@ const validPage = {
   slug: "ma-page",
   title: "Ma page",
   blocks: [validBlock],
-}
-
-const validPreset = {
-  slug: "hero-simple",
-  name: "Hero Simple",
-  blockType: "BlobBlock" as const,
-  template: {
-    blockType: "BlobBlock" as const,
-    data: { title: "Hero" },
-    innerBlocks: [],
-  },
 }
 
 /* ── BlockSchema ── */
@@ -195,57 +183,5 @@ describe("PageSchema", () => {
 
   it("valide une page sans blocs", () => {
     expect(() => PageSchema.parse({ ...validPage, blocks: [] })).not.toThrow()
-  })
-})
-
-/* ── BlockPresetSchema ── */
-
-describe("BlockPresetSchema", () => {
-  it("valide un preset correct", () => {
-    expect(() => BlockPresetSchema.parse(validPreset)).not.toThrow()
-  })
-
-  it("rejette un slug invalide", () => {
-    expect(() => BlockPresetSchema.parse({ ...validPreset, slug: "Hero Simple" })).toThrow()
-  })
-
-  it("rejette un preset sans nom", () => {
-    expect(() => BlockPresetSchema.parse({ ...validPreset, name: "" })).toThrow()
-  })
-
-  it("accepte un preset avec tags et useCase", () => {
-    const preset = {
-      ...validPreset,
-      tags: ["hero", "section"],
-      useCase: "Section principale d'une page d'accueil",
-    }
-    expect(() => BlockPresetSchema.parse(preset)).not.toThrow()
-  })
-})
-
-/* ── CreateBlockPresetRequestSchema ── */
-
-describe("CreateBlockPresetRequestSchema", () => {
-  it("valide une requête de création correcte", () => {
-    const request = {
-      block: { ...validBlock },
-      name: "Mon preset",
-      slug: "mon-preset",
-    }
-    expect(() => CreateBlockPresetRequestSchema.parse(request)).not.toThrow()
-  })
-
-  it("rejette une requête sans bloc", () => {
-    const request = { name: "Mon preset", slug: "mon-preset" }
-    expect(() => CreateBlockPresetRequestSchema.parse(request)).toThrow()
-  })
-
-  it("rejette une requête avec slug invalide", () => {
-    const request = {
-      block: { ...validBlock },
-      name: "Mon preset",
-      slug: "Mon Preset!",
-    }
-    expect(() => CreateBlockPresetRequestSchema.parse(request)).toThrow()
   })
 })

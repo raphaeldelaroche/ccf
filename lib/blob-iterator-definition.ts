@@ -29,12 +29,15 @@ export const ITERATOR_LAYOUTS = [
   "grid-2",
   "grid-3",
   "grid-4",
+  "grid-5",
+  "grid-6",
   "grid-auto",
 ] as const
 
 export type IteratorLayout = (typeof ITERATOR_LAYOUTS)[number]
 
 const allSizes: Record<string, string> = Object.fromEntries(SIZES.map((s) => [s, s]))
+const gapSizes: Record<string, string> = { auto: "Auto (défaut)", none: "Aucun (0)", ...allSizes }
 
 // ─── Iterator Block Definition ──────────────────────────────────────────────
 
@@ -58,13 +61,16 @@ export const IteratorBlockDefinition: BlockDefinition = {
             "grid-2": "Grille 2 colonnes",
             "grid-3": "Grille 3 colonnes",
             "grid-4": "Grille 4 colonnes",
+            "grid-5": "Grille 5 colonnes",
+            "grid-6": "Grille 6 colonnes",
             swiper: "Swiper (carrousel)",
           },
         },
-        iteratorGutter: {
+        iteratorGapX: { type: "dropdown", label: "Espacement X", options: gapSizes },
+      iteratorGapY: {
           type: "dropdown",
           label: "Espacement entre les items",
-          options: allSizes,
+          options: gapSizes,
         },
         enableSwiper: {
           type: "checkbox",
@@ -125,7 +131,8 @@ export const IteratorBlockDefinition: BlockDefinition = {
   // Valeurs initiales (pré-remplies mais modifiables)
   initialValues: {
     iteratorLayout: "grid-auto",
-    iteratorGutter: "md",
+    iteratorGapX: "md",
+    iteratorGapY: "md",
     // Par défaut : seul le CONTENU spécifique est géré par item
     // Tout le reste (forme, structure, style) est partagé/hérité
     itemFields: [

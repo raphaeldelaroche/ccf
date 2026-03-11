@@ -5,17 +5,16 @@ import { Swiper, SwiperSlide } from "swiper/react"
 import { Navigation, Pagination, Autoplay, A11y } from "swiper/modules"
 import type { SwiperOptions, Swiper as SwiperClass } from "swiper/types"
 import { cn } from "@/lib/utils"
+import type { SizeValue } from "./blob-grid"
 
 // Import Swiper styles
 import "swiper/css"
 import "swiper/css/navigation"
 import "swiper/css/pagination"
 
-export type SizeValue = "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "5xl" | "6xl" | "7xl" | "8xl" | "9xl" | "10xl"
-
 interface BlobSwiperProps {
   children: ReactNode
-  gutter?: SizeValue
+  gapX?: SizeValue
   className?: string
   swiperOptions?: Partial<SwiperOptions>
 }
@@ -23,20 +22,22 @@ interface BlobSwiperProps {
 /**
  * BlobSwiper - Client Component wrapper autour de Swiper.js
  *
- * @param gutter - Espacement entre les slides (tokens de taille)
+ * @param gapX - Espacement entre les slides (tokens de taille)
  * @param swiperOptions - Options Swiper.js (navigation, pagination, etc.)
  * @param className - Classes CSS supplémentaires
  */
 export function BlobSwiper({
   children,
-  gutter = "md",
+  gapX = "md",
   className,
   swiperOptions = {}
 }: BlobSwiperProps) {
   const swiperRef = useRef<SwiperClass | null>(null)
 
   // Convertir gutter token en pixels pour Swiper
-  const gutterMap: Record<SizeValue, number> = {
+  const gapXMap: Record<SizeValue, number> = {
+    none: 0,
+    auto: 16,
     xs: 8,
     sm: 12,
     md: 16,
@@ -55,7 +56,7 @@ export function BlobSwiper({
 
   const defaultOptions: SwiperOptions = {
     modules: [Navigation, Pagination, Autoplay, A11y],
-    spaceBetween: gutterMap[gutter] || 16,
+    spaceBetween: gapXMap[gapX] || 16,
     slidesPerView: "auto",
     grabCursor: true,
     ...swiperOptions

@@ -1,3 +1,5 @@
+import { getAppearanceOptions } from "@/config/blob-appearances";
+
 // ─── Sizes ───────────────────────────────────────────────────────────────────
 
 export const SIZES = [
@@ -38,7 +40,18 @@ const allSizes: Record<string, string> = Object.fromEntries(SIZES.map((s) => [s,
 
 const sizeOptions: Record<string, string> = { auto: "Auto (selon la taille)", ...allSizes };
 
-const gutterOptions: Record<string, string> = { auto: "Auto (selon la taille)", ...allSizes };
+const gapOptions: Record<string, string> = { auto: "Auto (selon la taille)", none: "Aucun (0)", ...allSizes };
+
+const paddingXOptions: Record<string, string> = { 
+  auto: "Auto (selon la taille)", 
+  none: "Aucun (0)",
+  ...allSizes,
+  "container-sm": "Container SM",
+  "container-md": "Container MD",
+  "container-lg": "Container LG",
+  "container-xl": "Container XL",
+  "container-2xl": "Container 2XL"
+};
 
 // ─── Icon options (3 icônes de test au format IconData) ──────────────────────
 
@@ -75,6 +88,25 @@ export const iconOptions: Record<string, IconData> = {
           type: "path",
           props: {
             d: "M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+          }
+        }]
+      }
+    }
+  },
+  asterisk: {
+    name: "asterisk",
+    collection: "lucide",
+    metadata: { size: 24, strokeWidth: 2 },
+    iconObject: {
+      type: "svg",
+      props: {
+        width: 24,
+        height: 24,
+        viewBox: "0 0 24 24",
+        children: [{
+          type: "path",
+          props: {
+            d: "M12 2v20M5 12h14M6.22 6.22l11.31 11.31M17.78 6.22l-11.31 11.31"
           }
         }]
       }
@@ -125,7 +157,26 @@ export const iconOptions: Record<string, IconData> = {
         ]
       }
     }
-  }
+  },
+  arrowRight: {
+    name: "arrowRight",
+    collection: "lucide",
+    metadata: { size: 24, strokeWidth: 2 },
+    iconObject: {
+      type: "svg",
+      props: {
+        width: 24,
+        height: 24,
+        viewBox: "0 0 24 24",
+        children: [{
+          type: "path",
+          props: {
+            d: "M5 12h14M12 5l7 7-7 7"
+          }
+        }]
+      }
+    }
+  },
 };
 
 // ─── Field types ──────────────────────────────────────────────────────────────
@@ -139,6 +190,10 @@ interface BaseField {
   label: string;
   inheritable?: boolean;
   showIf?: ShowIfCondition | ShowIfCondition[];
+  /** Key into CompatibilityState for compat-aware option resolution in the inspector */
+  compatKey?: "marker" | "align" | "figureWidth" | "actions";
+  /** Label for the implicit empty ("") option prepended to compat/dropdown options */
+  emptyLabel?: string;
 }
 
 interface TextField extends BaseField {
@@ -159,9 +214,15 @@ interface CheckboxField extends BaseField {
   type: "checkbox";
 }
 
+export interface RepeaterLayout {
+  inline: string[];
+  groups: Array<{ key: string; label: string; fields: string[] }>;
+}
+
 interface RepeaterField extends BaseField {
   type: "repeater";
   fields: Record<string, Field>;
+  layout?: RepeaterLayout;
 }
 
 interface IconField extends BaseField {
@@ -243,6 +304,7 @@ const fieldSections: Record<string, FieldSection> = {
           right: "Droite",
         },
         showIf: { field: "markerType", value: ["text", "icon"] },
+        compatKey: "marker",
         inheritable: true,
       },
       markerStyle: {
@@ -307,6 +369,8 @@ const fieldSections: Record<string, FieldSection> = {
           "3/4": "3/4",
         },
         showIf: { field: "figureType", value: ["image", "video"] },
+        compatKey: "figureWidth",
+        emptyLabel: "Par défaut",
         inheritable: true,
       },
       figureBleed: {
@@ -341,16 +405,32 @@ const fieldSections: Record<string, FieldSection> = {
         type: "dropdown",
         label: "Position des boutons",
         options: {
-          default: "Avant le contenu",
           after:  "Après le contenu",
           before: "Avant le contenu",
         },
+        compatKey: "actions",
+        emptyLabel: "Par défaut",
         inheritable: true,
       },
       buttons: {
         type: "repeater",
         label: "Boutons",
         inheritable: true,
+        layout: {
+          inline: ["label"],
+          groups: [
+            {
+              key: "link",
+              label: "Lien",
+              fields: ["linkType", "internalHref", "externalHref", "customAction", "opensInNewTab"],
+            },
+            {
+              key: "style",
+              label: "Style",
+              fields: ["variant", "theme"],
+            },
+          ],
+        },
         fields: {
           label: { type: "text", label: "Label" },
           linkType: {
@@ -479,6 +559,7 @@ const fieldSections: Record<string, FieldSection> = {
           center: "Centré",
           right:  "Droite",
         },
+        compatKey: "align",
         inheritable: true,
       },
     },
@@ -487,9 +568,12 @@ const fieldSections: Record<string, FieldSection> = {
   spacing: {
     label: "Espacement",
     fields: {
-      paddingX: { type: "dropdown", label: "Espacement horizontal", options: gutterOptions, inheritable: true },
-      paddingY: { type: "dropdown", label: "Espacement vertical",   options: gutterOptions, inheritable: true },
-      gutter:   { type: "dropdown", label: "Espacement interne",    options: gutterOptions, inheritable: true },
+      paddingX: { type: "dropdown", label: "Espacement horizontal", options: paddingXOptions, inheritable: true },
+      paddingY: { type: "dropdown", label: "Espacement vertical",   options: gapOptions, inheritable: true },
+      headerPaddingX: { type: "dropdown", label: "Header X", options: paddingXOptions, inheritable: true },
+      headerPaddingY: { type: "dropdown", label: "Header Y", options: paddingXOptions, inheritable: true },
+      gapX: { type: "dropdown", label: "Espacement interne X", options: gapOptions, inheritable: true },
+      gapY: { type: "dropdown", label: "Espacement interne Y", options: gapOptions, inheritable: true },
     },
   },
 
@@ -499,14 +583,7 @@ const fieldSections: Record<string, FieldSection> = {
       appearance: {
         type: "dropdown",
         label: "Apparence",
-        options: {
-          default: "Par défaut",
-          card: "Carte",
-          cardElevated: "Carte élevée",
-          glassmorphism: "Glassmorphism",
-          outlined: "Contour",
-          minimal: "Minimal",
-        },
+        options: getAppearanceOptions(),
         inheritable: true,
       },
       theme: {
@@ -652,7 +729,8 @@ export function createBlobItemFields(): Record<string, Field> {
     // Spacing fields
     paddingX: withItemFieldCondition(fieldSections.spacing.fields.paddingX, "paddingX"),
     paddingY: withItemFieldCondition(fieldSections.spacing.fields.paddingY, "paddingY"),
-    gutter: withItemFieldCondition(fieldSections.spacing.fields.gutter, "gutter"),
+    gapX: withItemFieldCondition(fieldSections.spacing.fields.gapX, "gapX"),
+    gapY: withItemFieldCondition(fieldSections.spacing.fields.gapY, "gapY"),
 
     // Style fields
     theme: withItemFieldCondition(fieldSections.style.fields.theme, "theme"),

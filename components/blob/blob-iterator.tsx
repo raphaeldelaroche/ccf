@@ -14,7 +14,7 @@ import type { SwiperOptions } from "swiper/types"
 const BREAKPOINT_ORDER = ["base", "sm", "md", "lg", "xl", "2xl"] as const
 type Breakpoint = (typeof BREAKPOINT_ORDER)[number]
 
-export type IteratorLayout = "swiper" | "grid-1" | "grid-2" | "grid-3" | "grid-4" | "grid-auto"
+export type IteratorLayout = "swiper" | "grid-1" | "grid-2" | "grid-3" | "grid-4" | "grid-5" | "grid-6" | "grid-auto"
 
 type ResponsiveIteratorLayout = string & { __brand?: "IteratorLayout" }
 
@@ -23,7 +23,7 @@ export interface BlobIteratorProps {
   /** Layout responsive du conteneur (ex: "swiper lg:grid-2") */
   containerLayout?: ResponsiveIteratorLayout
   /** Espacement entre les éléments (tokens de taille, via blob-gutter-*) */
-  gutter?: SizeValue
+  gapX?: SizeValue; gapY?: SizeValue
   /** Options Swiper.js (utilisées si swiper présent dans containerLayout) */
   swiperOptions?: Partial<SwiperOptions>
   /** Classes CSS supplémentaires */
@@ -112,7 +112,7 @@ function resolveBreakpoints(
  *
  * @example
  * ```tsx
- * <BlobIterator containerLayout="swiper lg:grid-2" gutter="md">
+ * <BlobIterator containerLayout="swiper lg:grid-2" gapX="md" gapY="md">
  *   <Blob>...</Blob>
  *   <Blob>...</Blob>
  * </BlobIterator>
@@ -121,7 +121,8 @@ function resolveBreakpoints(
 export function BlobIterator({
   children,
   containerLayout = "grid-auto",
-  gutter,
+  gapX,
+  gapY,
   swiperOptions,
   className
 }: BlobIteratorProps) {
@@ -134,7 +135,7 @@ export function BlobIterator({
     const singleLayout = breakpoints[0]?.layout || "grid-auto"
     const columns = extractGridColumns(singleLayout)
     return (
-      <BlobGrid columns={columns} gutter={gutter} className={className}>
+      <BlobGrid columns={columns} gapX={gapX} gapY={gapY} className={className}>
         {children}
       </BlobGrid>
     )
@@ -156,7 +157,7 @@ export function BlobIterator({
         if (isSwiperLayout) {
           return (
             <div key={`swiper-${bp}`} className={displayClass}>
-              <BlobSwiper gutter={gutter} swiperOptions={swiperOptions} className={className}>
+              <BlobSwiper gapX={gapX} swiperOptions={swiperOptions} className={className}>
                 {children}
               </BlobSwiper>
             </div>
@@ -164,7 +165,7 @@ export function BlobIterator({
         } else {
           return (
             <div key={`grid-${bp}`} className={displayClass}>
-              <BlobGrid columns={columns} gutter={gutter} className={className}>
+              <BlobGrid columns={columns} gapX={gapX} gapY={gapY} className={className}>
                 {children}
               </BlobGrid>
             </div>

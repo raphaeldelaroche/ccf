@@ -71,7 +71,9 @@ export interface BlobFormData {
   align?: string
   paddingX?: string
   paddingY?: string
-  gutter?: string
+  headerPaddingX?: string
+  headerPaddingY?: string
+  gapX?: string; gapY?: string
   actions?: string
 
   // Style
@@ -93,6 +95,30 @@ export interface BlobFormData {
   eyebrowAs?: string
 }
 
+export type ButtonVariant = 'default' | 'secondary' | 'outline' | 'ghost' | 'link';
+
+const VALID_BUTTON_VARIANTS: ButtonVariant[] = ['default', 'secondary', 'outline', 'ghost', 'link'];
+
+function toButtonVariant(val: string | undefined): ButtonVariant {
+  return VALID_BUTTON_VARIANTS.includes(val as ButtonVariant) ? (val as ButtonVariant) : 'default';
+}
+
+export type TitleAs = "div" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
+
+const VALID_TITLE_AS: TitleAs[] = ["div", "h1", "h2", "h3", "h4", "h5", "h6"];
+
+function toTitleAs(val: string | undefined, fallback: TitleAs): TitleAs {
+  return VALID_TITLE_AS.includes(val as TitleAs) ? (val as TitleAs) : fallback;
+}
+
+export type MarkerVariant = "default" | "secondary" | "ghost";
+
+const VALID_MARKER_VARIANTS: MarkerVariant[] = ["default", "secondary", "ghost"];
+
+function toMarkerVariant(val: string | undefined): MarkerVariant {
+  return VALID_MARKER_VARIANTS.includes(val as MarkerVariant) ? (val as MarkerVariant) : "default";
+}
+
 export interface MappedBlobData {
   // Props mappées vers Blob
   blobProps: BlobComposableProps & {
@@ -107,11 +133,13 @@ export interface MappedBlobData {
     eyebrow?: {
       text: string
       theme?: string
-      as?: "div" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6"
+      /** Classe CSS pré-calculée depuis theme (ex: "theme-blue") */
+      className?: string
+      as: TitleAs
     }
     title?: {
       text: string
-      as?: "div" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6"
+      as: TitleAs
       emphasisText?: string
     }
     subtitle?: {
@@ -123,29 +151,40 @@ export interface MappedBlobData {
     type: "text" | "icon"
     content?: string
     icon?: IconData
-    style?: string
+    style: MarkerVariant
     size?: string
     theme?: string
-    rounded?: string
+    rounded: boolean
+    /** Classes CSS pré-calculées depuis theme + size (ex: "theme-blue blob-size-md") */
+    className: string
   }
 
   figure?: {
     type: "image" | "video"
     src: string
+    alt: string
+    width: number
+    height: number
   }
 
   actions?: Array<{
     label: string
-    href?: string
-    variant?: string
+    variant: ButtonVariant
     theme?: string
-    opensInNewTab?: boolean
+    /** Props de lien pré-calculées (href, target, rel) */
+    linkProps: {
+      href: string
+      target?: '_blank'
+      rel?: 'noopener noreferrer'
+    }
   }>
 
   content?: {
     enabled: boolean
     fontSize?: string
     text: string
+    showContent?: boolean
+    contentType?: string
   }
 
   // Props non mappées (pour debugging)
@@ -194,14 +233,19 @@ export function mapFormDataToBlob(formData: BlobFormData): MappedBlobData {
   // ── Spacing mapping ──
   const paddingX = (!formData.paddingX || formData.paddingX === "auto")
     ? formData.size
-    : (formData.paddingX !== "none" ? formData.paddingX : undefined)
+    : formData.paddingX
   const paddingY = (!formData.paddingY || formData.paddingY === "auto")
     ? formData.size
-    : (formData.paddingY !== "none" ? formData.paddingY : undefined)
-  // "auto" signifie que gutter = size, donc on utilise la valeur de size
-  const gutter = formData.gutter === "auto"
-    ? formData.size
-    : (formData.gutter && formData.gutter !== "none" ? formData.gutter : undefined)
+    : formData.paddingY
+  const headerPaddingX = (!formData.headerPaddingX || formData.headerPaddingX === "auto")
+    ? undefined
+    : formData.headerPaddingX
+  const headerPaddingY = (!formData.headerPaddingY || formData.headerPaddingY === "auto")
+    ? undefined
+    : formData.headerPaddingY
+  // "auto" signifie que gapX/Y = size, donc on utilise la valeur de size
+  const gapX = formData.gapX === "auto" ? formData.size : (formData.gapX || undefined);
+  const gapY = formData.gapY === "auto" ? formData.size : (formData.gapY || undefined);
 
   // ── Figure Bleed mapping ──
   const figureBleed = formData.figureBleed && formData.figureType && formData.figureType !== "none"
@@ -217,9 +261,12 @@ export function mapFormDataToBlob(formData: BlobFormData): MappedBlobData {
     align: formData.align as BlobComposableProps["align"],
     figureWidth: figureWidth as BlobComposableProps["figureWidth"],
     size: formData.size as BlobComposableProps["size"],
-    gutter: gutter as BlobComposableProps["gutter"],
+    gapX: gapX as BlobComposableProps["gapX"],
+    gapY: gapY as BlobComposableProps["gapY"],
     paddingX: paddingX as BlobComposableProps["paddingX"],
     paddingY: paddingY as BlobComposableProps["paddingY"],
+    headerPaddingX: headerPaddingX as BlobComposableProps["headerPaddingX"],
+    headerPaddingY: headerPaddingY as BlobComposableProps["headerPaddingY"],
     figureBleed: figureBleed as BlobComposableProps["figureBleed"],
     theme: formData.theme,
   }
@@ -230,13 +277,14 @@ export function mapFormDataToBlob(formData: BlobFormData): MappedBlobData {
       eyebrow: {
         text: formData.eyebrow,
         theme: formData.eyebrowTheme,
-        as: formData.eyebrowAs as "div" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | undefined,
+        className: formData.eyebrowTheme ? `theme-${formData.eyebrowTheme}` : undefined,
+        as: toTitleAs(formData.eyebrowAs, 'div'),
       }
     }),
     ...(formData.title && {
       title: {
         text: formData.title,
-        as: formData.titleAs as "div" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | undefined,
+        as: toTitleAs(formData.titleAs, 'h2'),
         emphasisText: formData.emphasisText,
       }
     }),
@@ -254,41 +302,69 @@ export function mapFormDataToBlob(formData: BlobFormData): MappedBlobData {
     icon: formData.markerIcon && typeof formData.markerIcon === 'string'
       ? iconOptions[formData.markerIcon]
       : undefined,
-    style: formData.markerStyle,
+    style: toMarkerVariant(formData.markerStyle),
     size: formData.markerSize && formData.markerSize !== 'auto' ? formData.markerSize : undefined,
     theme: formData.markerTheme,
-    rounded: formData.markerRounded,
+    rounded: formData.markerRounded === 'rounded-full',
+    className: [
+      formData.markerTheme ? `theme-${formData.markerTheme}` : '',
+      formData.markerSize && formData.markerSize !== 'auto' ? `blob-size-${formData.markerSize}` : '',
+    ].filter(Boolean).join(' '),
   } : undefined
 
   // ── Figure data ──
   const figure = formData.figureType && formData.figureType !== "none" ? {
     type: formData.figureType as "image" | "video",
     src: (formData.figureType === "image" ? formData.image : formData.video) as string,
+    alt: '',
+    width: 1920,
+    height: 1080,
   } : undefined
 
   // ── Actions/Buttons data ──
-  const actions = formData.buttons && Array.isArray(formData.buttons) && formData.buttons.length > 0
-    ? formData.buttons.map(btn => ({
-        label: btn.label || "",
-        href: btn.linkType === "internal"
+  // buttons peut être un tableau (depuis l'éditeur) ou une string JSON (depuis Redis)
+  const rawButtons = (() => {
+    if (!formData.buttons) return []
+    if (Array.isArray(formData.buttons)) return formData.buttons
+    if (typeof formData.buttons === "string") {
+      try { const p = JSON.parse(formData.buttons); return Array.isArray(p) ? p : [] } catch { return [] }
+    }
+    return []
+  })()
+  const actions = rawButtons.length > 0
+    ? rawButtons.map(btn => {
+        const href = btn.linkType === "internal"
           ? btn.internalHref
           : btn.linkType === "external"
             ? btn.externalHref
-            : undefined,
-        variant: btn.variant,
-        theme: btn.theme,
-        opensInNewTab: btn.opensInNewTab,
-      }))
+            : undefined
+        return {
+          label: btn.label || "",
+          variant: toButtonVariant(btn.variant),
+          theme: btn.theme,
+          linkProps: {
+            href: href ?? '#',
+            target: btn.opensInNewTab ? '_blank' as const : undefined,
+            rel: btn.opensInNewTab ? 'noopener noreferrer' as const : undefined,
+          },
+        }
+      })
     : undefined
 
   // ── Content data ──
   // showContent is stored as a "true"/"false" string in the BlockNote propSchema,
   // so we must normalize it explicitly — `!!"false"` would be truthy otherwise.
   const showContentEnabled = formData.showContent === true || formData.showContent === "true"
+  // Text content is only active when contentType is "text" (or unset, for backwards compat).
+  // When contentType is "innerBlocks", the text content must not render.
+  const isTextContent = !formData.contentType || formData.contentType === "text"
   const content = {
-    enabled: showContentEnabled,
+    enabled: showContentEnabled && isTextContent,
     fontSize: formData.fontSize,
-    text: formData.contentText || (showContentEnabled ? "Votre contenu ici..." : ""),
+    text: formData.contentText || (showContentEnabled && isTextContent ? "Votre contenu ici..." : ""),
+    // Expose showContent et contentType pour gérer les innerBlocks
+    showContent: showContentEnabled,
+    contentType: formData.contentType as string | undefined,
   }
 
   // ── Unmapped props ──

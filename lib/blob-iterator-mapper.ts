@@ -9,15 +9,13 @@
 import type { BlobComposableProps } from "@/lib/blob-compose"
 import { mapFormDataToBlob, type BlobFormData, type MappedBlobData } from "@/lib/blob-form-mapper"
 import type { SwiperOptions } from "swiper/types"
-
-type FormDataValue = string | boolean | string[] | Array<Record<string, unknown>>
+import type { BlockNode } from "@/lib/new-editor/block-types"
+import type { FormDataValue } from "@/types/editor"
 
 export interface BlobIteratorFormData {
-  [key: string]: FormDataValue | undefined
-
   // Iterator container config
   iteratorLayout?: string
-  iteratorGutter?: string
+  iteratorGapX?: string; iteratorGapY?: string
   enableSwiper?: boolean
   swiperNavigation?: boolean
   swiperPagination?: boolean
@@ -36,14 +34,18 @@ export interface BlobIteratorFormData {
   markerPosition?: string
   appearance?: string
 
-  // Items (array of blob data)
-  items?: Array<Record<string, FormDataValue>>
+  // Items (array of BlockNode) - toujours des BlockNode complets maintenant
+  items?: BlockNode[]
+
+  // Allow any other FormDataValue
+  [key: string]: FormDataValue | BlockNode[] | undefined
 }
 
 export interface MappedIteratorData {
   // Props pour BlobIterator
   iteratorLayout: string
-  iteratorGutter: string
+  iteratorGapX: string;
+  iteratorGapY: string
   swiperOptions?: Partial<SwiperOptions>
 
   // Props héritées (partagées par tous les blobs)
@@ -52,20 +54,28 @@ export interface MappedIteratorData {
   }
   sharedAppearance?: string
 
-  // Items mappés (données pour chaque blob)
-  items: Array<MappedBlobData>
+  // Items mappés (données pour chaque blob) avec innerBlocks et itemId
+  items: Array<MappedBlobData & { innerBlocks?: BlockNode[]; itemId: string }>
 }
 
 /**
  * Construit les props partagées qui seront appliquées à tous les blobs.
  * Un champ est partagé s'il N'EST PAS dans itemFields.
  */
+function parseJsonField<T>(value: unknown, fallback: T): T {
+  if (Array.isArray(value)) return value as T
+  if (typeof value === "string" && value.trim().startsWith("[")) {
+    try { return JSON.parse(value) as T } catch { return fallback }
+  }
+  return fallback
+}
+
 function buildSharedBlobProps(formData: BlobIteratorFormData): {
   blobProps: Partial<BlobComposableProps>
   appearance?: string
 } {
   const sharedProps: Partial<BlobComposableProps> = {}
-  const itemFields = (formData.itemFields as string[]) || []
+  const itemFields = parseJsonField<string[]>(formData.itemFields, [])
 
   // Helper: un champ est partagé s'il n'est pas dans itemFields
   const isShared = (key: string) => !itemFields.includes(key)
@@ -104,8 +114,8 @@ function buildSharedBlobProps(formData: BlobIteratorFormData): {
     sharedProps.paddingY = formData.paddingY as string
   }
 
-  if (isShared("gutter") && formData.gutter) {
-    sharedProps.gutter = formData.gutter as string
+  if (isShared("gapX") && formData.gapX) {
+    sharedProps.gapX = formData.gapX as string
   }
 
   // Figure props
@@ -161,27 +171,36 @@ function buildSwiperOptions(formData: BlobIteratorFormData): Partial<SwiperOptio
 }
 
 /**
- * Mappe un item individuel en tenant compte des champs par item.
+ * Mappe un item individuel (BlockNode) en tenant compte des champs par item.
  * Si un champ est dans itemFields → valeur de l'item.
  * Sinon → valeur partagée (depuis formData global).
+ * Préserve les innerBlocks et l'ID de l'item.
  */
 function mapIteratorItem(
-  itemData: Record<string, FormDataValue>,
+  item: BlockNode,
   sharedProps: Partial<BlobComposableProps>,
   formData: BlobIteratorFormData
-): MappedBlobData {
-  const itemFields = (formData.itemFields as string[]) || []
+): MappedBlobData & { innerBlocks?: BlockNode[]; itemId: string } {
+  // Extraire l'ID, les innerBlocks et les données de l'item
+  const itemId = item.id;
+  const innerBlocks = item.innerBlocks;
+  const actualData = item.data;
+  const itemFields = parseJsonField<string[]>(formData.itemFields, [])
 
   // Helper: si le champ est dans itemFields, utiliser la valeur de l'item, sinon la valeur globale
   const getFieldValue = (fieldKey: string): FormDataValue | undefined => {
-    return itemFields.includes(fieldKey)
-      ? itemData[fieldKey]
-      : formData[fieldKey]
+    if (itemFields.includes(fieldKey)) {
+      return actualData[fieldKey]
+    }
+    const value = formData[fieldKey]
+    // Si c'est le champ items qui contient des BlockNode, on ne le retourne pas ici
+    if (fieldKey === "items") return undefined
+    return value as FormDataValue | undefined
   }
 
-  // Convertir itemData en BlobFormData
+  // Convertir actualData en BlobFormData
   const itemFormData: BlobFormData = {
-    ...itemData,
+    ...actualData,
 
     // Header fields
     title: getFieldValue("title") as string | undefined,
@@ -213,6 +232,7 @@ function mapIteratorItem(
 
     // Content fields
     showContent: getFieldValue("showContent") as boolean | undefined,
+    contentType: getFieldValue("contentType") as string | undefined,
     contentText: getFieldValue("contentText") as string | undefined,
     fontSize: getFieldValue("fontSize") as string | undefined,
 
@@ -225,7 +245,7 @@ function mapIteratorItem(
     // Spacing fields
     paddingX: getFieldValue("paddingX") as string | undefined,
     paddingY: getFieldValue("paddingY") as string | undefined,
-    gutter: getFieldValue("gutter") as string | undefined,
+    gapX: getFieldValue("gapX") as string | undefined, gapY: getFieldValue("gapY") as string | undefined,
 
     // Style fields
     theme: getFieldValue("theme") as string | undefined,
@@ -246,8 +266,14 @@ function mapIteratorItem(
     eyebrowAs: getFieldValue("eyebrowAs") as string | undefined,
   }
 
-  // Utiliser le mapper blob existant
-  return mapFormDataToBlob(itemFormData)
+  // Utiliser le mapper blob existant et préserver les innerBlocks et l'ID
+  const mappedBlob = mapFormDataToBlob(itemFormData);
+
+  return {
+    ...mappedBlob,
+    innerBlocks,
+    itemId
+  };
 }
 
 /**
@@ -257,14 +283,15 @@ export function mapIteratorFormData(formData: BlobIteratorFormData): MappedItera
   const { blobProps: sharedBlobProps, appearance: sharedAppearance } = buildSharedBlobProps(formData)
   const swiperOptions = buildSwiperOptions(formData)
 
-  // Mapper chaque item
-  const items = Array.isArray(formData.items)
-    ? formData.items.map((item) => mapIteratorItem(item, sharedBlobProps, formData))
-    : []
+  // Mapper chaque item (items peut être une string JSON depuis Redis)
+  // Les items sont toujours des BlockNode complets
+  const rawItems = parseJsonField<BlockNode[]>(formData.items, [])
+  const items = rawItems.map((item) => mapIteratorItem(item, sharedBlobProps, formData))
 
   return {
     iteratorLayout: formData.iteratorLayout || "grid-auto",
-    iteratorGutter: formData.iteratorGutter || "md",
+    iteratorGapX: formData.iteratorGapX ?? "md",
+    iteratorGapY: formData.iteratorGapY ?? "md",
     swiperOptions,
     sharedBlobProps,
     sharedAppearance,

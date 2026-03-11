@@ -8,7 +8,6 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
 import { loadPage, savePage, deletePage } from "@/lib/page-storage"
-import { validateBlocks } from "@/lib/block-utils"
 import { PageSchema } from "@/lib/schemas/page"
 import type { PageData } from "@/types/editor"
 
@@ -32,19 +31,19 @@ export async function PUT(request: Request, { params }: { params: Promise<{ slug
     const { slug } = await params
     const body = await request.json()
 
-    // 1. Charger la page existante pour fusionner les données manquantes
+    // 1. Charger la page existante (ou initialiser pour un upsert)
     const existing = await loadPage(slug)
-    if (!existing) {
-      return NextResponse.json({ error: "Page non trouvée" }, { status: 404 })
-    }
 
     // 2. Fusionner : le body peut être partiel (ex: seulement { blocks })
     const merged: PageData = {
-      ...existing,
+      version: "1.0",
+      blocks: [],
+      ...(existing ?? {}),
       ...body,
       slug, // toujours utiliser le slug de l'URL
       meta: {
-        ...existing.meta,
+        createdAt: new Date().toISOString(),
+        ...(existing?.meta ?? {}),
         ...(body.meta ?? {}),
         updatedAt: new Date().toISOString(),
       },
@@ -59,17 +58,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ slug
       )
     }
 
-    // 4. Validation de structure hiérarchique des blocs (uniquement pour les blocs BlobEditor)
-    // Les blocs BlockNote natifs n'ont pas de `blockType` et sont ignorés par validateBlocks.
-    const structureErrors = validateBlocks(parsed.data.blocks as PageData["blocks"])
-    if (structureErrors.length > 0) {
-      return NextResponse.json(
-        { error: "Structure de blocs invalide", details: structureErrors },
-        { status: 400 }
-      )
-    }
-
-    // 5. Sauvegarde
+    // 4. Sauvegarde
     await savePage(slug, parsed.data as PageData)
     return NextResponse.json({ success: true })
   } catch (error) {
@@ -90,5 +79,51 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ s
     return NextResponse.json({ success: true })
   } catch {
     return NextResponse.json({ error: "Erreur lors de la suppression de la page" }, { status: 500 })
+  }
+}
+
+/**
+ * PATCH /api/pages/[slug]
+ * Renomme une page : { title?, newSlug? }
+ * - title seul → met à jour le titre sans changer la clé Redis
+ * - newSlug → migre la clé Redis vers le nouveau slug (+ met à jour le titre si fourni)
+ */
+export async function PATCH(request: Request, { params }: { params: Promise<{ slug: string }> }) {
+  try {
+    const { slug } = await params
+    const body = await request.json()
+    const { title, newSlug } = body as { title?: string; newSlug?: string }
+
+    const existing = await loadPage(slug)
+    if (!existing) {
+      return NextResponse.json({ error: "Page non trouvée" }, { status: 404 })
+    }
+
+    const targetSlug = newSlug?.trim() || slug
+
+    // Valider le nouveau slug si fourni
+    if (newSlug && !/^[a-z0-9-]+$/.test(newSlug)) {
+      return NextResponse.json(
+        { error: "Le slug doit contenir uniquement des lettres minuscules, chiffres et tirets" },
+        { status: 400 }
+      )
+    }
+
+    // Mettre à jour le titre si fourni
+    if (title) existing.title = title.trim()
+
+    if (newSlug && newSlug !== slug) {
+      // Migre vers le nouveau slug (supprime l'ancien, crée le nouveau)
+      existing.slug = newSlug
+      await savePage(newSlug, existing)
+      const { kv } = await import("@/lib/kv-client")
+      await kv.del(`page:${slug}`)
+    } else {
+      await savePage(targetSlug, existing)
+    }
+
+    return NextResponse.json({ success: true, slug: targetSlug })
+  } catch {
+    return NextResponse.json({ error: "Erreur lors du renommage de la page" }, { status: 500 })
   }
 }

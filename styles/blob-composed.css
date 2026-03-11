@@ -14,6 +14,8 @@
   --blob-rows: auto;
   align-content: start;
 
+  & [data-slot="blob-header"] { align-self: center; }
+  
   &:where(:not(:has(> [data-slot="marker"])))                                               { --blob-areas: "figure" "header" "actions" "content"; --blob-columns: 1fr; }
   &:where(:not(:has(> [data-slot="blob-actions"])))                                         { --blob-areas: "figure figure" "marker header" "content content"; }
   &:where(:not(:has(> [data-slot="blob-content"])))                                         { --blob-areas: "figure figure" "marker header" "actions actions"; }
@@ -38,6 +40,7 @@
   --blob-rows: auto;
   align-content: start;
 
+  & [data-slot="blob-header"] { align-self: center; }
   & [data-slot="blob-actions"] { align-self: end; }
 
   &:where(:not(:has(> [data-slot="marker"])))                                               { --blob-areas: "figure" "header" "content" "actions"; --blob-columns: 1fr; }

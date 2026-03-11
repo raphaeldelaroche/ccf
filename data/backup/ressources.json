@@ -1,0 +1,242 @@
+[
+  {
+    "id": "reso-0001-hero-0000-0000-000000000001",
+    "blockType": "blob",
+    "data": {
+      "size": "8xl",
+      "layout": "stack",
+      "align": "center",
+      "paddingX": "container-xl",
+      "paddingY": "9xl",
+      "headerPaddingX": "container-sm",
+      "eyebrow": "Ressources",
+      "title": "Publications, méthodologie // et mises à jour.",
+      "subtitle": "Que vous soyez une entreprise, un investisseur, un décideur public ou un analyste, ces ressources vous permettent de comprendre comment la contribution est mesurée — et comment le cadre évolue.",
+      "showContent": "false",
+      "figureType": "none",
+      "appearance": "borderBottom"
+    },
+    "innerBlocks": []
+  },
+  {
+    "id": "reso-0002-whhp-0000-0000-000000000002",
+    "blockType": "blob",
+    "data": {
+      "size": "2xl",
+      "layout": "stack",
+      "align": "center",
+      "paddingX": "container-lg",
+      "paddingY": "6xl",
+      "headerPaddingX": "container-md",
+      "eyebrow": "Le White Paper",
+      "title": "La méthodologie complète // dans un document de référence.",
+      "subtitle": "Le White Paper présente l'architecture complète du Climate Contribution Framework — du raisonnement fondateur jusqu'aux perspectives de développement.",
+      "buttons": "[{\"label\":\"Télécharger le White Paper\",\"variant\":\"default\",\"theme\":\"default\",\"linkType\":\"internal\",\"internalHref\":\"\",\"opensInNewTab\":\"false\"},{\"label\":\"Lire le résumé exécutif\",\"variant\":\"ghost\",\"theme\":\"default\",\"linkType\":\"internal\",\"internalHref\":\"\",\"opensInNewTab\":\"false\"}]",
+      "showContent": "true",
+      "contentType": "innerBlocks",
+      "appearance": "borderBottom",
+      "gapY": "3xl"
+    },
+    "innerBlocks": [
+      {
+        "id": "reso-0002-whhp-iter-0000-000000000002a",
+        "blockType": "blobIterator",
+        "data": {
+          "iteratorLayout": "grid-3",
+          "iteratorGapX": "md",
+          "iteratorGapY": "none",
+          "size": "lg",
+          "markerType": "none",
+          "appearance": "outlined",
+          "align": "left",
+          "paddingX": "md",
+          "paddingY": "md",
+          "itemFields": [
+            "title",
+            "subtitle"
+          ],
+          "items": [
+            {
+              "id": "reso-0002-whhp-iter-0000-000000000002a-item-1773239845776-3qagq1b",
+              "blockType": "blob",
+              "data": {
+                "title": "Le passage de la réduction à la contribution",
+                "subtitle": "Le raisonnement qui fonde le CCF : pourquoi mesurer uniquement l'empreinte carbone est insuffisant pour rendre compte de l'action climatique réelle des entreprises."
+              },
+              "innerBlocks": []
+            },
+            {
+              "id": "reso-0002-whhp-iter-0000-000000000002a-item-1773239845776-offiryh",
+              "blockType": "blob",
+              "data": {
+                "title": "L'architecture en trois piliers",
+                "subtitle": "Description complète des piliers A (Réduction), B (Solutions) et C (Financement), leur périmètre, leurs sous-piliers et les référentiels sources mobilisés."
+              },
+              "innerBlocks": []
+            },
+            {
+              "id": "reso-0002-whhp-iter-0000-000000000002a-item-1773239845776-6aka3ga",
+              "blockType": "blob",
+              "data": {
+                "title": "Le système de scoring et la pondération sectorielle",
+                "subtitle": "Fonctionnement du Kit de Traduction, des coefficients de crédibilité et des coefficients sectoriels α, β, γ — avec exemples chiffrés."
+              },
+              "innerBlocks": []
+            },
+            {
+              "id": "reso-0002-whhp-iter-0000-000000000002a-item-1773239845776-hceehyc",
+              "blockType": "blob",
+              "data": {
+                "title": "Les trois résultats clés",
+                "subtitle": "Potentiel contributif, contribution effective et performance contributive : comment ils sont calculés, comment les lire et comment les comparer."
+              },
+              "innerBlocks": []
+            },
+            {
+              "id": "reso-0002-whhp-iter-0000-000000000002a-item-1773239845776-tma84dl",
+              "blockType": "blob",
+              "data": {
+                "title": "Les limites du cadre",
+                "subtitle": "Les périmètres exclus, les hypothèses de calibration sectorielle et les points de vigilance méthodologiques documentés par les auteurs."
+              },
+              "innerBlocks": []
+            },
+            {
+              "id": "reso-0002-whhp-iter-0000-000000000002a-item-1773239845776-vg62tdc",
+              "blockType": "blob",
+              "data": {
+                "title": "Les développements futurs",
+                "subtitle": "Les axes d'évolution prévus : extension sectorielle, intégration de nouveaux référentiels, amélioration de la granularité des scores et gouvernance du cadre."
+              },
+              "innerBlocks": []
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "reso-0003-faqq-0000-0000-000000000003",
+    "blockType": "blob",
+    "data": {
+      "size": "2xl",
+      "layout": "stack",
+      "align": "center",
+      "paddingX": "container-lg",
+      "paddingY": "6xl",
+      "headerPaddingX": "container-md",
+      "eyebrow": "FAQ",
+      "title": "Questions fréquentes.",
+      "subtitle": "Les questions les plus posées sur le Climate Contribution Framework — sa portée, son fonctionnement et ses relations avec les référentiels existants.",
+      "showContent": "true",
+      "contentType": "innerBlocks",
+      "appearance": "borderBottom",
+      "gapY": "3xl"
+    },
+    "innerBlocks": [
+      {
+        "id": "reso-0003-faqq-iter-0000-000000000003a",
+        "blockType": "blobIterator",
+        "data": {
+          "iteratorLayout": "grid-2",
+          "iteratorGapX": "md",
+          "iteratorGapY": "md",
+          "size": "lg",
+          "markerType": "none",
+          "appearance": "outlined",
+          "align": "left",
+          "paddingX": "md",
+          "paddingY": "md",
+          "itemFields": [
+            "title",
+            "subtitle"
+          ],
+          "items": [
+            {
+              "id": "reso-0003-faqq-iter-0000-000000000003a-item-1773239845776-9g20qaz",
+              "blockType": "blob",
+              "data": {
+                "title": "Que mesure le CCF ?",
+                "subtitle": "Un cadre multidimensionnel qui évalue les réductions d'émissions dans la chaîne de valeur, les émissions évitées par les produits et services, le financement climatique et l'influence sur les politiques publiques. Il capture les impacts directs et indirects pour refléter l'intégralité du spectre de l'action climatique."
+              },
+              "innerBlocks": []
+            },
+            {
+              "id": "reso-0003-faqq-iter-0000-000000000003a-item-1773239845776-9tcwhex",
+              "blockType": "blob",
+              "data": {
+                "title": "Comment le CCF garantit-il une comparaison équitable entre secteurs ?",
+                "subtitle": "Le CCF applique une pondération ajustée au contexte selon le secteur d'activité, la géographie, la taille de l'entreprise et les marges bénéficiaires. Les secteurs à fort impact sont évalués sur des plages de contribution plus larges. Cette approche permet des comparaisons entre pairs tout en reflétant les rôles structurellement différents dans la transition."
+              },
+              "innerBlocks": []
+            },
+            {
+              "id": "reso-0003-faqq-iter-0000-000000000003a-item-1773239845776-ybqvbcs",
+              "blockType": "blob",
+              "data": {
+                "title": "Quel est le lien entre le CCF et les référentiels existants ?",
+                "subtitle": "Le CCF est conçu pour compléter — non remplacer — des référentiels comme SBTi ou le GHG Protocol. Il comble les lacunes actuelles en intégrant les impacts indirects et le financement climatique, en s'alignant sur les méthodologies de meilleures pratiques et en fournissant un benchmark unifié couvrant plusieurs référentiels."
+              },
+              "innerBlocks": []
+            },
+            {
+              "id": "reso-0003-faqq-iter-0000-000000000003a-item-1773239845776-dypusve",
+              "blockType": "blob",
+              "data": {
+                "title": "Qui développe le CCF ?",
+                "subtitle": "L'initiative est portée par Sweep et le Mirova Research Center. Le développement méthodologique est réalisé avec I Care by BearingPoint et Winrock International. Un groupe d'entreprises sponsor soutient le projet, et un comité d'observateurs indépendant composé d'experts des principales organisations climatiques assure la supervision."
+              },
+              "innerBlocks": []
+            },
+            {
+              "id": "reso-0003-faqq-iter-0000-000000000003a-item-1773239845776-2m7clsn",
+              "blockType": "blob",
+              "data": {
+                "title": "Quel est le lien entre le CCF et la plateforme Sweep ?",
+                "subtitle": "Le CCF définit la méthodologie d'évaluation de la contribution. Sweep fournit la technologie pour l'opérationnaliser : collecte et consolidation des données, application de la méthodologie, calcul des trois indicateurs, simulation de scénarios et planification des actions. Le cadre fixe les règles, Sweep fournit le moteur digital."
+              },
+              "innerBlocks": []
+            },
+            {
+              "id": "reso-0003-faqq-iter-0000-000000000003a-item-1773239845776-r2hikn7",
+              "blockType": "blob",
+              "data": {
+                "title": "Quelle est l'ambition à long terme du CCF ?",
+                "subtitle": "Établir le CCF comme référence mondiale pour la contribution climatique des entreprises, en intégrant et en s'appuyant sur les référentiels existants. À terme, l'objectif est d'influencer les politiques publiques afin que chaque entreprise soit tenue de définir et de publier un Plan de Contribution."
+              },
+              "innerBlocks": []
+            },
+            {
+              "id": "reso-0003-faqq-iter-0000-000000000003a-item-1773239845776-00zzfbt",
+              "blockType": "blob",
+              "data": {
+                "title": "Le CCF est-il accessible au public ?",
+                "subtitle": "Oui. Le CCF est conçu pour être accessible à tous — son développement et sa diffusion étant financés par la philanthropie. Le White Paper, la documentation méthodologique et les mises à jour sont disponibles librement."
+              },
+              "innerBlocks": []
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "reso-0004-cta0-0000-0000-000000000004",
+    "blockType": "blob",
+    "data": {
+      "size": "4xl",
+      "layout": "stack",
+      "align": "center",
+      "paddingY": "7xl",
+      "headerPaddingX": "container-md",
+      "title": "Vous souhaitez comprendre // comment votre entreprise // pourrait être évaluée ?",
+      "subtitle": "Démarrez le benchmark en 3 minutes ou téléchargez le White Paper pour explorer la méthodologie dans le détail.",
+      "buttons": "[{\"label\":\"Démarrer le benchmark (3 minutes)\",\"variant\":\"default\",\"theme\":\"red\",\"linkType\":\"internal\",\"internalHref\":\"\",\"opensInNewTab\":\"false\"},{\"label\":\"Télécharger le White Paper\",\"variant\":\"ghost\",\"theme\":\"red\",\"linkType\":\"internal\",\"internalHref\":\"\",\"opensInNewTab\":\"false\"}]",
+      "showContent": "false",
+      "figureType": "none",
+      "markerType": "none",
+      "appearance": "darkBackground"
+    },
+    "innerBlocks": []
+  }
+]

@@ -39,6 +39,12 @@ export const APPEARANCES: Record<string, AppearanceDefinition> = {
     label: "Par défaut",
     blobClassName: "bg-white",
   },
+  list: {
+    label: "Liste",
+    blobClassName: "mb-1",
+    markerClassName: "stroke-2 w-auto h-auto",
+    headerClassName: "[&_[data-slot='title']]:font-medium",
+  },
   card: {
     label: "Carte",
     blobClassName: "bg-white border border-gray-200 rounded-lg shadow-sm",
@@ -46,6 +52,14 @@ export const APPEARANCES: Record<string, AppearanceDefinition> = {
   cardElevated: {
     label: "Carte élevée",
     blobClassName: "bg-white rounded-2xl overflow-hidden shadow-2xl shadow-gray-900/10",
+  },
+  darkBackground: {
+    label: "Fond sombre",
+    blobClassName: "bg-gray-200",
+  },
+  borderBottom: {
+    label: "Bordure inférieure",
+    blobClassName: "border-b",
   },
   glassmorphism: {
     label: "Glassmorphism",
@@ -97,4 +111,16 @@ export function getAppearanceOptions(): Record<string, string> {
     acc[key] = config.label;
     return acc;
   }, {} as Record<string, string>);
+}
+
+/**
+ * Résout une clé d'apparence en AppearanceDefinition.
+ * Retourne `fallback` (ou `APPEARANCES.default`) si la clé est invalide/absente.
+ */
+export function resolveAppearance(
+  key?: string,
+  fallback?: AppearanceDefinition
+): AppearanceDefinition {
+  if (key && APPEARANCES[key]) return APPEARANCES[key];
+  return fallback ?? APPEARANCES.default;
 }

@@ -20,15 +20,19 @@ function Blob({
   align = "left",
   figureWidth,
   size,
-  gutter,
+  gapX,
+  gapY,
   paddingX,
   paddingY,
+  headerPaddingX,
+  headerPaddingY,
   figureBleed,
   theme,
   children,
   ...props
 }: BlobProps) {
-  const composedClasses = composeBlobClasses({ layout, direction, marker, actions, align, figureWidth, size, gutter, paddingX, paddingY, figureBleed, theme })
+  const composedClasses = composeBlobClasses({ layout, direction, marker, actions, align, figureWidth, size, gapX,
+  gapY, paddingX, paddingY, headerPaddingX, headerPaddingY, figureBleed, theme })
 
   return (
     <div

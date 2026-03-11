@@ -8,7 +8,7 @@
  */
 
 import type { Field, ShowIfCondition } from "@/lib/blob-fields"
-import type { ColumnDef, ColumnGroupDef, DetailField, TableRow } from "@/components/editor/TableField"
+import type { ColumnDef, ColumnGroupDef, DetailField, TableRow } from "@/components/ui/TableField"
 
 // ─── Layout configuration ─────────────────────────────────────────────────────
 

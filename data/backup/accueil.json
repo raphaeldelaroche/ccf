@@ -1,0 +1,819 @@
+[
+  {
+    "id": "block-1773056590867-qmmsrl30q",
+    "blockType": "blob",
+    "data": {
+      "size": "9xl",
+      "layout": "stack",
+      "align": "center",
+      "direction": "default",
+      "title": "Vous agissez, // nous le mesurons.",
+      "subtitle": "Le CCF rassemble vos actions climat existantes en un score unique, comparable et ajusté à votre secteur. Sans reporting supplémentaire.",
+      "paddingX": "none",
+      "paddingY": "10xl",
+      "buttons": "[{\"label\":\"Évaluer votre contribution\",\"linkType\":\"internal\",\"internalHref\":\"\",\"externalHref\":\"\",\"customAction\":\"action1\",\"variant\":\"default\",\"theme\":\"red\",\"opensInNewTab\":\"false\"},{\"label\":\"À  propos du CCF\",\"linkType\":\"internal\",\"internalHref\":\"\",\"externalHref\":\"\",\"customAction\":\"action1\",\"variant\":\"outline\",\"theme\":\"red\",\"opensInNewTab\":\"false\"}]",
+      "showContent": false,
+      "figureType": "none",
+      "image": "/placeholder.svg",
+      "headerPaddingX": "container-sm",
+      "markerType": "none",
+      "markerIcon": "heart",
+      "contentType": "text",
+      "contentText": "",
+      "appearance": "borderBottom",
+      "emphasisText": ""
+    },
+    "innerBlocks": []
+  },
+  {
+    "id": "block-1773070814514-546ic0v7y",
+    "blockType": "blob",
+    "data": {
+      "size": "md",
+      "layout": "stack",
+      "align": "center",
+      "direction": "default",
+      "title": "",
+      "paddingX": "container-lg",
+      "showContent": true,
+      "contentType": "innerBlocks",
+      "figureType": "none",
+      "image": "",
+      "eyebrow": "",
+      "paddingY": "xl",
+      "appearance": "borderBottom",
+      "gapY": "none"
+    },
+    "innerBlocks": [
+      {
+        "id": "block-1773071337693-52guwvlfk",
+        "blockType": "blobIterator",
+        "data": {
+          "containerLayout": "grid-3",
+          "gapX": "none",
+          "gapY": "none",
+          "itemFields": [],
+          "items": [
+            {
+              "id": "block-1773071337693-52guwvlfk-item-1773239511527-nqu4pac",
+              "blockType": "blob",
+              "data": {},
+              "innerBlocks": []
+            },
+            {
+              "id": "block-1773071337693-52guwvlfk-item-1773239511527-j1agivr",
+              "blockType": "blob",
+              "data": {},
+              "innerBlocks": []
+            },
+            {
+              "id": "block-1773071337693-52guwvlfk-item-1773239511527-2ufeyvp",
+              "blockType": "blob",
+              "data": {},
+              "innerBlocks": []
+            },
+            {
+              "id": "block-1773071337693-52guwvlfk-item-1773239511527-5bu4ct0",
+              "blockType": "blob",
+              "data": {},
+              "innerBlocks": []
+            },
+            {
+              "id": "block-1773071337693-52guwvlfk-item-1773239511527-dp24zco",
+              "blockType": "blob",
+              "data": {},
+              "innerBlocks": []
+            }
+          ],
+          "title": "",
+          "figureType": "image",
+          "image": "/placeholder-135x400.svg",
+          "paddingX": "none",
+          "paddingY": "none",
+          "iteratorLayout": "grid-5"
+        }
+      }
+    ]
+  },
+  {
+    "id": "block-1773084479085-zgrntuw4o",
+    "blockType": "blob",
+    "data": {
+      "size": "2xl",
+      "layout": "stack",
+      "align": "center",
+      "direction": "default",
+      "title": "Un meta-framework et un score simple.",
+      "paddingX": "container-lg",
+      "showContent": true,
+      "contentType": "innerBlocks",
+      "figureType": "none",
+      "image": "",
+      "buttons": "[{\"label\":\"Évaluer votre contribution\",\"linkType\":\"internal\",\"internalHref\":\"\",\"externalHref\":\"\",\"customAction\":\"action1\",\"variant\":\"default\",\"theme\":\"red\",\"opensInNewTab\":\"false\"},{\"label\":\"En savoir plus\",\"linkType\":\"internal\",\"internalHref\":\"\",\"externalHref\":\"\",\"customAction\":\"action1\",\"variant\":\"outline\",\"theme\":\"red\",\"opensInNewTab\":\"false\"}]",
+      "markerType": "none",
+      "markerContent": "+",
+      "markerStyle": "ghost",
+      "markerSize": "lg",
+      "subtitle": "Le Climate Contribution Framework ne remplace pas les référentiels existants — Il les rassemble pour  obtenir une  Score Card qui reflète l'ensemble de l'action climatique de votre entreprise.",
+      "actions": "after",
+      "appearance": "borderBottom",
+      "paddingY": "6xl",
+      "headerPaddingX": "container-md",
+      "eyebrow": ""
+    },
+    "innerBlocks": [
+      {
+        "id": "block-1773222621450-qgnk0ab4j",
+        "blockType": "buttonTooltip",
+        "data": {
+          "layout": "horizontal",
+          "spacing": "md",
+          "align": "center",
+          "variant": "default",
+          "size": "default",
+          "tooltips": "[{\"label\":\"Est-ce pondéré par secteur ? \",\"content\":\"Oui\",\"linkLabel\":\"\",\"linkUrl\":\"\"},{\"label\":\"Est-ce pondéré par secteur ? \",\"content\":\"Oui\",\"linkLabel\":\"\",\"linkUrl\":\"\"}]"
+        }
+      },
+      {
+        "id": "block-1773084479085-7pjwe7co1",
+        "blockType": "blobIterator",
+        "data": {
+          "containerLayout": "grid-4",
+          "gapX": "none",
+          "gapY": "none",
+          "itemFields": [],
+          "items": [
+            {
+              "id": "block-1773084479085-7pjwe7co1-item-1773239511527-arj6o9q",
+              "blockType": "blob",
+              "data": {},
+              "innerBlocks": []
+            },
+            {
+              "id": "block-1773084479085-7pjwe7co1-item-1773239511527-143en1t",
+              "blockType": "blob",
+              "data": {},
+              "innerBlocks": []
+            },
+            {
+              "id": "block-1773084479085-7pjwe7co1-item-1773239511527-qc0jj0h",
+              "blockType": "blob",
+              "data": {},
+              "innerBlocks": []
+            }
+          ],
+          "title": "",
+          "figureType": "image",
+          "image": "/placeholder-vertical.svg",
+          "paddingX": "none",
+          "paddingY": "none"
+        }
+      }
+    ]
+  },
+  {
+    "id": "block-1773216979321-f12zlr3rf",
+    "blockType": "blob",
+    "data": {
+      "size": "2xl",
+      "layout": "stack",
+      "align": "center",
+      "direction": "default",
+      "title": "Trois résultats clairs : Potentiel, effectif et performance",
+      "figureType": "none",
+      "image": "/placeholder.svg",
+      "figureBleed": "full",
+      "subtitle": "Cette structure répond à la fois à \"Que faites-vous ?\" et \"Que pourriez-vous faire ?\", créant une responsabilité tout en reconnaissant la diversité des trajectoires. Le résultat : des insights actionnables — des signaux clairs sur les domaines où les entreprises doivent investir et où les capitaux peuvent générer un impact maximal.",
+      "eyebrow": "Votre Score Card",
+      "emphasisText": "",
+      "markerPosition": "top",
+      "markerType": "none",
+      "markerContent": "01.",
+      "appearance": "borderBottom",
+      "showContent": true,
+      "contentText": "",
+      "paddingX": "container-md",
+      "paddingY": "5xl",
+      "markerIcon": "checkCircle",
+      "eyebrowTheme": "brand",
+      "markerSize": "auto",
+      "markerRounded": "rounded-square",
+      "markerTheme": "brand",
+      "markerStyle": "default",
+      "buttons": "[{\"label\":\"Évaluer votre contribution\",\"linkType\":\"internal\",\"internalHref\":\"\",\"externalHref\":\"\",\"customAction\":\"action1\",\"variant\":\"default\",\"theme\":\"red\",\"opensInNewTab\":\"false\"},{\"label\":\"Notre méthodologie\",\"linkType\":\"internal\",\"internalHref\":\"\",\"externalHref\":\"\",\"customAction\":\"action1\",\"variant\":\"outline\",\"theme\":\"red\",\"opensInNewTab\":\"false\"}]",
+      "titleAs": "h2",
+      "eyebrowAs": "div",
+      "contentType": "innerBlocks",
+      "actions": "after",
+      "figureWidth": "1/2",
+      "headerPaddingX": "container-md",
+      "headerPaddingY": "auto",
+      "gapY": "3xl"
+    },
+    "innerBlocks": [
+      {
+        "id": "block-1773217249816-mrh4qd5r5",
+        "blockType": "blob",
+        "data": {
+          "size": "md",
+          "layout": "row",
+          "align": "left",
+          "direction": "reverse",
+          "figureType": "image",
+          "image": "/placeholder-vertical.svg",
+          "figureWidth": "1/2",
+          "paddingX": "xl",
+          "showContent": true,
+          "contentType": "innerBlocks",
+          "appearance": "outlined",
+          "title": "",
+          "paddingY": "none",
+          "figureBleed": "full"
+        },
+        "innerBlocks": [
+          {
+            "id": "block-1773217436249-oeqehl4va",
+            "blockType": "blobIterator",
+            "data": {
+              "iteratorLayout": "grid-1",
+              "iteratorGapX": "md",
+              "iteratorGapY": "xs",
+              "itemFields": [
+                "title",
+                "emphasisText",
+                "eyebrow",
+                "eyebrowTheme",
+                "subtitle",
+                "markerContent",
+                "markerIcon",
+                "image",
+                "video",
+                "buttons",
+                "contentText"
+              ],
+              "layout": "stack",
+              "items": [
+                {
+                  "id": "block-1773217436249-oeqehl4va-item-1773239511527-kso6e3c",
+                  "blockType": "blob",
+                  "data": {
+                    "title": "Potentiel contributif",
+                    "emphasisText": "",
+                    "eyebrow": "",
+                    "eyebrowTheme": "",
+                    "subtitle": "Contribution maximale atteignable en fonction du rôle climatique du secteur",
+                    "markerContent": "1.",
+                    "markerIcon": "",
+                    "image": "",
+                    "video": "",
+                    "buttons": "",
+                    "contentText": ""
+                  },
+                  "innerBlocks": []
+                },
+                {
+                  "id": "block-1773217436249-oeqehl4va-item-1773239511528-bcxkuc3",
+                  "blockType": "blob",
+                  "data": {
+                    "title": "Contribution effective",
+                    "emphasisText": "",
+                    "eyebrow": "",
+                    "eyebrowTheme": "",
+                    "subtitle": "Performance actuelle sur l'ensemble des trois piliers",
+                    "markerContent": "2.",
+                    "markerIcon": "",
+                    "image": "",
+                    "video": "",
+                    "buttons": "",
+                    "contentText": ""
+                  },
+                  "innerBlocks": []
+                },
+                {
+                  "id": "block-1773217436249-oeqehl4va-item-1773239511528-wky9yry",
+                  "blockType": "blob",
+                  "data": {
+                    "title": "Performance contributive",
+                    "emphasisText": "",
+                    "eyebrow": "",
+                    "eyebrowTheme": "",
+                    "subtitle": "Ratio entre la contribution effective et le potentiel contributif",
+                    "markerContent": "3. ",
+                    "markerIcon": "",
+                    "image": "",
+                    "video": "",
+                    "buttons": "",
+                    "contentText": ""
+                  },
+                  "innerBlocks": []
+                }
+              ],
+              "paddingY": "none",
+              "paddingX": "none",
+              "markerType": "text",
+              "markerPosition": "left",
+              "markerSize": "lg",
+              "markerStyle": "default",
+              "size": "md"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "block-1773066857659-zz5nlcscw",
+    "blockType": "blob",
+    "data": {
+      "size": "2xl",
+      "layout": "stack",
+      "align": "center",
+      "direction": "default",
+      "title": "Les 3 piliers de l'action climatique",
+      "figureType": "none",
+      "image": "/placeholder.svg",
+      "figureBleed": "full",
+      "subtitle": "Les entreprises ne font pas qu'émettre du carbone : elles innovent, accélèrent le déploiement de technologies bas-carbone et mobilisent des capitaux. Le Climate Contribution Framework analyse l'action climatique au zéro émission net mondial à travers 3 piliers.",
+      "eyebrow": "Comment ça marche",
+      "emphasisText": "",
+      "markerPosition": "top",
+      "markerType": "none",
+      "markerContent": "01.",
+      "appearance": "borderBottom",
+      "showContent": true,
+      "contentText": "",
+      "paddingX": "container-lg",
+      "paddingY": "5xl",
+      "markerIcon": "checkCircle",
+      "eyebrowTheme": "brand",
+      "markerSize": "auto",
+      "markerRounded": "rounded-square",
+      "markerTheme": "brand",
+      "markerStyle": "default",
+      "buttons": "[{\"label\":\"Notre méthodologie\",\"linkType\":\"internal\",\"internalHref\":\"\",\"externalHref\":\"\",\"customAction\":\"action1\",\"variant\":\"outline\",\"theme\":\"red\",\"opensInNewTab\":\"false\"}]",
+      "titleAs": "h2",
+      "eyebrowAs": "div",
+      "contentType": "innerBlocks",
+      "actions": "after",
+      "figureWidth": "1/2",
+      "headerPaddingX": "container-md",
+      "headerPaddingY": "auto",
+      "gapY": "3xl"
+    },
+    "innerBlocks": [
+      {
+        "id": "block-1773066857659-b15jr4vwn",
+        "blockType": "blobIterator",
+        "data": {
+          "containerLayout": "grid-3",
+          "gapX": "md",
+          "gapY": "md",
+          "itemFields": [
+            "title",
+            "emphasisText",
+            "eyebrow",
+            "eyebrowTheme",
+            "subtitle",
+            "markerContent",
+            "image",
+            "video",
+            "buttons",
+            "contentText"
+          ],
+          "items": [
+            {
+              "id": "block-1773066857659-b15jr4vwn-item-1773239511529-tfw7rap",
+              "blockType": "blob",
+              "data": {
+                "title": "Réduire",
+                "emphasisText": "",
+                "eyebrow": "",
+                "eyebrowTheme": "",
+                "subtitle": "Décarboner les opérations et la chaîne de valeur",
+                "markerContent": "01.",
+                "image": "",
+                "video": "",
+                "buttons": "[]",
+                "contentText": "Réduire les émissions sur les Scopes 1, 2 et 3 grâce à des plans de transition, des achats bas-carbone et une gouvernance climatique, notamment dans les secteurs difficiles à décarboner."
+              },
+              "innerBlocks": []
+            },
+            {
+              "id": "block-1773066857659-b15jr4vwn-item-1773239511529-wiyqsok",
+              "blockType": "blob",
+              "data": {
+                "title": "Déployer",
+                "emphasisText": "",
+                "eyebrow": "",
+                "eyebrowTheme": "",
+                "subtitle": "Mettre à l'échelle les solutions bas-carbone",
+                "markerContent": "02.",
+                "image": "",
+                "video": "",
+                "buttons": "",
+                "contentText": "Accélérer la transition via des solutions concrètes : énergies renouvelables, innovations d'économie circulaire et technologies qui construisent l'économie net-zéro."
+              },
+              "innerBlocks": []
+            },
+            {
+              "id": "block-1773066857659-b15jr4vwn-item-1773239511529-x1iyjcj",
+              "blockType": "blob",
+              "data": {
+                "title": "Financer",
+                "emphasisText": "",
+                "eyebrow": "",
+                "eyebrowTheme": "",
+                "subtitle": "Orienter les capitaux vers des projets Net Zero",
+                "markerContent": "03.",
+                "image": "",
+                "video": "",
+                "buttons": "",
+                "contentText": "Investir au-delà de sa chaîne de valeur grâce aux crédits carbone, aux technologies climatiques et aux véhicules financiers dédiés au zéro émission nette."
+              },
+              "innerBlocks": []
+            }
+          ],
+          "markerType": "text",
+          "size": "lg",
+          "appearance": "outlined",
+          "markerStyle": "default",
+          "showContent": true,
+          "contentType": "text",
+          "paddingX": "auto",
+          "markerSize": "auto",
+          "align": "left"
+        }
+      }
+    ]
+  },
+  {
+    "id": "block-1773218173814-3yz3ipu2i",
+    "blockType": "blob",
+    "data": {
+      "size": "2xl",
+      "layout": "stack",
+      "align": "center",
+      "paddingX": "container-lg",
+      "paddingY": "5xl",
+      "headerPaddingX": "container-md",
+      "eyebrow": "Comité d'observation indépendant",
+      "title": "Un groupe international d'experts pour garantir l'indépendance scientifique.",
+      "subtitle": "Le comité n'effectue pas d'évaluations d'entreprises et ne joue aucun rôle commercial dans le processus de notation.",
+      "showContent": "true",
+      "contentType": "innerBlocks",
+      "appearance": "borderBottom",
+      "gapY": "3xl"
+    },
+    "innerBlocks": [
+      {
+        "id": "block-1773218173814-t02mg810q",
+        "blockType": "blobIterator",
+        "data": {
+          "iteratorLayout": "grid-3",
+          "iteratorGapX": "md",
+          "iteratorGapY": "xs",
+          "size": "md",
+          "appearance": "outlined",
+          "align": "left",
+          "paddingX": "auto",
+          "paddingY": "auto",
+          "itemFields": [
+            "title",
+            "subtitle"
+          ],
+          "items": [
+            {
+              "id": "block-1773218173814-t02mg810q-item-1773239511529-r7l1g2i",
+              "blockType": "blob",
+              "data": {
+                "title": "World Business Council for Sustainable Development (WBCSD)",
+                "subtitle": "Coalition de 200+ entreprises leaders mondiales engagées dans l'accélération de la transition vers un monde durable."
+              },
+              "innerBlocks": []
+            },
+            {
+              "id": "block-1773218173814-t02mg810q-item-1773239511529-hr6ad7c",
+              "blockType": "blob",
+              "data": {
+                "title": "Science Based Targets initiative (SBTi)",
+                "subtitle": "Le standard de référence mondial pour la validation des objectifs de réduction d'émissions alignés sur la science climatique."
+              },
+              "innerBlocks": []
+            },
+            {
+              "id": "block-1773218173814-t02mg810q-item-1773239511529-7mub92a",
+              "blockType": "blob",
+              "data": {
+                "title": "CERES",
+                "subtitle": "Organisation à but non lucratif américaine mobilisant les investisseurs et entreprises sur les risques et opportunités liés au développement durable."
+              },
+              "innerBlocks": []
+            },
+            {
+              "id": "block-1773218173814-t02mg810q-item-1773239511529-5nwtje6",
+              "blockType": "blob",
+              "data": {
+                "title": "International Carbon Reduction and Offset Alliance (ICROA)",
+                "subtitle": "Organisme de gouvernance des marchés volontaires carbone, garant des standards de qualité et d'intégrité."
+              },
+              "innerBlocks": []
+            },
+            {
+              "id": "block-1773218173814-t02mg810q-item-1773239511529-xf5rher",
+              "blockType": "blob",
+              "data": {
+                "title": "Exponential Roadmap Initiative",
+                "subtitle": "Initiative visant à accélérer les solutions climatiques capables de réduire les émissions mondiales de moitié d'ici 2030 via des innovations exponentielles."
+              },
+              "innerBlocks": []
+            },
+            {
+              "id": "block-1773218173814-t02mg810q-item-1773239511529-3jyz8cv",
+              "blockType": "blob",
+              "data": {
+                "title": "World Benchmarking Alliance",
+                "subtitle": "Alliance créant des benchmarks publics gratuits pour mesurer et stimuler la contribution des entreprises aux Objectifs de Développement Durable."
+              },
+              "innerBlocks": []
+            },
+            {
+              "id": "block-1773218173814-t02mg810q-item-1773239511529-n1gs4ek",
+              "blockType": "blob",
+              "data": {
+                "title": "Oxford Net Zero",
+                "subtitle": "Programme interdisciplinaire de l'Université d'Oxford analysant les engagements net zéro et produisant des recherches indépendantes sur leur crédibilité."
+              },
+              "innerBlocks": []
+            },
+            {
+              "id": "block-1773218173814-t02mg810q-item-1773239511529-6a2qkul",
+              "blockType": "blob",
+              "data": {
+                "title": "Stockholm Environment Institute",
+                "subtitle": "Institut de recherche environnementale indépendant, référence internationale sur la politique climatique, l'énergie durable et la gouvernance des ressources."
+              },
+              "innerBlocks": []
+            },
+            {
+              "id": "block-1773218173814-t02mg810q-item-1773239511529-ap3f21p",
+              "blockType": "blob",
+              "data": {
+                "title": "GHG Management Institute",
+                "subtitle": "Institut spécialisé dans la formation et la recherche sur la mesure, la gestion et la réduction des émissions de gaz à effet de serre."
+              },
+              "innerBlocks": []
+            },
+            {
+              "id": "block-1773218173814-t02mg810q-item-1773239511529-v69p00s",
+              "blockType": "blob",
+              "data": {
+                "title": "Environmental Defense Fund (EDF)",
+                "subtitle": "Organisation environnementale américaine de référence, pionnière dans l'élaboration de solutions pragmatiques aux défis climatiques et environnementaux mondiaux."
+              },
+              "innerBlocks": []
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "block-1773127372015-0risxeosk",
+    "blockType": "blob",
+    "data": {
+      "size": "4xl",
+      "layout": "stack",
+      "align": "center",
+      "direction": "default",
+      "buttons": "[{\"label\":\"Évaluer votre contribution\",\"linkType\":\"internal\",\"internalHref\":\"\",\"externalHref\":\"\",\"customAction\":\"action1\",\"variant\":\"default\",\"theme\":\"red\",\"opensInNewTab\":\"false\"}]",
+      "appearance": "darkBackground",
+      "gapY": "auto",
+      "paddingY": "7xl",
+      "title": "Le zéro émission net est la destination. // La contribution des entreprises en est le moteur.",
+      "headerPaddingX": "container-md"
+    },
+    "innerBlocks": []
+  },
+  {
+    "id": "block-1773066668006-4ihmos3gr",
+    "blockType": "blob",
+    "data": {
+      "containerLayout": "grid-3",
+      "gapX": "md",
+      "gapY": "md",
+      "itemFields": [
+        "title",
+        "emphasisText",
+        "eyebrow",
+        "eyebrowTheme",
+        "subtitle",
+        "markerContent",
+        "image",
+        "video",
+        "buttons",
+        "contentText"
+      ],
+      "items": [
+        {
+          "title": "Feature 1",
+          "emphasisText": "",
+          "eyebrow": "",
+          "eyebrowTheme": "",
+          "subtitle": "",
+          "markerContent": "01.",
+          "image": "",
+          "video": "",
+          "buttons": "",
+          "contentText": ""
+        },
+        {
+          "title": "Feature 2",
+          "emphasisText": "",
+          "eyebrow": "",
+          "eyebrowTheme": "",
+          "subtitle": "",
+          "markerContent": "02.",
+          "image": "",
+          "video": "",
+          "buttons": "",
+          "contentText": ""
+        },
+        {
+          "title": "Feature 3",
+          "emphasisText": "",
+          "eyebrow": "",
+          "eyebrowTheme": "",
+          "subtitle": "",
+          "markerContent": "03.",
+          "image": "",
+          "video": "",
+          "buttons": "",
+          "contentText": ""
+        }
+      ],
+      "markerType": "text"
+    },
+    "innerBlocks": [
+      {
+        "id": "block-1773066722245-3ljroy9vj",
+        "blockType": "blobIterator",
+        "data": {
+          "containerLayout": "grid-3",
+          "gapX": "md",
+          "gapY": "md",
+          "itemFields": [
+            "title",
+            "emphasisText",
+            "eyebrow",
+            "eyebrowTheme",
+            "subtitle",
+            "markerContent",
+            "markerIcon",
+            "image",
+            "video",
+            "buttons",
+            "contentText"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "block-1773055868383-vrxsovevx",
+    "blockType": "blobIterator",
+    "data": {
+      "containerLayout": "grid-3",
+      "gapX": "md",
+      "gapY": "md",
+      "itemFields": [
+        "emphasisText",
+        "eyebrow",
+        "eyebrowTheme",
+        "subtitle",
+        "markerContent",
+        "markerIcon",
+        "image",
+        "video",
+        "buttons",
+        "contentText"
+      ],
+      "items": [
+        {
+          "id": "block-1773055868383-vrxsovevx-item-1773239511530-uci3737",
+          "blockType": "blob",
+          "data": {
+            "title": "coucou",
+            "emphasisText": "salut",
+            "eyebrow": "",
+            "eyebrowTheme": "",
+            "subtitle": "",
+            "markerContent": "",
+            "markerIcon": "",
+            "image": "",
+            "video": "",
+            "buttons": "",
+            "contentText": ""
+          },
+          "innerBlocks": []
+        }
+      ]
+    }
+  },
+  {
+    "id": "block-1773057321768-xpfg01wrr",
+    "blockType": "blobIterator",
+    "data": {
+      "containerLayout": "grid-3",
+      "gapX": "md",
+      "gapY": "md",
+      "itemFields": [
+        "emphasisText",
+        "eyebrow",
+        "eyebrowTheme",
+        "subtitle",
+        "markerContent",
+        "markerIcon",
+        "image",
+        "video",
+        "buttons",
+        "contentText",
+        "title"
+      ],
+      "items": [
+        {
+          "id": "block-1773057321768-xpfg01wrr-item-1773239511530-akzey1k",
+          "blockType": "blob",
+          "data": {
+            "title": "",
+            "emphasisText": "",
+            "eyebrow": "",
+            "eyebrowTheme": "",
+            "subtitle": "",
+            "markerContent": "",
+            "markerIcon": "",
+            "image": "",
+            "video": "",
+            "buttons": "",
+            "contentText": ""
+          },
+          "innerBlocks": []
+        },
+        {
+          "id": "block-1773057321768-xpfg01wrr-item-1773239511530-a0sy63i",
+          "blockType": "blob",
+          "data": {
+            "emphasisText": "",
+            "eyebrow": "",
+            "eyebrowTheme": "",
+            "subtitle": "",
+            "markerContent": "",
+            "markerIcon": "",
+            "image": "",
+            "video": "",
+            "buttons": "",
+            "contentText": "",
+            "title": ""
+          },
+          "innerBlocks": []
+        }
+      ]
+    }
+  },
+  {
+    "id": "block-1773058729753-23loa6wrb",
+    "blockType": "blobIterator",
+    "data": {
+      "size": "3xl",
+      "layout": "row",
+      "align": "center",
+      "direction": "reverse",
+      "title": "Bonjour",
+      "figureType": "image",
+      "image": "/placeholder.svg",
+      "figureBleed": "full",
+      "subtitle": "Sous-titre",
+      "eyebrow": "Sur-titre",
+      "emphasisText": "",
+      "markerPosition": "top",
+      "markerType": "icon",
+      "markerContent": "01.",
+      "appearance": "default",
+      "showContent": true,
+      "contentText": "",
+      "paddingX": "md",
+      "paddingY": "none",
+      "markerIcon": "checkCircle",
+      "eyebrowTheme": "brand",
+      "markerSize": "auto",
+      "markerRounded": "rounded-square",
+      "markerTheme": "brand",
+      "markerStyle": "default",
+      "buttons": "[{\"label\":\"Hello\",\"linkType\":\"external\",\"internalHref\":\"\",\"externalHref\":\"http://coucou.fr\",\"customAction\":\"action1\",\"variant\":\"default\",\"theme\":\"red\",\"opensInNewTab\":\"false\"},{\"label\":\"Hello\",\"linkType\":\"internal\",\"internalHref\":\"\",\"externalHref\":\"\",\"customAction\":\"action1\",\"variant\":\"outline\",\"theme\":\"red\",\"opensInNewTab\":\"false\"}]",
+      "titleAs": "h2",
+      "eyebrowAs": "div",
+      "contentType": "innerBlocks",
+      "actions": "before",
+      "figureWidth": "1/2"
+    }
+  }
+]

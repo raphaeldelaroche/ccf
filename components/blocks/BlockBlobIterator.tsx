@@ -2,6 +2,7 @@ import type { MappedIteratorData } from "@/lib/blob-iterator-mapper"
 import { BlobIterator, type IteratorLayout } from "@/components/blob/blob-iterator"
 import type { SizeValue } from "@/components/blob/blob-grid"
 import { BlobBlock } from "./BlockBlob"
+import type { BlockNode } from "@/lib/new-editor/block-types"
 
 /**
  * BlockBlobIterator - Renderer pour le composant BlobIterator
@@ -10,14 +11,21 @@ import { BlobBlock } from "./BlockBlob"
  * rendre un BlobIterator avec tous ses items.
  *
  * @param data - Données mappées depuis mapIteratorFormData
+ * @param renderInnerBlock - Fonction pour rendre les blocs imbriqués (optionnel)
  */
-export function BlockBlobIterator({ data }: { data: MappedIteratorData }) {
-  const { iteratorLayout, iteratorGutter, swiperOptions, sharedBlobProps, sharedAppearance, items } = data
+export function BlockBlobIterator({
+  data,
+  renderInnerBlock
+}: {
+  data: MappedIteratorData;
+  renderInnerBlock?: (block: BlockNode) => React.ReactNode;
+}) {
+  const { iteratorLayout, iteratorGapX, iteratorGapY, swiperOptions, sharedBlobProps, sharedAppearance, items } = data
 
   return (
     <BlobIterator
       containerLayout={iteratorLayout as IteratorLayout}
-      gutter={iteratorGutter as SizeValue}
+      gapX={iteratorGapX as SizeValue} gapY={iteratorGapY as SizeValue}
       swiperOptions={swiperOptions}
     >
       {items.map((itemData, index) => {
@@ -31,7 +39,15 @@ export function BlockBlobIterator({ data }: { data: MappedIteratorData }) {
           appearance: sharedAppearance || itemData.appearance,
         }
 
-        return <BlobBlock key={index} data={mergedData} />
+        // Passer les innerBlocks et la fonction de rendu si disponibles
+        return (
+          <BlobBlock
+            key={index}
+            data={mergedData}
+            innerBlocks={itemData.innerBlocks}
+            renderInnerBlock={renderInnerBlock}
+          />
+        )
       })}
     </BlobIterator>
   )

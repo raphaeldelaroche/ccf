@@ -4,42 +4,49 @@ Un système de composants ultra-modulable pour construire des sections de conten
 
 ## Installation & Base de Données (Vercel & Redis)
 
-Ce projet utilise une base de données **Redis (Vercel KV / Upstash)** pour sauvegarder et synchroniser les pages et les presets entre votre environnement de développement local et votre environnement de production sur Vercel. 
+Ce projet utilise une base de données **Redis (Vercel KV / Upstash)** pour sauvegarder et synchroniser les pages et les presets entre votre environnement de développement local et votre environnement de production sur Vercel.
 
 ### Prérequis
+
 * Node.js & pnpm
 * Un compte Vercel (gratuit) avec un projet configuré
 * La CLI Vercel (`npm i -g vercel`)
 
 ### Configuration du projet
+
+
+
 1. **Cloner le projet et installer les dépendances** :
+
    ```bash
    git clone <votre-repo>
    cd blobui
    pnpm install
    ```
-
 2. **Créer la base de données sur Vercel** :
    * Sur votre tableau de bord Vercel en ligne, allez dans l'onglet **Storage**.
    * Cliquez sur **Create Database**, choisissez **KV (Redis)**, et validez.
-
 3. **Lier votre environnement local à Vercel** :
+
    ```bash
    npx vercel link
    ```
-   *(Acceptez les options par défaut pour lier votre dossier au projet Vercel existant)*
 
+   *(Acceptez les options par défaut pour lier votre dossier au projet Vercel existant)*
 4. **Télécharger les variables d'environnement distantes** :
+
    ```bash
    npx vercel env pull .env.local
    ```
-   *(Ceci créera un fichier `.env.local` et téléchargera automatiquement la variable `REDIS_URL` nécessaire à la base de données)*
 
+   *(Ceci créera un fichier* `.env.local` et téléchargera automatiquement la variable `REDIS_URL` nécessaire à la base de données)
 5. **Lancer le serveur de développement** :
+
    ```bash
    pnpm dev
    ```
-   *Votre application tournera sur `http://localhost:3000`. Les pages créées ou modifiées seront instantanément synchronisées avec votre base de données distante Vercel.*
+
+   *Votre application tournera sur* `http://localhost:3000`. Les pages créées ou modifiées seront instantanément synchronisées avec votre base de données distante Vercel.
 
 ## Vue d'ensemble
 
@@ -59,13 +66,96 @@ Un système de conteneur pour créer des collections de blobs avec :
 
 * **Layouts responsives** : grilles (1-4 colonnes, auto) et swiper/carrousel
 * **Système de champs partagés** : par défaut tout est partagé (layout, spacing, style), on liste explicitement les champs gérés par item via `itemFields`
+* **Blocs imbriqués dans les items** : Chaque item peut contenir des `innerBlocks` avec profondeur illimitée — les items sont des `BlockNode` complets avec `id`, `blockType`, `data`, `innerBlocks`
 * **Optimisation Server/Client** : détection automatique (Server Component pour grilles, Client Component pour swiper)
 
-### 3. **BlobEditor** — Éditeurs de pages
+### 3. **New Editor** — Éditeur de pages (Développement actuel)
 
-Deux implémentations d'éditeur sont disponibles :
+**⚠️ Le développement se concentre désormais sur** `/new-editor` — un éditeur dédié au Blob qui résout les limitations de BlockNote pour les blocs imbriqués personnalisés.
 
-#### **Éditeur Custom (Stable)** — `/blob-editor`
+#### **New Editor** — `/new-editor` ⚡ **EN TEST**
+
+Un éditeur visuel simplifié et performant construit de zéro pour supporter pleinement les besoins du système Blob :
+
+**Pourquoi un nouvel éditeur ?**
+
+* BlockNote ne supporte pas les "custom nested blocks" (blocs personnalisés avec enfants récursifs)
+* Les Blob blocks doivent pouvoir contenir d'autres Blob blocks à profondeur illimitée
+* Besoin d'un contrôle total sur la structure hiérarchique et le rendu
+
+**Architecture** :
+
+* **Interface en 3 colonnes** : Sidebar navigation (gauche) + Canvas scrollable (centre) + Inspector scrollable (droite) — chaque colonne défile indépendamment à `100vh - hauteur toolbar`
+* **Système de vues** : Sidebar permet de basculer entre deux vues — Éditeur visuel (Canvas + Inspector) et Éditeur JSON (textarea pleine largeur du JSON de la page)
+* **Types de blocs** : `Blob`, `BlobIterator` et blocs custom (ex: `ButtonTooltip`) — système extensible
+* **Blocs imbriqués récursifs** : Les Blob peuvent contenir d'autres Blob à l'infini via `innerBlocks` — activé via le champ `contentType: "innerBlocks"` dans la section Contenu
+* **Hover controls** : Boutons ↑ ↓ + 📋 (dupliquer) + 🗑 cliquables en position absolue sur chaque bloc
+* **Inspector dynamique** : Bascule automatiquement entre BlobInspector et IteratorInspector selon le type de bloc sélectionné
+* **Zero re-render pattern** : Inputs avec `localValue` state pour éviter les cursor-jumps
+* **Lazy mounting** : Les sections accordion ne montent leurs enfants qu'à la première ouverture
+* **Système itemFields** : Multiselect pour choisir quels champs sont gérés par item vs partagés (Iterator)
+* **Persistance Redis** : Sauvegarde dans Vercel KV via API `/api/pages`
+* **Gestion de pages dynamique** : Chargement et création de pages depuis le sitemap
+* **Raccourcis clavier** : `⌘S`/`Ctrl+S` pour sauvegarder, `Backspace`/`Delete` pour supprimer le bloc sélectionné, `⌘Z` pour annuler, `⌘⇧Z` pour rétablir
+* **Animation de sélection** : Onde `box-shadow` à chaque sélection de bloc, rendue via `createPortal` pour un positionnement correct à toute profondeur d'imbrication
+
+**Architecture fichiers** (`/components/new-editor`) :
+
+* `NewEditor.tsx` : Orchestrateur pur — layout + assemblage des sous-composants
+* `NewEditorToolbar.tsx` : Barre d'outils fixe (pages, ajout de blocs, sauvegarde)
+* `NewEditorSidebar.tsx` : Sidebar de navigation gauche avec boutons de changement de vue (Éditeur visuel / Éditeur JSON)
+* `JsonEditor.tsx` : Éditeur JSON pleine largeur (textarea + bouton Appliquer + gestion d'erreurs de parsing)
+* `BlockCanvas.tsx` : Zone de rendu central avec sélection
+* `BlockRenderer.tsx` : Rendu récursif des blocs avec proper component usage
+* `BlockInspector.tsx` : Switch entre BlobInspector et IteratorInspector
+* `BlobInspector.tsx` : 9 sections, 40+ champs Blob
+* `IteratorInspector.tsx` : itemFields multiselect + items management
+* `BlockHoverControls.tsx` : Contrôles flottants ↑ ↓ + 📋 (dupliquer) + 🗑 + picker d'ajout de bloc
+* `BlockPickerPopover.tsx` : Popover de sélection du type de bloc à créer (style slash command)
+
+**Hooks** (`/lib/new-editor`) :
+
+* `useEditorState.ts` : État global, CRUD blocs (ajout, suppression, déplacement, duplication récursive), gestion des pages, auto-save, historique undo/redo (50 snapshots), presse-papiers interne, `handleSetBlocks` (remplacement atomique du tableau de blocs avec commit dans l'historique — utilisé par l'éditeur JSON)
+* `useKeyboardShortcuts.ts` : Raccourcis clavier (`⌘S`, `Backspace`/`Delete`, `⌘Z`, `⌘⇧Z`)
+
+**Status** : 🧪 **Phase de test active — Non terminé**
+
+**Ce qui fonctionne** :
+
+* ✅ Création et chargement de pages dynamiques
+* ✅ Ajout de blocs Blob et BlobIterator
+* ✅ Sélection et navigation entre blocs
+* ✅ Édition des props via Inspector (tous les champs)
+* ✅ Déplacement de blocs (↑↓), ajout (+), duplication (📋) et suppression (🗑) via hover controls
+* ✅ Suppression du bloc sélectionné via `Backspace`/`Delete`
+* ✅ Sauvegarde manuelle `⌘S`/`Ctrl+S` et automatique avec debounce (2s)
+* ✅ Rendu récursif des innerBlocks
+* ✅ Sélecteur de type de contenu (`text` / `innerBlocks`) dans la section Contenu
+* ✅ Zone de dépôt pour ajouter le premier bloc imbriqué dans un conteneur vide
+* ✅ Utilisation correcte des composants Blob (Marker, Title, etc.)
+* ✅ **Système itemFields complet pour BlobIterator** :
+  * Multiselect dynamique avec \~50 champs organisés par sections visuelles
+  * Héritage inversé : champs partagés par défaut, itemFields liste les exceptions
+  * Sections partagées qui apparaissent/disparaissent selon itemFields
+  * Support des champs conditionnels avec fusion de contexte (shared + item)
+  * Nettoyage automatique des données au toggle itemFields
+  * Support de tous les types de champs (text, dropdown, icon, repeater via `RepeaterInspector`)
+  * Libellés uniformisés entre Blob et BlobIterator (source unique : blob-fields.ts)
+* ✅ Animation d'onde à la sélection de bloc — fonctionne sur les blocs racine et imbriqués via `createPortal`
+* ✅ Layout scrollable indépendant pour chaque colonne (sidebar, canvas, inspector)
+* ✅ **Picker de type de bloc** : Au lieu de créer un bloc directement, un popover liste les types disponibles (style slash command Notion) — déclenché depuis les hover controls, la zone innerBlocks ou la toolbar
+* ✅ **Icônes Lucide** dans le picker, l'inspector et le registre de blocs (type `LucideIcon`)
+* ✅ **Copier / Coller un bloc** : Menu contextuel (clic droit) sur chaque bloc avec actions Copier et Coller — presse-papiers interne à la session, fonctionne sur blocs racine et imbriqués
+* ✅ **Annuler / Rétablir** : Historique à 50 snapshots, raccourcis `⌘Z` / `⌘⇧Z`, boutons dans la toolbar avec état désactivé ; les éditions de texte sont groupées (debounce 800 ms) pour éviter un snapshot par frappe
+* ✅ **Système de vues** : Basculement via la sidebar entre Éditeur visuel (Canvas + Inspector) et Éditeur JSON — l'éditeur JSON affiche le JSON complet de la page dans une textarea monospace, permet l'édition directe, et applique les modifications via le bouton Appliquer ou `⌘S` ; les erreurs de parsing sont affichées inline ; l'application est enregistrée dans l'historique undo/redo
+
+
+#### **Anciens éditeurs** (À retirer prochainement)
+
+**Note** : `/blob-editor` et `/editor` ont vocation à être retirés une fois `/new-editor` stabilisé.
+
+<details>
+<summary><strong>Éditeur Custom (Legacy)</strong> — `/blob-editor`</summary>
 
 Un éditeur visuel complet pour créer et gérer des pages entières avec :
 
@@ -75,9 +165,12 @@ Un éditeur visuel complet pour créer et gérer des pages entières avec :
 * **Système de presets** : Sauvegarde et réutilisation de blocs via clic droit
 * **Types de blocs** : BlobBlock, BlobSection, BlobIterator
 * **Persistance JSON** : Stockage des pages et presets en fichiers JSON
-* **Status** : ✅ Fonctionnel et stable
+* **Status** : ✅ Fonctionnel et stable (legacy)
 
-#### **Éditeur BlockNote (En développement)** — `/editor`
+</details>
+
+<details>
+<summary><strong>Éditeur BlockNote (Abandonné)</strong> — `/editor`</summary>
 
 Migration vers BlockNote.js pour une expérience d'édition plus moderne :
 
@@ -90,54 +183,9 @@ Migration vers BlockNote.js pour une expérience d'édition plus moderne :
 * **Save/Load** : Format natif BlockNote stocké directement en JSON (pas de conversion)
 * **Navigation par URL** : `?page=slug` charge automatiquement la page souhaitée
 
-**Status** : 🚧 Prototype fonctionnel, base saine
+**Status** : 🚧 Prototype fonctionnel, abandonné au profit de `/new-editor`
 
-**Ce qui fonctionne** :
-- ✅ Sélecteur de pages : affiche slug + titre correctement (`listPagesWithMeta`)
-- ✅ Création et chargement de pages
-- ✅ Navigation par URL : `/editor?page=slug` charge automatiquement la page au mount, et l'URL se met à jour lors des changements de page
-- ✅ Sauvegarde fonctionnelle (PUT `/api/pages/{slug}`) — payload partiel accepté via merge côté serveur
-- ✅ Format de stockage natif BlockNote (`type/props/content/children`) — pas de conversion intermédiaire
-- ✅ Blocs natifs (paragraph, heading, etc.) sauvegardés et rechargés fidèlement avec leur contenu texte
-- ✅ Custom block `alert` (info/warning/error/success) avec contenu inline éditable — visible dans le Slash Menu
-- ✅ Custom block `blob` (40+ props) activé dans le schema et insérable via le Slash Menu
-- ✅ Custom block `section` : bloc atomique avec alignement contrôlable (default/wide/full), hauteur fixe et background gris (placeholder v1)
-- ✅ Block alignment Gutenberg-style : chaque bloc reçoit une largeur `default` (max-w-4xl) via CSS global, les blocs Section peuvent s'élargir en `wide` (max-w-7xl) ou `full` (pleine largeur) via un attribut `data-block-alignment`
-- ✅ Toolbar flottante d'alignement : 3 boutons icônes au-dessus du bloc sélectionné, réutilisable par tout custom block
-- ✅ Inspecteur Section : panneau droit avec dropdown d'alignement, synchronisé avec la toolbar
-- ✅ Inspector externe avec tous les champs Blob
-- ✅ Sections repliables (Textes, Marqueur, Figure, Boutons, Contenu, Disposition, Espacement, Style, Séparateur, SEO)
-- ✅ Schema JSON `data/schemas/block.schema.json` aligné sur le format BlockNote natif
-- ✅ Inputs text : mise à jour instantanée sans debounce, zéro re-render sur l'arbre inspector
-- ✅ Sélection du bloc Blob : inspector et outline BlockNote au **premier clic**
-- ✅ Chargement de l'inspector : lazy mount des sections (performance initiale divisée par ~8)
-
-**Décisions architecturales prises** :
-- Le format de persistance de `/editor` est le **format natif BlockNote** (`type/props/content/children`), pas le format `BlockNode` du blob-editor (`blockType/data/innerBlocks`). Les deux formats coexistent dans `data/app/` sans problème pour l'instant.
-- `PageSchema` (Zod) accepte `blocks: z.array(z.unknown())` — la validation fine des blocs est laissée à BlockNote lui-même.
-- `PUT /api/pages/{slug}` fonctionne avec des payloads partiels : il charge la page existante, merge le body, puis valide et sauvegarde.
-- **Convention `propSchema` blob-block** : utiliser `""` (chaîne vide) comme valeur par défaut pour les props qui se mappent vers `undefined` dans la couche Blob (ex: `direction`, `actions`). Le mapper applique déjà un fallback `|| "default"` / `|| "after"`, et `""` est falsy — la chaîne `"default"` ne doit jamais être passée directement car elle n'est pas une `Action` valide.
-- **Thème visuel** : l'éditeur utilise `@blocknote/shadcn` (pas `@blocknote/mantine`) pour s'intégrer avec le design system shadcn/ui du projet. La police est imposée via `--bn-font-family: var(--font-jakarta)` sur `.bn-container`, et les styles de reset BlockNote sont neutralisés via `.bn-default-styles { all: revert }`.
-- **Détection du bloc sélectionné dans l'Inspector** : `editor.getSelection()` est utilisé en priorité (capte les blocs `content: "none"` comme le blob), avec fallback sur `editor.getTextCursorPosition()` pour les blocs inline.
-- **`BlockSelectionContext`** (`components/editor/block-selection-context.tsx`) : context React partagé entre `Editor`, `Inspector` et le render du custom block `blob`. Expose `selectedBlock` (state), `propsRef` (props sans re-render), et `selectedIdRef` (id courant, closure-safe). Permet au render du bloc blob d'appeler `setSelectedBlock` directement dans `onMouseDown` — l'inspector se met à jour **dans le même tick que le clic**, sans attendre la chaîne `onSelectionChange → setState → re-render`. `onSelectionChange` reste le fallback pour la navigation clavier et les blocs inline.
-- **Inputs sans debounce** : `InspectorField` appelle `onChange` directement à chaque keystroke. Le state local `localValue` garde l'input contrôlé. `handleUpdateProp` dans `Inspector` ne déclenche **aucun `setState`** — seulement `propsRef.current = ...` puis `editor.updateBlock()`. L'arbre `BlobInspector` et ses ~40 `InspectorField` restent complètement stables pendant la frappe.
-- **Lazy mount des sections** : `CollapsibleSection` ne monte ses enfants que lors de la **première ouverture** (`hasBeenOpened`). Une fois ouverte, la section reste montée et le toggle suivant est purement CSS. Réduit le coût du premier rendu de l'inspector de ~40 composants à ~5 (la seule section `defaultOpen={true}`).
-- **Sélection atom au premier clic** : les blocs `content: "none"` sont des nœuds atoms ProseMirror. Au premier clic (éditeur non focusé), ProseMirror place le curseur *autour* de l'atom et non *dessus*. Fix : `onMouseDown` intercepte le clic, dispatch une `NodeSelection` explicite via `_tiptapEditor.view`, et appelle `e.preventDefault()` pour empêcher le navigateur de reset la sélection.
-
-**Problèmes connus** :
-- ⚠️ Boutons individuels non éditables dans l'Inspector (la position des actions est configurable, mais pas le contenu des boutons)
-- ⚠️ `showContent` et `showSeparator` sont stockés comme strings `"true"`/`"false"` dans le `propSchema` BlockNote mais passés à `InspectorField type="checkbox"` — `"false"` étant une string non-vide, elle est truthy en JS, ce qui rend le checkbox toujours coché. À corriger en normalisant dans `InspectorField` : `checked={value === true || value === "true"}`.
-- ⚠️ `doc.descendants()` dans `blob-block.tsx` parcourt tout le document à chaque `mousedown` pour trouver la position ProseMirror du bloc (O(n)). Acceptable sur de petits documents, à optimiser sur de grands documents en maintenant un cache `id → pos` via un plugin ProseMirror.
-- ⚠️ `useBlockSelection()` est appelé dans le `render` de `createReactBlockSpec` — fonctionnel car BlockNote traite ce render comme un composant React, mais hors des règles ESLint standard (commentaire `eslint-disable` en place). Si BlockNote venait à changer la façon dont il appelle ce render, le hook devrait être déplacé dans un sous-composant wrapper. Le bloc `section` utilise déjà cette approche propre (composant `SectionBlockRenderer` extrait).
-- **Block alignment CSS** : la largeur par défaut de tous les blocs est gérée via CSS global (`.bn-editor > .bn-block-group > .bn-block-outer`), pas via un wrapper `max-w` sur le conteneur de l'éditeur. Les blocs avec `data-block-alignment` peuvent dépasser cette contrainte. Les variables CSS `--bn-content-width` et `--bn-wide-width` permettent de personnaliser les seuils.
-- **Architecture d'alignement** : les composants `AlignmentToolbar` et `AlignmentInspectorField` sont réutilisables — tout futur custom block peut les importer. Le `blockAlignmentProp` est un fragment `propSchema` partageable. Le registre `blockAlignmentLocked` permet de fixer l'alignement d'un type de bloc (non-configurable depuis l'UI).
-
-**Prochaines étapes** :
-1. Corriger le bug `showContent`/`showSeparator` (string vs boolean dans les checkboxes)
-2. Enrichir le bloc Section (enfants imbriqués, background, padding)
-3. Implémenter BlobIterator comme custom block BlockNote
-4. Ajouter le système de presets
-5. Implémenter l'édition des boutons individuels dans l'Inspector
+**Détails techniques archivés** : Voir la section "Anciens éditeurs" ci-dessus pour la documentation complète de `/editor`.
 
 ## Architecture du projet
 
@@ -207,9 +255,42 @@ Le système Blob est organisé en plusieurs couches :
 * Construit les options Swiper si activées
 * Clés du formulaire : `iteratorLayout`, `iteratorGutter` (pour éviter les conflits avec les props Blob)
 
-**Nouveaux fichiers pour BlobEditor :**
+**Fichiers pour New Editor (**`/lib/new-editor`) :
 
-`block-registry.ts` — Registre des types de blocs
+`block-types.ts` — Types du nouveau système
+
+* Types : `BlockType` ('blob' | 'blobIterator' | 'buttonTooltip' | ...)
+* Interface `BlockNode` : `{ id, blockType, data, innerBlocks? }`
+* Interface `EditorState` : `{ blocks, selectedBlockId, currentPage }`
+
+`block-registry.ts` — Registre des blocs
+
+* Définit tous les types de blocs : Blob, BlobIterator, et blocs custom
+* Configuration : label, icon, description, allowedInnerBlocks, sections, defaultValues, initialValues
+* Import de `fieldSections` (default export de blob-fields) et définitions des blocs custom
+* Le registre Blob utilise toutes les sections de blob-fields (9 sections, 40+ champs)
+* Le registre Iterator configure les itemFields par défaut (champs de contenu gérés par item)
+* Système extensible : ajouter de nouveaux blocs en suivant le protocole décrit dans "Créer un nouveau bloc custom"
+
+`useEditorState.ts` — Hook d'état central
+
+* Gère l'état complet de l'éditeur : blocks, selectedBlockId, pages, isSaving
+* CRUD récursif : `handleAddBlock`, `handleDeleteBlock`, `handleMoveBlock`, `handleUpdateBlock`
+* Chargement/création/sauvegarde de pages via `/api/pages`
+* Auto-save avec debounce 2s
+
+`useKeyboardShortcuts.ts` — Hook de raccourcis clavier
+
+* `⌘S` / `Ctrl+S` → sauvegarde manuelle
+* `Backspace` / `Delete` → supprime le bloc sélectionné
+* Ignore automatiquement les événements quand le focus est dans un champ de saisie
+
+**Fichiers Legacy BlobEditor (**`/lib`) :
+
+<details>
+<summary>Voir la documentation des fichiers legacy</summary>
+
+`block-registry.ts` — Registre des types de blocs (Legacy)
 
 * Définit tous les types de blocs disponibles (BlobBlock, BlobSection, BlobIterator)
 * Configuration centralisée : label, icon, description, allowedInnerBlocks
@@ -232,7 +313,7 @@ Le système Blob est organisé en plusieurs couches :
 
 `page-storage.ts` — Persistance des pages
 
-* Stockage dans `/data/app/*.json`
+* Stockage dans Redis (Vercel KV) via `/api/pages`
 * `listPages()`, `loadPage()`, `savePage()`, `createPage()`, `deletePage()`
 * Gestion des métadonnées (createdAt, updatedAt)
 * Import/Export de pages
@@ -243,6 +324,8 @@ Le système Blob est organisé en plusieurs couches :
 * `listBlockPresets()`, `loadBlockPreset()`, `saveBlockPreset()`
 * `createBlockPreset()` : Crée un preset depuis un bloc
 * `instantiateBlockFromPreset()` : Instancie un bloc depuis un preset
+
+</details>
 
 #### 2. Composants (`/components/blob` et `/components/blocks`)
 
@@ -272,7 +355,107 @@ Le système Blob est organisé en plusieurs couches :
 * `BlobSwiper` : Client Component avec Swiper.js (navigation, pagination, autoplay, etc.)
 * Prop `gutter` : utilise les mêmes tokens de taille que Blob (via `blob-gutter-*` CSS utilities)
 
-**Renderers de blocs**
+**Composants New Editor** (`/components/new-editor`)
+
+`NewEditor.tsx` — Orchestrateur pur
+
+* Layout 3 colonnes : Sidebar (gauche) + zone principale (centre+droite)
+* Assemble `useEditorState`, `useKeyboardShortcuts`, `NewEditorToolbar`, `NewEditorSidebar`, `BlockCanvas`, `BlockInspector`, `JsonEditor`
+* Gère l'état de vue (`activeView: 'visual' | 'json'`) en local state — bascule conditionnellement entre Canvas+Inspector et JsonEditor
+* Ne contient aucune logique métier — responsabilité unique : composition du layout
+
+`NewEditorToolbar.tsx` — Barre d'outils fixe
+
+* Sélecteur de pages, dialog de création de page, boutons Blob/Iterator, sauvegarde
+* Affiche l'heure de dernière sauvegarde
+
+`NewEditorSidebar.tsx` — Sidebar de navigation gauche
+
+* Barre étroite (`w-11`) avec boutons icônes pour changer de vue
+* `LayoutTemplate` → vue Éditeur visuel, `Braces` → vue Éditeur JSON
+* Bouton actif mis en évidence (`bg-gray-300`), tooltips Radix UI au survol
+* Exporte le type `EditorView = 'visual' | 'json'`
+
+`JsonEditor.tsx` — Éditeur JSON pleine largeur
+
+* Affiche `JSON.stringify(blocks, null, 2)` dans une `<textarea>` monospace pleine hauteur
+* State local `localJson` + `isDirty` : ne remplace pas les blocs en live mais à la validation explicite
+* Synchronise depuis `blocks` uniquement quand `isDirty === false` (respecte les undo/redo de la toolbar)
+* Bouton **Appliquer** : parse le JSON, valide que c'est un tableau, appelle `onSetBlocks` (push dans l'historique undo) + `onSave`
+* `⌘S`/`Ctrl+S` déclenche Appliquer depuis l'éditeur JSON
+* Affiche l'erreur de parsing inline (`AlertCircle` + message `SyntaxError`)
+
+`BlockCanvas.tsx` — Zone de rendu central
+
+* Affiche les blocs avec `BlockRenderer` récursif
+* Gestion de la sélection au clic
+* Wrapper pour les handlers de déplacement, ajout et suppression
+
+`BlockRenderer.tsx` — Rendu récursif des blocs
+
+* Rend un bloc selon son type (blob ou blobIterator)
+* Utilise `mapFormDataToBlob` et `mapIteratorFormData`
+* Utilise les composants Blob propres (Marker, Title, Subtitle, etc.)
+* Supporte les innerBlocks récursifs
+* Intègre `BlockHoverControls` pour chaque bloc
+* Animation d'onde `box-shadow` (élément `fixed` via `getBoundingClientRect`) à chaque sélection
+
+`BlockHoverControls.tsx` — Contrôles flottants
+
+* Boutons ↑ ↓ + 🗑 en position absolue sur la gauche
+* Visibilité pilotée par état React `isHovered` (pas de `group-hover` CSS) pour rester cliquables
+* Contrôle du déplacement, de l'ajout et de la suppression de blocs
+
+`BlockInspector.tsx` — Inspector principal
+
+* Switch entre BlobInspector et IteratorInspector selon blockType
+* Affiche "Sélectionnez un bloc" si aucune sélection
+
+`BlobInspector.tsx` — Inspector Blob
+
+* 9 sections collapsibles : Textes, Marqueur, Figure, Boutons, Contenu, Disposition, Espacement, Style, Séparateur
+* Utilise `InspectorField` pour les champs standards et `RepeaterInspector` pour les champs `type: "repeater"` (ex: Boutons)
+* Couvre les 40+ champs du système Blob
+
+`IteratorInspector.tsx` — Inspector Iterator
+
+* Section Iterator : containerLayout, gapX, gapY
+* Section itemFields : multiselect organisé par catégories (En-tête, Marqueur, Figure, Boutons, etc.)
+* Section Items : délègue à `RepeaterInspector` avec `ItemBlobInspector` comme `renderContent` — même code path que le champ Boutons
+* Handlers pour itemFields checkbox (ajout/suppression de champs avec nettoyage des données)
+
+`ItemBlobInspector.tsx` — Contenu des items Iterator
+
+* Reproduction exacte de la logique `BlobInspector` filtrée sur `itemFields`
+* Même ordre `fieldSections`, mêmes `CollapsibleSection`, même `renderField`
+* `showIf` évalué sur le contexte fusionné `{ ...sharedData, ...item }`
+* Compat calculé sur le même contexte fusionné
+
+`RepeaterInspector.tsx` — Champ répéteur générique
+
+* Label + un bouton trigger par item (ouvre un Popover avec les champs) + bouton Ajouter en bas
+* Drag & drop natif HTML5 pour réordonner les items (handle `GripVertical`)
+* Boutons Dupliquer et Supprimer par item
+* Render prop `renderContent` pour personnaliser le contenu du popover (utilisé par Iterator)
+* Utilisé par `BlobInspector` / `ItemBlobInspector` pour tout champ `type: "repeater"`, et par `IteratorInspector` pour la liste des items
+
+`InspectorField.tsx` — Champ atomique
+
+* Types supportés : text, textarea, select, checkbox
+* State local `localValue` pour éviter cursor-jumps
+* `onChange` appelé directement sans debounce
+* Synchronisation via `useEffect([value])`
+
+`CollapsibleSection.tsx` — Section accordion
+
+* Lazy mount : les enfants ne montent qu'à la première ouverture
+* Flag `hasBeenOpened` garde les enfants montés après ouverture
+* Toggle suivants purement CSS (performance)
+
+**Renderers de blocs (Legacy)** (`/components/blocks`)
+
+<details>
+<summary>Voir la documentation des renderers legacy</summary>
 
 `blocks/BlockBlob.tsx` — Renderer Blob par défaut
 
@@ -290,7 +473,28 @@ Le système Blob est organisé en plusieurs couches :
 
 * Wrapper `<section>` avec gestion de la largeur du container
 
-**Composants BlobEditor** (`/components/blob-editor`)
+</details>
+
+**Composants BlobEditor (Legacy)** (`/components/blob-editor`)
+
+<details>
+<summary>Voir la documentation de BlobEditor legacy</summary>
+
+`BlobEditor.tsx` — Orchestrateur principal
+
+* Layout en 3 colonnes (Tree, Canvas, Inspector)
+* Gestion d'état : blocks, selectedBlockId, currentPage
+* Handlers : add, delete, move, update, saveAsPreset
+* Intégration avec les API de pages et presets
+* Auto-save indicator et toolbar
+
+`BlockTree.tsx` / `BlockTreeItem.tsx` — Arborescence des blocs
+
+* Affichage hiérarchique avec indentation par niveau
+* Menu contextuel (clic droit) avec "Enregistrer comme preset"
+* Contrôles : déplacer (↑↓), ajouter (+), supprimer (🗑️)
+* Support récursif des innerBlocks
+* Expand/collapse des blocs parents
 
 `BlobEditor.tsx` — Orchestrateur principal
 
@@ -337,6 +541,8 @@ Le système Blob est organisé en plusieurs couches :
 * Validation et feedback utilisateur
 * Appel API `/api/block-presets` pour sauvegarder
 
+</details>
+
 **Composants éditeur BlockNote** (`/components/editor`)
 
 `Editor.tsx` — Orchestrateur de l'éditeur BlockNote
@@ -374,7 +580,7 @@ Le système Blob est organisé en plusieurs couches :
 
 * **Lazy mount** : les enfants ne sont pas montés avant la première ouverture (`hasBeenOpened`)
 * Une fois ouverts, les enfants restent montés — les toggles suivants sont purement CSS
-* Réduit le coût du premier rendu de l'inspector de ~40 composants à ~5
+* Réduit le coût du premier rendu de l'inspector de \~40 composants à \~5
 
 #### 3. Styles (`/styles`)
 
@@ -443,9 +649,20 @@ marker="top md:left"
 align="center md:left"
 figureWidth="md:1-2 lg:1-3"
 size="md lg:xl"
+paddingX="container-md lg:container-lg"
 ```
 
 Le système parse ces chaînes, résout les breakpoints en mode mobile-first (les valeurs se propagent), et génère les classes appropriées pour chaque breakpoint.
+
+### Paddings dynamiques (Container Mode)
+
+La propriété `paddingX` supporte deux valeurs spéciales : `container-md` et `container-lg`.
+Contrairement aux tokens de taille classiques (ex: `xl`, `2xl`), ces utilitaires calculent dynamiquement une marge intérieure (padding) afin que le contenu s'aligne exactement sur une largeur maximale, tout en permettant au fond (background) de s'étendre sur toute la largeur de l'écran (approche "full-bleed").
+
+* `container-md` : Contraint le contenu à `max-w-4xl` (56rem / 896px)
+* `container-lg` : Contraint le contenu à `max-w-7xl` (80rem / 1280px)
+
+**Le grand avantage** : Lorsque combiné avec `figureBleed="full"`, le calcul natif des marges CSS annule exactement ce padding, permettant à l'image de s'échapper en dehors du "container" virtuel pour aller toucher le bord de l'écran, sans aucune classe de surpassement complexe.
 
 ### Système de tokens de taille
 
@@ -510,6 +727,8 @@ Le BlobIterator introduit un système de partage intelligent pour les collection
 
 ### BlobEditor
 
+
+
 1. **Interaction utilisateur** : sélection d'un bloc dans `BlockTree`, modification d'un champ dans `BlockInspector`
 2. **Mise à jour de l'état** : `BlobEditor.handleUpdateBlock()` met à jour `blocks`
 3. **Mapping** : `mapBlockWithInnerBlocks()` transforme récursivement les données en props utilisables
@@ -518,6 +737,8 @@ Le BlobIterator introduit un système de partage intelligent pour les collection
 6. **Application** : le navigateur applique les classes CSS et rend la grille
 
 ### BlobIterator (dans l'éditeur)
+
+
 
 1. **Résolution des champs** : `resolveBlockSections(blobFieldSections, IteratorBlockDefinition)` fusionne Blob + Iterator
 2. **Mapping** : `mapIteratorFormData` transforme en `MappedIteratorData`
@@ -563,13 +784,317 @@ Le code est **en développement actif**. L'API des props et la structure des don
   3. Gérer dans `buildSharedBlobProps()` et `mapIteratorItem()` de `blob-iterator-mapper.ts`
 * **Modifier les valeurs par défaut** : éditer `initialValues.itemFields` dans `blob-iterator-definition.ts`
 
-### Extensibilité
+### Créer un nouveau bloc custom
 
-* **Créer un nouveau bloc** : créer une `BlockDefinition` avec `extraSections`/`extraFields`, `initialValues`, et un `render` personnalisé
+Le système supporte la création de blocs custom indépendants (comme `ButtonTooltip`) qui peuvent être ajoutés n'importe où dans l'éditeur, au même titre que `Blob` et `BlobIterator`.
 
-Le système est conçu pour que chaque partie soit **indépendante** : source unique de vérité (`blob-fields.ts`), système de compatibilité découplé, extensions via `BlockDefinition`.
+#### Protocole de création en 8 étapes
 
-### BlobEditor
+**Exemple concret** : Création d'un bloc `ButtonTooltip` - un répéteur de boutons avec tooltips.
+
+##### 1. Définir le type de bloc
+
+**Fichier** : `/lib/new-editor/block-types.ts`
+
+```typescript
+export type BlockType = 'blob' | 'blobIterator' | 'buttonTooltip';
+```
+
+##### 2. Créer les définitions de champs
+
+**Fichier** : `/lib/button-tooltip-fields.ts` (nouveau)
+
+```typescript
+import type { FieldSection } from './blob-fields'
+
+export const buttonTooltipFields: Record<string, FieldSection> = {
+  tooltips: {
+    label: "Tooltips",
+    fields: {
+      tooltips: {
+        type: "repeater",
+        label: "Liste des tooltips",
+        fields: {
+          label: { type: "text", label: "Label du bouton" },
+          content: { type: "textarea", label: "Contenu du tooltip" },
+          linkLabel: { type: "text", label: "Label du lien (optionnel)" },
+          linkUrl: { type: "text", label: "URL du lien (optionnel)" },
+        },
+      },
+    },
+  },
+  configuration: {
+    label: "Configuration",
+    fields: {
+      layout: {
+        type: "dropdown",
+        label: "Disposition",
+        options: { horizontal: "Horizontale", vertical: "Verticale" },
+      },
+      spacing: { /* ... */ },
+      align: { /* ... */ },
+    },
+  },
+  buttonStyle: {
+    label: "Style des boutons",
+    fields: {
+      variant: { /* ... */ },
+      size: { /* ... */ },
+    },
+  },
+}
+```
+
+**Types de champs disponibles** : `text`, `textarea`, `dropdown`, `checkbox`, `repeater`, `multiselect`, `icon`, `image`, `video`
+
+##### 3. Créer la fonction mapper
+
+**Fichier** : `/lib/button-tooltip-mapper.ts` (nouveau)
+
+```typescript
+import type { FormDataValue } from '@/types/editor'
+
+export interface TooltipItem {
+  label: string
+  content: string
+  linkLabel?: string
+  linkUrl?: string
+}
+
+export interface MappedButtonTooltipData {
+  layout: string
+  spacing: string
+  align: string
+  variant: string
+  size: string
+  tooltips: TooltipItem[]
+}
+
+export function mapButtonTooltipFormData(
+  formData: ButtonTooltipFormData
+): MappedButtonTooltipData {
+  const rawTooltips = parseJsonField<any[]>(formData.tooltips, [])
+
+  const tooltips: TooltipItem[] = rawTooltips.map((item) => ({
+    label: item?.label || "",
+    content: item?.content || "",
+    linkLabel: item?.linkLabel || undefined,
+    linkUrl: item?.linkUrl || undefined,
+  }))
+
+  return {
+    layout: formData.layout || "horizontal",
+    spacing: formData.spacing || "md",
+    align: formData.align || "left",
+    variant: formData.variant || "default",
+    size: formData.size || "default",
+    tooltips,
+  }
+}
+```
+
+##### 4. Créer le composant React
+
+**Fichier** : `/components/blocks/BlockButtonTooltip.tsx` (nouveau)
+
+```typescript
+import { MappedButtonTooltipData } from '@/lib/button-tooltip-mapper'
+import * as TooltipPrimitive from "@radix-ui/react-tooltip"
+import { Button } from '@/components/ui/button'
+
+export function BlockButtonTooltip({ data }: { data: MappedButtonTooltipData }) {
+  const { layout, spacing, align, variant, size, tooltips } = data
+
+  return (
+    <div className={/* classes basées sur layout, spacing, align */}>
+      <TooltipPrimitive.Provider delayDuration={0}>
+        {tooltips.map((item, index) => (
+          <TooltipPrimitive.Root key={index}>
+            <TooltipPrimitive.Trigger asChild>
+              <Button variant="outline" size={size as any}>
+                {item.label || `Bouton ${index + 1}`}
+              </Button>
+            </TooltipPrimitive.Trigger>
+            <TooltipContent>
+              <p>{item.content}</p>
+              {item.linkLabel && item.linkUrl && (
+                <Link href={item.linkUrl}>{item.linkLabel} →</Link>
+              )}
+            </TooltipContent>
+          </TooltipPrimitive.Root>
+        ))}
+      </TooltipPrimitive.Provider>
+    </div>
+  )
+}
+```
+
+##### 5. Créer l'inspecteur
+
+**Fichier** : `/components/new-editor/ButtonTooltipInspector.tsx` (nouveau)
+
+```typescript
+import { InspectorField } from "./InspectorField"
+import { CollapsibleSection } from "./CollapsibleSection"
+import { RepeaterInspector } from "./RepeaterInspector"
+import { buttonTooltipFields } from "@/lib/button-tooltip-fields"
+
+export function ButtonTooltipInspector({ data, onUpdate }) {
+  const handleChange = (key: string, value: FormDataValue) => {
+    onUpdate({ [key]: value })
+  }
+
+  return (
+    <div>
+      {Object.entries(buttonTooltipFields).map(([sectionKey, section]) => (
+        <CollapsibleSection key={sectionKey} title={section.label}>
+          <div className="pt-3 space-y-3">
+            {Object.entries(section.fields).map(([fieldKey, fieldDef]) => {
+              if (fieldDef.type === "repeater") {
+                return (
+                  <RepeaterInspector
+                    key={fieldKey}
+                    label={fieldDef.label}
+                    value={JSON.stringify(data[fieldKey] || [])}
+                    fields={fieldDef.fields}
+                    onChange={(v) => handleChange(fieldKey, JSON.parse(v))}
+                  />
+                )
+              }
+
+              return (
+                <InspectorField
+                  key={fieldKey}
+                  label={fieldDef.label}
+                  value={data[fieldKey] || ""}
+                  type={fieldDef.type}
+                  options={fieldDef.options}
+                  onChange={(v) => handleChange(fieldKey, v)}
+                />
+              )
+            })}
+          </div>
+        </CollapsibleSection>
+      ))}
+    </div>
+  )
+}
+```
+
+##### 6. Enregistrer le bloc
+
+**Fichier** : `/lib/new-editor/block-registry.ts`
+
+```typescript
+import { HelpCircle } from 'lucide-react'
+import { buttonTooltipFields } from '@/lib/button-tooltip-fields'
+
+export const BLOCK_REGISTRY: Record<BlockType, BlockDefinition> = {
+  // ... blob, blobIterator
+
+  buttonTooltip: {
+    label: 'Button Tooltip',
+    icon: HelpCircle,
+    description: 'Boutons avec tooltips interactifs',
+    allowedInnerBlocks: [], // Pas de blocs imbriqués
+    sections: buttonTooltipFields,
+    initialValues: {
+      layout: 'horizontal',
+      spacing: 'md',
+      align: 'left',
+      variant: 'default',
+      size: 'default',
+      tooltips: '[]',
+    },
+  },
+}
+```
+
+##### 7. Intégrer dans l'inspecteur de l'éditeur
+
+**Fichier** : `/components/new-editor/BlockInspector.tsx`
+
+```typescript
+import { ButtonTooltipInspector } from './ButtonTooltipInspector'
+
+export function BlockInspector({ selectedBlock, onUpdateBlock }) {
+  // ...
+  return (
+    <ScrollArea>
+      {selectedBlock.blockType === "blob" && <BlobInspector ... />}
+      {selectedBlock.blockType === "blobIterator" && <IteratorInspector ... />}
+      {selectedBlock.blockType === "buttonTooltip" && (
+        <ButtonTooltipInspector
+          data={selectedBlock.data}
+          onUpdate={handleUpdate}
+        />
+      )}
+    </ScrollArea>
+  )
+}
+```
+
+##### 8. Intégrer dans les renderers
+
+**Fichier** : `/components/new-editor/BlockRenderer.tsx` (éditeur)
+
+```typescript
+import { mapButtonTooltipFormData } from "@/lib/button-tooltip-mapper"
+import { BlockButtonTooltip } from "@/components/blocks/BlockButtonTooltip"
+
+const renderBlockContent = () => {
+  // ... cas blob, blobIterator
+
+  if (block.blockType === "buttonTooltip") {
+    const mappedData = mapButtonTooltipFormData(block.data)
+    return <BlockButtonTooltip data={mappedData} />
+  }
+}
+```
+
+**Fichier** : `/lib/render-page-blocks.tsx` (pages publiques)
+
+```typescript
+import { mapButtonTooltipFormData } from "@/lib/button-tooltip-mapper"
+import { BlockButtonTooltip } from "@/components/blocks/BlockButtonTooltip"
+
+export function renderBlock(block: BlockNode): React.ReactNode {
+  switch (block.blockType) {
+    // ... cas blob, blobIterator
+
+    case "buttonTooltip": {
+      const mappedData = mapButtonTooltipFormData(block.data)
+      return <BlockButtonTooltip key={block.id} data={mappedData} />
+    }
+  }
+}
+```
+
+#### Résumé des fichiers
+
+**Nouveaux fichiers (4)** :
+- `/lib/[block-name]-fields.ts` - Définitions des champs
+- `/lib/[block-name]-mapper.ts` - Transformation FormData → Props
+- `/components/blocks/Block[Name].tsx` - Composant React de rendu
+- `/components/new-editor/[Name]Inspector.tsx` - Interface d'édition
+
+**Fichiers modifiés (4)** :
+- `/lib/new-editor/block-types.ts` - Ajout du type
+- `/lib/new-editor/block-registry.ts` - Enregistrement du bloc
+- `/components/new-editor/BlockInspector.tsx` - Routing de l'inspecteur
+- `/lib/render-page-blocks.tsx` + `/components/new-editor/BlockRenderer.tsx` - Rendu
+
+#### Principes clés
+
+- **Champs répéteurs** : Stockent les données en JSON string `"[{...},{...}]"`
+- **Mapper** : Transforme les données plates du formulaire en props structurées
+- **Inspector** : Utilise `RepeaterInspector` pour les champs de type `repeater`
+- **Deux renderers** : Un pour l'éditeur (`BlockRenderer.tsx`), un pour les pages publiques (`render-page-blocks.tsx`)
+- **Type safety** : Définir des interfaces TypeScript pour `FormData` et `MappedData`
+
+Le système est conçu pour que chaque partie soit **indépendante** : source unique de vérité (champs), mappers découplés, composants réutilisables.
+
+### BlobEditor (Legacy)
 
 * **Ajouter un type de bloc** : Ajouter une entrée dans `BLOCK_REGISTRY` avec label, icon, mapper, render, et `allowedInnerBlocks`
 * **Modifier les blocs autorisés** : Éditer la propriété `allowedInnerBlocks` dans la définition du bloc
@@ -661,6 +1186,11 @@ Pour lancer le projet en développement :
 pnpm dev
 ```
 
-**BlobEditor** : <http://localhost:3000/blob-editor>
+**New Editor (Développement actuel)** : <http://localhost:3000/new-editor>
+
+**Anciens éditeurs** :
+
+* BlobEditor (Legacy) : <http://localhost:3000/blob-editor>
+* BlockNote Editor (Abandonné) : <http://localhost:3000/editor>
 
 

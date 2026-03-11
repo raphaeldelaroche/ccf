@@ -52,25 +52,34 @@
 @source inline("{sm,md,lg,xl,2xl}:blob-figure-w-{xs,sm,md,lg,xl,1-4,1-3,1-2,2-3,3-4}");
 @source inline("blob-size-{xs,sm,md,lg,xl,2xl,3xl,4xl,5xl,6xl,7xl,8xl,9xl,10xl}");
 @source inline("{sm,md,lg,xl,2xl}:blob-size-{xs,sm,md,lg,xl,2xl,3xl,4xl,5xl,6xl,7xl,8xl,9xl,10xl}");
-@source inline("blob-gutter-{none,xs,sm,md,lg,xl,2xl,3xl,4xl,5xl,6xl,7xl,8xl,9xl,10xl}");
-@source inline("{sm,md,lg,xl,2xl}:blob-gutter-{none,xs,sm,md,lg,xl,2xl,3xl,4xl,5xl,6xl,7xl,8xl,9xl,10xl}");
-@source inline("blob-padding-x-{none,xs,sm,md,lg,xl,2xl,3xl,4xl,5xl,6xl,7xl,8xl,9xl,10xl}");
-@source inline("{sm,md,lg,xl,2xl}:blob-padding-x-{none,xs,sm,md,lg,xl,2xl,3xl,4xl,5xl,6xl,7xl,8xl,9xl,10xl}");
+@source inline("blob-gap-x-{none,xs,sm,md,lg,xl,2xl,3xl,4xl,5xl,6xl,7xl,8xl,9xl,10xl}");
+@source inline("{sm,md,lg,xl,2xl}:blob-gap-x-{none,xs,sm,md,lg,xl,2xl,3xl,4xl,5xl,6xl,7xl,8xl,9xl,10xl}");
+@source inline("blob-gap-y-{none,xs,sm,md,lg,xl,2xl,3xl,4xl,5xl,6xl,7xl,8xl,9xl,10xl}");
+@source inline("{sm,md,lg,xl,2xl}:blob-gap-y-{none,xs,sm,md,lg,xl,2xl,3xl,4xl,5xl,6xl,7xl,8xl,9xl,10xl}");
+@source inline("blob-padding-x-{none,xs,sm,md,lg,xl,2xl,3xl,4xl,5xl,6xl,7xl,8xl,9xl,10xl,container-sm,container-md,container-lg,container-xl,container-2xl}");
+@source inline("{sm,md,lg,xl,2xl}:blob-padding-x-{none,xs,sm,md,lg,xl,2xl,3xl,4xl,5xl,6xl,7xl,8xl,9xl,10xl,container-sm,container-md,container-lg,container-xl,container-2xl}");
 @source inline("blob-padding-y-{none,xs,sm,md,lg,xl,2xl,3xl,4xl,5xl,6xl,7xl,8xl,9xl,10xl}");
 @source inline("{sm,md,lg,xl,2xl}:blob-padding-y-{none,xs,sm,md,lg,xl,2xl,3xl,4xl,5xl,6xl,7xl,8xl,9xl,10xl}");
+@source inline("blob-header-padding-x-{none,xs,sm,md,lg,xl,2xl,3xl,4xl,5xl,6xl,7xl,8xl,9xl,10xl,container-sm,container-md,container-lg,container-xl,container-2xl}");
+@source inline("{sm,md,lg,xl,2xl}:blob-header-padding-x-{none,xs,sm,md,lg,xl,2xl,3xl,4xl,5xl,6xl,7xl,8xl,9xl,10xl,container-sm,container-md,container-lg,container-xl,container-2xl}");
+@source inline("blob-header-padding-y-{none,xs,sm,md,lg,xl,2xl,3xl,4xl,5xl,6xl,7xl,8xl,9xl,10xl,container-sm,container-md,container-lg,container-xl,container-2xl}");
+@source inline("{sm,md,lg,xl,2xl}:blob-header-padding-y-{none,xs,sm,md,lg,xl,2xl,3xl,4xl,5xl,6xl,7xl,8xl,9xl,10xl,container-sm,container-md,container-lg,container-xl,container-2xl}");
 @source inline("text-blob");
 @source inline("{blob-figure-bleed,blob-figure-bleed-reverse,blob-figure-bleed-row,blob-figure-bleed-row-reverse,blob-figure-bleed-none}");
 @source inline("{sm,md,lg,xl,2xl}:{blob-figure-bleed,blob-figure-bleed-reverse,blob-figure-bleed-row,blob-figure-bleed-row-reverse,blob-figure-bleed-none}");
-@source inline("{blob-iterator-grid-1,blob-iterator-grid-2,blob-iterator-grid-3,blob-iterator-grid-4,blob-iterator-grid-auto,blob-iterator-swiper}");
-@source inline("{sm,md,lg,xl,2xl}:{blob-iterator-grid-1,blob-iterator-grid-2,blob-iterator-grid-3,blob-iterator-grid-4,blob-iterator-grid-auto,blob-iterator-swiper}");
+@source inline("{blob-iterator-grid-1,blob-iterator-grid-2,blob-iterator-grid-3,blob-iterator-grid-4,blob-iterator-grid-5,blob-iterator-grid-6,blob-iterator-grid-auto,blob-iterator-swiper}");
+@source inline("{sm,md,lg,xl,2xl}:{blob-iterator-grid-1,blob-iterator-grid-2,blob-iterator-grid-3,blob-iterator-grid-4,blob-iterator-grid-5,blob-iterator-grid-6,blob-iterator-grid-auto,blob-iterator-swiper}");
 
 /* ── Grid areas base : consomme les variables CSS injectées par les classes composées ── */
 @layer base {
   [data-slot="blob"] {
     display: grid;
-    gap: var(--spacing-section);
+    gap: var(--spacing-gap-y, var(--spacing-section)) var(--spacing-gap-x, var(--spacing-section));
     padding-inline: var(--spacing-padding-x, 0);
     padding-block: var(--spacing-padding-y, 0);
+    /* Reset header padding variables at each blob root to prevent inheritance into nested blobs */
+    --spacing-header-padding-x: 0;
+    --spacing-header-padding-y: 0;
     align-items: start;
     font-size: var(--size-body-font-size);
 
@@ -85,7 +94,7 @@
     justify-items: var(--blob-align-justify, start);
 
     & [data-slot="marker"]       { grid-area: marker; align-self: start; }
-    & [data-slot="blob-header"]  { grid-area: header; justify-self: stretch; align-self: start; align-items: var(--blob-align-flex, flex-start); }
+    & [data-slot="blob-header"]  { grid-area: header; justify-self: stretch; align-self: start; align-items: var(--blob-align-flex, flex-start); padding-inline: var(--spacing-header-padding-x, 0); padding-block: var(--spacing-header-padding-y, 0); }
     & [data-slot="blob-actions"] { grid-area: actions; align-self: start; }
     & [data-slot="blob-content"] { grid-area: content; align-self: start; }
     & [data-slot="blob-figure"]  { grid-area: figure; align-self: start; }
@@ -107,11 +116,11 @@
 @utility blob-figure-w-md  { --blob-figure-columns-ltr: 1fr 360px; --blob-figure-columns-rtl: 360px 1fr; }
 @utility blob-figure-w-lg  { --blob-figure-columns-ltr: 1fr 480px; --blob-figure-columns-rtl: 480px 1fr; }
 @utility blob-figure-w-xl  { --blob-figure-columns-ltr: 1fr 640px; --blob-figure-columns-rtl: 640px 1fr; }
-@utility blob-figure-w-1-4 { --blob-figure-columns-ltr: 3fr 1fr;   --blob-figure-columns-rtl: 1fr 3fr;   }
-@utility blob-figure-w-1-3 { --blob-figure-columns-ltr: 2fr 1fr;   --blob-figure-columns-rtl: 1fr 2fr;   }
-@utility blob-figure-w-1-2 { --blob-figure-columns-ltr: 1fr 1fr;   --blob-figure-columns-rtl: 1fr 1fr;   }
-@utility blob-figure-w-2-3 { --blob-figure-columns-ltr: 1fr 2fr;   --blob-figure-columns-rtl: 2fr 1fr;   }
-@utility blob-figure-w-3-4 { --blob-figure-columns-ltr: 1fr 3fr;   --blob-figure-columns-rtl: 3fr 1fr;   }
+@utility blob-figure-w-1-4 { --blob-figure-columns-ltr: 1fr 25%;              --blob-figure-columns-rtl: 25% 1fr;              }
+@utility blob-figure-w-1-3 { --blob-figure-columns-ltr: 1fr calc(100% / 3);   --blob-figure-columns-rtl: calc(100% / 3) 1fr;   }
+@utility blob-figure-w-1-2 { --blob-figure-columns-ltr: 1fr 50%;              --blob-figure-columns-rtl: 50% 1fr;              }
+@utility blob-figure-w-2-3 { --blob-figure-columns-ltr: 1fr calc(200% / 3);   --blob-figure-columns-rtl: calc(200% / 3) 1fr;   }
+@utility blob-figure-w-3-4 { --blob-figure-columns-ltr: 1fr 75%;              --blob-figure-columns-rtl: 75% 1fr;              }
 
 /* ═══════════════════════════════════════════════════════
    ALIGNMENTS — Vrais modifiers (indépendants des layouts)
@@ -191,31 +200,43 @@
 @utility blob-iterator-grid-1 {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--spacing-section);
+  gap: var(--spacing-gap-y, var(--spacing-section)) var(--spacing-gap-x, var(--spacing-section));
 }
 
 @utility blob-iterator-grid-2 {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: var(--spacing-section);
+  gap: var(--spacing-gap-y, var(--spacing-section)) var(--spacing-gap-x, var(--spacing-section));
 }
 
 @utility blob-iterator-grid-3 {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: var(--spacing-section);
+  gap: var(--spacing-gap-y, var(--spacing-section)) var(--spacing-gap-x, var(--spacing-section));
 }
 
 @utility blob-iterator-grid-4 {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: var(--spacing-section);
+  gap: var(--spacing-gap-y, var(--spacing-section)) var(--spacing-gap-x, var(--spacing-section));
+}
+
+@utility blob-iterator-grid-5 {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--spacing-gap-y, var(--spacing-section)) var(--spacing-gap-x, var(--spacing-section));
+}
+
+@utility blob-iterator-grid-6 {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: var(--spacing-gap-y, var(--spacing-section)) var(--spacing-gap-x, var(--spacing-section));
 }
 
 @utility blob-iterator-grid-auto {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
-  gap: var(--spacing-section);
+  gap: var(--spacing-gap-y, var(--spacing-section)) var(--spacing-gap-x, var(--spacing-section));
 }
 
 @utility blob-iterator-swiper {

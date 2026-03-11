@@ -79,7 +79,8 @@ export const BlockDataSchema = z
     // Espacement
     paddingX: z.string().optional(),
     paddingY: z.string().optional(),
-    gutter: z.string().optional(),
+    gapX: z.string().optional(),
+  gapY: z.string().optional(),
 
     // Séparateur
     separator: z.boolean().optional(),
@@ -94,9 +95,11 @@ export const BlockDataSchema = z
 
     // BlobIterator spécifique
     iteratorLayout: z.string().optional(),
-    iteratorGutter: z.string().optional(),
+    iteratorGapX: z.string().optional(),
+  iteratorGapY: z.string().optional(),
     itemFields: z.array(z.string()).optional(),
-    items: z.array(z.record(z.string(), z.unknown())).optional(),
+    // Items sont toujours des BlockNode complets (avec ID, blockType, data, innerBlocks)
+    items: z.array(z.lazy(() => BlockSchema)).optional(),
     swiperNavigation: z.boolean().optional(),
     swiperPagination: z.boolean().optional(),
     swiperAutoplay: z.boolean().optional(),

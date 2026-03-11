@@ -18,6 +18,42 @@ export async function listPages(): Promise<string[]> {
   }
 }
 
+export interface PageMeta {
+  slug: string
+  title: string
+  createdAt?: string
+  updatedAt?: string
+}
+
+export async function listPagesWithDetails(): Promise<PageMeta[]> {
+  try {
+    const keys = await kv.keys("page:*")
+    if (keys.length === 0) return []
+
+    const pages = await kv.mget(...keys)
+
+    return pages.map((pageStr, index) => {
+      const slug = keys[index].replace("page:", "")
+      if (!pageStr) return { slug, title: slug }
+
+      try {
+        const page = JSON.parse(pageStr) as PageData
+        return {
+          slug,
+          title: page?.title ?? slug,
+          createdAt: page?.meta?.createdAt,
+          updatedAt: page?.meta?.updatedAt,
+        }
+      } catch {
+        return { slug, title: slug }
+      }
+    })
+  } catch (error) {
+    console.error("Erreur lors de la liste des pages avec détails:", error)
+    return []
+  }
+}
+
 export async function listPagesWithMeta(): Promise<Array<{ slug: string; title: string }>> {
   try {
     const keys = await kv.keys("page:*")
@@ -28,7 +64,7 @@ export async function listPagesWithMeta(): Promise<Array<{ slug: string; title: 
     return pages.map((pageStr, index) => {
       const slug = keys[index].replace("page:", "")
       if (!pageStr) return { slug, title: slug }
-      
+
       try {
         const page = JSON.parse(pageStr) as PageData
         return { slug, title: page?.title ?? slug }

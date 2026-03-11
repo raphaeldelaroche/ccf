@@ -1,0 +1,541 @@
+[
+  {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567801",
+    "blockType": "blob",
+    "data": {
+      "size": "8xl",
+      "layout": "stack",
+      "align": "center",
+      "paddingX": "container-xl",
+      "paddingY": "9xl",
+      "headerPaddingX": "container-sm",
+      "eyebrow": "À propos",
+      "title": "Un nouveau consortium pour l'action climatique des entreprises.",
+      "subtitle": "Le Climate Contribution Framework (CCF) a été créé pour répondre à un manque croissant de redevabilité climatique : alors que les entreprises publient de plus en plus leurs émissions et leurs plans de transition, leur contribution globale au Net Zero mondial reste fragmentée, difficile à comparer et sous-valorisée.",
+      "showContent": "false",
+      "figureType": "none",
+      "appearance": "borderBottom"
+    },
+    "innerBlocks": []
+  },
+  {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567803",
+    "blockType": "blob",
+    "data": {
+      "size": "2xl",
+      "layout": "stack",
+      "align": "center",
+      "paddingX": "container-md",
+      "paddingY": "5xl",
+      "headerPaddingX": "container-md",
+      "eyebrow": "À l'origine de framework",
+      "title": "Co-initié par Sweep et le Mirova Research Center.",
+      "subtitle": "Ensemble, ces organisations ont combiné science du climat, recherche financière et expertise opérationnelle pour concevoir une méthodologie robuste, transparente et utilisable à grande échelle.",
+      "showContent": "true",
+      "contentType": "innerBlocks",
+      "appearance": "borderBottom",
+      "gapY": "3xl"
+    },
+    "innerBlocks": [
+      {
+        "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567803a",
+        "blockType": "blobIterator",
+        "data": {
+          "iteratorLayout": "grid-2",
+          "iteratorGapX": "md",
+          "iteratorGapY": "none",
+          "size": "md",
+          "appearance": "outlined",
+          "align": "left",
+          "paddingX": "md",
+          "paddingY": "md",
+          "itemFields": [
+            "title",
+            "subtitle",
+            "align"
+          ],
+          "items": [
+            {
+              "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567803a-item-1773239342724-q07u2qr",
+              "blockType": "blob",
+              "data": {
+                "title": "Sweep",
+                "subtitle": "Plateforme de référence pour la gestion des données de durabilité. Sweep accompagne les grandes entreprises dans la collecte, l'analyse et la communication de leurs données climatiques. Son infrastructure technique est au cœur de l'intégration du CCF dans les systèmes de reporting existants.",
+                "align": "right"
+              },
+              "innerBlocks": []
+            },
+            {
+              "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567803a-item-1773239342724-c6kvl6j",
+              "blockType": "blob",
+              "data": {
+                "title": "Mirova Research Center",
+                "subtitle": "Branche de recherche du gestionnaire d'actifs durable Mirova, le Research Center apporte l'expertise en analyse climatique, financement de la transition et investissement responsable. Il assure la crédibilité académique et financière de la méthodologie CCF."
+              },
+              "innerBlocks": []
+            }
+          ]
+        }
+      },
+      {
+        "id": "block-1773224045789-kh1orafi7",
+        "blockType": "blob",
+        "data": {
+          "size": "md",
+          "layout": "stack",
+          "align": "center",
+          "direction": "default",
+          "showContent": true,
+          "contentType": "text",
+          "contentText": "Le développement scientifique a été réalisé en collaboration avec I Care by BearingPoint et Winrock International.",
+          "paddingY": "none"
+        },
+        "innerBlocks": []
+      },
+      {
+        "id": "block-1773224105049-dzn72b95n",
+        "blockType": "blobIterator",
+        "data": {
+          "iteratorLayout": "grid-4",
+          "iteratorGapX": "xs",
+          "iteratorGapY": "md",
+          "itemFields": [
+            "title",
+            "emphasisText",
+            "eyebrow",
+            "eyebrowTheme",
+            "subtitle",
+            "markerContent",
+            "markerIcon",
+            "buttons",
+            "contentText",
+            "image"
+          ],
+          "figureType": "image",
+          "image": "/placeholder-135x400.svg",
+          "items": [
+            {
+              "id": "block-1773224105049-dzn72b95n-item-1773239342724-fyus08k",
+              "blockType": "blob",
+              "data": {
+                "title": "",
+                "emphasisText": "",
+                "eyebrow": "",
+                "eyebrowTheme": "",
+                "subtitle": "",
+                "markerContent": "",
+                "markerIcon": "",
+                "buttons": "",
+                "contentText": ""
+              },
+              "innerBlocks": []
+            },
+            {
+              "id": "block-1773224105049-dzn72b95n-item-1773239342724-juuknca",
+              "blockType": "blob",
+              "data": {
+                "title": "",
+                "emphasisText": "",
+                "eyebrow": "",
+                "eyebrowTheme": "",
+                "subtitle": "",
+                "markerContent": "",
+                "markerIcon": "",
+                "buttons": "",
+                "contentText": ""
+              },
+              "innerBlocks": []
+            }
+          ],
+          "paddingY": "none",
+          "paddingX": "5xl",
+          "gapX": "none",
+          "gapY": "none"
+        }
+      }
+    ]
+  },
+  {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567805",
+    "blockType": "blob",
+    "data": {
+      "size": "xl",
+      "layout": "stack",
+      "align": "center",
+      "paddingX": "container-lg",
+      "paddingY": "3xl",
+      "eyebrow": "Les partenaires",
+      "title": "Co-construit avec des entreprises de premier plan",
+      "subtitle": "Le cadre a été co-construit avec dix grandes entreprises représentant des secteurs variés et des positions diverses dans la chaîne de valeur. Ces entreprises ont apporté leur expertise, testé les premières versions de la méthodologie et aidé à garantir sa pertinence pour les stratégies réelles des entreprises.",
+      "showContent": "true",
+      "contentType": "innerBlocks",
+      "appearance": "borderBottom",
+      "gapY": "xl",
+      "headerPaddingX": "container-md"
+    },
+    "innerBlocks": [
+      {
+        "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567805a",
+        "blockType": "blobIterator",
+        "data": {
+          "iteratorLayout": "grid-5",
+          "iteratorGapX": "sm",
+          "iteratorGapY": "sm",
+          "figureType": "image",
+          "image": "/placeholder-135x400.svg",
+          "paddingX": "none",
+          "paddingY": "none",
+          "items": [
+            {
+              "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567805a-item-1773239342724-qrwem1s",
+              "blockType": "blob",
+              "data": {},
+              "innerBlocks": []
+            },
+            {
+              "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567805a-item-1773239342724-b496rew",
+              "blockType": "blob",
+              "data": {},
+              "innerBlocks": []
+            },
+            {
+              "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567805a-item-1773239342724-7g80mfi",
+              "blockType": "blob",
+              "data": {},
+              "innerBlocks": []
+            },
+            {
+              "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567805a-item-1773239342724-zznhlfa",
+              "blockType": "blob",
+              "data": {},
+              "innerBlocks": []
+            },
+            {
+              "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567805a-item-1773239342724-579zxpu",
+              "blockType": "blob",
+              "data": {},
+              "innerBlocks": []
+            }
+          ],
+          "itemFields": [
+            "title",
+            "emphasisText",
+            "eyebrow",
+            "eyebrowTheme",
+            "subtitle",
+            "markerContent",
+            "markerIcon",
+            "buttons",
+            "contentText"
+          ],
+          "gapX": "none",
+          "gapY": "none"
+        }
+      },
+      {
+        "id": "block-1773223754505-9sxf4mzyc",
+        "blockType": "blobIterator",
+        "data": {
+          "iteratorLayout": "grid-5",
+          "iteratorGapX": "sm",
+          "iteratorGapY": "sm",
+          "figureType": "image",
+          "image": "/placeholder-135x400.svg",
+          "paddingX": "none",
+          "paddingY": "none",
+          "items": [
+            {
+              "id": "block-1773223754505-9sxf4mzyc-item-1773239342724-s1ie942",
+              "blockType": "blob",
+              "data": {},
+              "innerBlocks": []
+            },
+            {
+              "id": "block-1773223754505-9sxf4mzyc-item-1773239342724-8epxgp5",
+              "blockType": "blob",
+              "data": {},
+              "innerBlocks": []
+            },
+            {
+              "id": "block-1773223754505-9sxf4mzyc-item-1773239342724-ayxptv5",
+              "blockType": "blob",
+              "data": {},
+              "innerBlocks": []
+            },
+            {
+              "id": "block-1773223754505-9sxf4mzyc-item-1773239342724-htvp9hr",
+              "blockType": "blob",
+              "data": {},
+              "innerBlocks": []
+            },
+            {
+              "id": "block-1773223754505-9sxf4mzyc-item-1773239342724-2dtjve4",
+              "blockType": "blob",
+              "data": {},
+              "innerBlocks": []
+            }
+          ],
+          "itemFields": [
+            "title",
+            "emphasisText",
+            "eyebrow",
+            "eyebrowTheme",
+            "subtitle",
+            "markerContent",
+            "markerIcon",
+            "buttons",
+            "contentText"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567806",
+    "blockType": "blob",
+    "data": {
+      "size": "2xl",
+      "layout": "stack",
+      "align": "center",
+      "paddingX": "container-lg",
+      "paddingY": "5xl",
+      "headerPaddingX": "container-md",
+      "eyebrow": "Gouvernance",
+      "title": "Indépendance, rigueur et transparence.",
+      "subtitle": "Le Climate Contribution Framework est piloté par une structure multicouche conçue pour garantir la crédibilité scientifique, l'indépendance méthodologique, la transparence vis-à-vis des marchés, et l'ouverture aux retours des parties prenantes.",
+      "showContent": "true",
+      "contentType": "innerBlocks",
+      "appearance": "borderBottom",
+      "gapY": "3xl"
+    },
+    "innerBlocks": [
+      {
+        "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567806a",
+        "blockType": "blobIterator",
+        "data": {
+          "iteratorLayout": "grid-3",
+          "iteratorGapX": "md",
+          "iteratorGapY": "md",
+          "size": "lg",
+          "markerType": "none",
+          "markerPosition": "top",
+          "markerStyle": "secondary",
+          "appearance": "default",
+          "align": "center",
+          "paddingX": "auto",
+          "paddingY": "auto",
+          "itemFields": [
+            "title",
+            "subtitle",
+            "contentText"
+          ],
+          "items": [
+            {
+              "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567806a-item-1773239342724-6g9icyq",
+              "blockType": "blob",
+              "data": {
+                "title": "L'équipe opérationnelle",
+                "subtitle": "",
+                "contentText": "La direction opérationnelle est partagée entre Sweep et le Mirova Research Center. Ils supervisent la stratégie, la feuille de route, les partenariats et les processus de consultation publique."
+              },
+              "innerBlocks": []
+            },
+            {
+              "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567806a-item-1773239342724-67gig6b",
+              "blockType": "blob",
+              "data": {
+                "title": "Les partenaires techniques",
+                "subtitle": "",
+                "contentText": "I Care by BearingPoint et Winrock International conduisent le développement méthodologique, en ancrant le cadre dans les dernières avancées de la science climatique."
+              },
+              "innerBlocks": []
+            },
+            {
+              "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567806a-item-1773239342724-e5gqktu",
+              "blockType": "blob",
+              "data": {
+                "title": "Le comité d'observation",
+                "subtitle": "",
+                "contentText": "Un groupe international d'experts issus d'organisations climatiques de premier plan assure une révision externe et fournit des orientations stratégiques indépendantes."
+              },
+              "innerBlocks": []
+            }
+          ],
+          "markerIcon": "star",
+          "showContent": true,
+          "contentType": "text",
+          "fontSize": "md"
+        }
+      }
+    ]
+  },
+  {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567807",
+    "blockType": "blob",
+    "data": {
+      "size": "2xl",
+      "layout": "stack",
+      "align": "center",
+      "paddingX": "container-lg",
+      "paddingY": "5xl",
+      "headerPaddingX": "container-md",
+      "eyebrow": "Comité d'observation indépendant",
+      "title": "Un groupe international d'experts pour garantir l'indépendance scientifique.",
+      "subtitle": "Le comité n'effectue pas d'évaluations d'entreprises et ne joue aucun rôle commercial dans le processus de notation.",
+      "showContent": "true",
+      "contentType": "innerBlocks",
+      "appearance": "borderBottom",
+      "gapY": "3xl"
+    },
+    "innerBlocks": [
+      {
+        "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567807a",
+        "blockType": "blobIterator",
+        "data": {
+          "iteratorLayout": "grid-3",
+          "iteratorGapX": "md",
+          "iteratorGapY": "xs",
+          "size": "md",
+          "appearance": "outlined",
+          "align": "left",
+          "paddingX": "auto",
+          "paddingY": "auto",
+          "itemFields": [
+            "title",
+            "subtitle"
+          ],
+          "items": [
+            {
+              "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567807a-item-1773239342724-ezpzjx9",
+              "blockType": "blob",
+              "data": {
+                "title": "World Business Council for Sustainable Development (WBCSD)",
+                "subtitle": "Coalition de 200+ entreprises leaders mondiales engagées dans l'accélération de la transition vers un monde durable."
+              },
+              "innerBlocks": []
+            },
+            {
+              "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567807a-item-1773239342724-8its4yg",
+              "blockType": "blob",
+              "data": {
+                "title": "Science Based Targets initiative (SBTi)",
+                "subtitle": "Le standard de référence mondial pour la validation des objectifs de réduction d'émissions alignés sur la science climatique."
+              },
+              "innerBlocks": []
+            },
+            {
+              "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567807a-item-1773239342724-774dn79",
+              "blockType": "blob",
+              "data": {
+                "title": "CERES",
+                "subtitle": "Organisation à but non lucratif américaine mobilisant les investisseurs et entreprises sur les risques et opportunités liés au développement durable."
+              },
+              "innerBlocks": []
+            },
+            {
+              "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567807a-item-1773239342724-am72bjs",
+              "blockType": "blob",
+              "data": {
+                "title": "International Carbon Reduction and Offset Alliance (ICROA)",
+                "subtitle": "Organisme de gouvernance des marchés volontaires carbone, garant des standards de qualité et d'intégrité."
+              },
+              "innerBlocks": []
+            },
+            {
+              "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567807a-item-1773239342724-q2cn5yd",
+              "blockType": "blob",
+              "data": {
+                "title": "Exponential Roadmap Initiative",
+                "subtitle": "Initiative visant à accélérer les solutions climatiques capables de réduire les émissions mondiales de moitié d'ici 2030 via des innovations exponentielles."
+              },
+              "innerBlocks": []
+            },
+            {
+              "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567807a-item-1773239342724-51q4zxg",
+              "blockType": "blob",
+              "data": {
+                "title": "World Benchmarking Alliance",
+                "subtitle": "Alliance créant des benchmarks publics gratuits pour mesurer et stimuler la contribution des entreprises aux Objectifs de Développement Durable."
+              },
+              "innerBlocks": []
+            },
+            {
+              "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567807a-item-1773239342724-upaf30e",
+              "blockType": "blob",
+              "data": {
+                "title": "Oxford Net Zero",
+                "subtitle": "Programme interdisciplinaire de l'Université d'Oxford analysant les engagements net zéro et produisant des recherches indépendantes sur leur crédibilité."
+              },
+              "innerBlocks": []
+            },
+            {
+              "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567807a-item-1773239342724-0hkgh4u",
+              "blockType": "blob",
+              "data": {
+                "title": "Stockholm Environment Institute",
+                "subtitle": "Institut de recherche environnementale indépendant, référence internationale sur la politique climatique, l'énergie durable et la gouvernance des ressources."
+              },
+              "innerBlocks": []
+            },
+            {
+              "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567807a-item-1773239342724-moj2fsh",
+              "blockType": "blob",
+              "data": {
+                "title": "GHG Management Institute",
+                "subtitle": "Institut spécialisé dans la formation et la recherche sur la mesure, la gestion et la réduction des émissions de gaz à effet de serre."
+              },
+              "innerBlocks": []
+            },
+            {
+              "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567807a-item-1773239342724-mz0j9st",
+              "blockType": "blob",
+              "data": {
+                "title": "Environmental Defense Fund (EDF)",
+                "subtitle": "Organisation environnementale américaine de référence, pionnière dans l'élaboration de solutions pragmatiques aux défis climatiques et environnementaux mondiaux."
+              },
+              "innerBlocks": []
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567808",
+    "blockType": "blob",
+    "data": {
+      "size": "2xl",
+      "layout": "stack",
+      "align": "center",
+      "paddingX": "container-lg",
+      "paddingY": "5xl",
+      "headerPaddingX": "container-md",
+      "eyebrow": "Modèle de financement",
+      "title": "Un cadre conçu pour être accessible publiquement.",
+      "subtitle": "Son développement et sa diffusion sont financés par la philanthropie et les contributions des sponsors soutenant la recherche méthodologique — sans influence sur les règles de notation ou les résultats.",
+      "showContent": "false",
+      "figureType": "none",
+      "appearance": "borderBottom"
+    },
+    "innerBlocks": []
+  },
+  {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567809",
+    "blockType": "blob",
+    "data": {
+      "size": "4xl",
+      "layout": "stack",
+      "align": "center",
+      "paddingY": "7xl",
+      "headerPaddingX": "container-md",
+      "title": "Vous souhaitez explorer votre contribution // au Net Zero mondial ?",
+      "subtitle": "Rejoignez les entreprises qui rendent visible ce que les évaluations classiques ne voient pas encore.",
+      "buttons": "[{\"label\":\"Lancer le benchmark (3 minutes)\",\"variant\":\"default\",\"theme\":\"red\",\"linkType\":\"internal\",\"internalHref\":\"\",\"opensInNewTab\":\"false\"},{\"label\":\"Télécharger le White Paper\",\"variant\":\"ghost\",\"theme\":\"red\",\"linkType\":\"internal\",\"internalHref\":\"\",\"opensInNewTab\":\"false\"}]",
+      "showContent": "false",
+      "figureType": "none",
+      "markerType": "none",
+      "appearance": "darkBackground"
+    },
+    "innerBlocks": []
+  }
+]

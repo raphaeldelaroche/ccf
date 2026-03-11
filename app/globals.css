@@ -46,6 +46,8 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
+  --container-8xl: 1280px;
+  --container-9xl: 1440px;
 }
 
 
@@ -85,26 +87,76 @@
 .blob-editor .bn-editor {
   padding-right: 0;
   border-radius: 0;
+  background: var(--color-gray-100);
 }
 
-.blob-editor .bn-editor .bn-block-group {
+.blob-editor > .bn-container > .bn-editor > .bn-block-group {
   background: var(--background);
   padding-top: 24px;
   border-left: 1px solid var(--border);
-  height: calc(100vh - 53px);
+  min-height: calc(100vh - 53px);
 }
 
-.bn-editor > .bn-block-group > [data-node-type="blockOuter"] {
-  max-width: var(--bn-content-width, 56rem); /* 4xl = 56rem */
+.blob-editor .bn-block > .bn-block-group {
+  margin-left: 0;
+}
+
+.blob-editor .bn-block-group .bn-block-group > .bn-block-outer:not([data-prev-depth-changed]):before {
+  display: none;
+}
+
+.bn-editor > .bn-block-group > .bn-block-outer {
+  position: relative;
+  max-width: var(--bn-content-width, 56rem);
   margin-left: auto;
   margin-right: auto;
   width: 100%;
 }
 
-.bn-editor > .bn-block-group > [data-node-type="blockOuter"]:has([data-block-alignment="wide"]) {
-  max-width: var(--bn-wide-width, 80rem); /* 7xl = 80rem */
+/* Extend the blockContainer's hit area into the auto-margin zone.
+   BlockNote's side-menu uses elementsFromPoint → walks UP to
+   [data-node-type="blockContainer"]. Without this, the margin is
+   a dead zone where no blockContainer is found → menu hides. */
+.bn-editor > .bn-block-group > .bn-block-outer > .bn-block {
+  position: relative;
 }
 
-.bn-editor > .bn-block-group > [data-node-type="blockOuter"]:has([data-block-alignment="full"]) {
+.bn-editor > .bn-block-group > .bn-block-outer > .bn-block::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 100%;
+  width: 50vw;
+}
+
+.bn-editor .bn-block-group .bn-block-outer:has([data-block-alignment="wide"]) {
+  max-width: var(--bn-wide-width, 80rem);
+}
+
+.bn-editor .bn-block-group .bn-block-outer:has([data-block-alignment="full"]) {
   max-width: none;
+}
+
+/* ── Section block: visual container for nested blocks ── */
+.bn-block-outer:has([data-section-block][data-section-has-content]) {
+  background: #f5f5f5;
+  border-radius: 0.75rem;
+  border: 2px dashed #d1d5db;
+  padding: 0.25rem 0.5rem 0.5rem;
+}
+
+/* Remove default BlockNote indentation for children inside a section */
+.bn-block-outer:has([data-section-block][data-section-has-content]) > .bn-block-group {
+  margin-left: 0;
+}
+
+/* ─── Block selection wave ─────────────────────────────────────── */
+@keyframes block-select-wave {
+  0%   { box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.75); }
+  100% { box-shadow: 0 0 0 12px rgba(59, 130, 246, 0); border-radius: 1rem; }
+}
+
+.block-select-wave {
+  animation: block-select-wave 0.3s ease-out forwards;
 }

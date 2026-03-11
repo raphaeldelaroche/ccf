@@ -47,11 +47,15 @@ export type BlobComposableProps = {
   /** Taille (ex: "md" ou "sm lg:xl") */
   size?: ResponsiveValue<SizeValue>
   /** Gutter - gap entre les enfants (override de size, ex: "xs sm:md") */
-  gutter?: ResponsiveValue<SizeValue>
+  gapX?: ResponsiveValue<SizeValue>; gapY?: ResponsiveValue<SizeValue>
   /** Padding inline du container (ex: "xs sm:md") */
-  paddingX?: ResponsiveValue<SizeValue>
+  paddingX?: ResponsiveValue<SizeValue | "container-sm" | "container-md" | "container-lg" | "container-xl" | "container-2xl">
   /** Padding block du container (ex: "xs sm:md") */
   paddingY?: ResponsiveValue<SizeValue>
+  /** Padding inline du header uniquement (ex: "xs sm:md" ou "container-lg") */
+  headerPaddingX?: ResponsiveValue<SizeValue | "container-sm" | "container-md" | "container-lg" | "container-xl" | "container-2xl">
+  /** Padding block du header uniquement (ex: "xs sm:md") */
+  headerPaddingY?: ResponsiveValue<SizeValue | "container-sm" | "container-md" | "container-lg" | "container-xl" | "container-2xl">
   /** Figure bleed - débordement de la figure sur le padding (ex: "full" ou "none md:full") */
   figureBleed?: ResponsiveValue<FigureBleedValue>
   /** Thème de couleur (ex: "brand", "blue", "red") */
@@ -168,7 +172,8 @@ function parseResponsiveClass(value: string, prefix: string): string {
  * Gère la syntaxe responsive Tailwind-like sur toutes les props.
  */
 export function composeBlobClasses(props: BlobComposableProps): string {
-  const { layout, direction, marker, actions, align, figureWidth, size, gutter, paddingX, paddingY, figureBleed, theme } = props
+  const { layout, direction, marker, actions, align, figureWidth, size, gapX,
+  gapY, paddingX, paddingY, headerPaddingX, headerPaddingY, figureBleed, theme } = props
   const classes: string[] = []
 
   // ── Props dépendantes : layout + direction + marker + actions ──
@@ -250,9 +255,9 @@ export function composeBlobClasses(props: BlobComposableProps): string {
       if (fwVal) {
         const validWidths = resolveValid(l, "figureWidth", context)
         if (validWidths.length === 0) {
-          console.error(
-            `[Blob@${bp}] figureWidth="${fwVal}" ignoré : layout="${l}" n'a pas de slot Figure dimensionnable.`
-          )
+          // console.error(
+          //   `[Blob@${bp}] figureWidth="${fwVal}" ignoré : layout="${l}" n'a pas de slot Figure dimensionnable.`
+          // )
         } else if (!(validWidths as readonly string[]).includes(fwVal)) {
           console.error(
             `[Blob@${bp}] figureWidth="${fwVal}" non supporté pour layout="${l}".` +
@@ -266,9 +271,13 @@ export function composeBlobClasses(props: BlobComposableProps): string {
   if (align) classes.push(parseResponsiveClass(align, "blob-align"))
   if (figureWidth) classes.push(parseResponsiveClass(figureWidth, "blob-figure-w"))
   if (size) classes.push(parseResponsiveClass(size, "blob-size"))
-  if (gutter) classes.push(parseResponsiveClass(gutter, "blob-gutter"))
+  if (gapX) classes.push(parseResponsiveClass(gapX,
+  "blob-gap-x"));
+  if (gapY) classes.push(parseResponsiveClass(gapY, "blob-gap-y"))
   if (paddingX) classes.push(parseResponsiveClass(paddingX, "blob-padding-x"))
   if (paddingY) classes.push(parseResponsiveClass(paddingY, "blob-padding-y"))
+  if (headerPaddingX) classes.push(parseResponsiveClass(headerPaddingX, "blob-header-padding-x"))
+  if (headerPaddingY) classes.push(parseResponsiveClass(headerPaddingY, "blob-header-padding-y"))
 
   // ── Figure bleed : applique la bonne classe en fonction du layout + direction ──
   if (figureBleed) {
