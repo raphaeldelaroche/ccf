@@ -338,14 +338,15 @@ export function mapFormDataToBlob(formData: BlobFormData): MappedBlobData {
           : btn.linkType === "external"
             ? btn.externalHref
             : undefined
+        const opensInNewTab = btn.opensInNewTab === true || btn.opensInNewTab === "true"
         return {
           label: btn.label || "",
           variant: toButtonVariant(btn.variant),
           theme: btn.theme,
           linkProps: {
             href: href ?? '#',
-            target: btn.opensInNewTab ? '_blank' as const : undefined,
-            rel: btn.opensInNewTab ? 'noopener noreferrer' as const : undefined,
+            target: opensInNewTab ? '_blank' as const : undefined,
+            rel: opensInNewTab ? 'noopener noreferrer' as const : undefined,
           },
         }
       })
