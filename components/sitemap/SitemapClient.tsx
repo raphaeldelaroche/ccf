@@ -36,6 +36,7 @@ import type { PageMeta } from "@/lib/page-storage"
 interface SitemapClientProps {
   pages: PageMeta[]
   navSlugs?: Set<string>
+  staticHrefs?: Record<string, string>
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -330,7 +331,7 @@ function CreatePageDialog() {
 // Main table component
 // ─────────────────────────────────────────────────────────────────────────────
 
-export function SitemapClient({ pages, navSlugs }: SitemapClientProps) {
+export function SitemapClient({ pages, navSlugs, staticHrefs = {} }: SitemapClientProps) {
   const [search, setSearch] = useState("")
 
   const filtered = pages.filter(
@@ -396,16 +397,16 @@ export function SitemapClient({ pages, navSlugs }: SitemapClientProps) {
                   <td className="px-4 py-3 font-medium">
                     <div className="flex items-center gap-2">
                       <Link
-                        href={`/${page.slug}`}
+                        href={staticHrefs[page.slug] ?? `/${page.slug}`}
                         className="hover:underline underline-offset-4"
                       >
                         {page.title}
                       </Link>
-                      {navSlugs?.has(page.slug) && (
-                        <span className="bg-primary/10 text-primary rounded px-1.5 py-0.5 text-xs font-medium">
-                          Nav
+                      {staticHrefs[page.slug] ? (
+                        <span className="bg-muted text-muted-foreground rounded px-1.5 py-0.5 text-xs font-medium">
+                          Static
                         </span>
-                      )}
+                      ) : null}
                     </div>
                   </td>
                   <td className="px-4 py-3">
@@ -421,37 +422,54 @@ export function SitemapClient({ pages, navSlugs }: SitemapClientProps) {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-1">
-                      {/* Rename */}
-                      <RenamePageDialog slug={page.slug} title={page.title} />
+                      {staticHrefs[page.slug] ? (
+                        /* Static page: view only */
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-muted-foreground h-8 w-8"
+                          asChild
+                          aria-label={`Voir « ${page.title} »`}
+                        >
+                          <Link href={staticHrefs[page.slug]}>
+                            <Eye className="h-3.5 w-3.5" />
+                          </Link>
+                        </Button>
+                      ) : (
+                        <>
+                          {/* View public page */}
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-muted-foreground h-8 w-8"
+                            asChild
+                            aria-label={`Voir « ${page.title} »`}
+                          >
+                            <Link href={`/${page.slug}`}>
+                              <Eye className="h-3.5 w-3.5" />
+                            </Link>
+                          </Button>
 
-                      {/* View public page */}
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-muted-foreground h-8 w-8"
-                        asChild
-                        aria-label={`Voir « ${page.title} »`}
-                      >
-                        <Link href={`/${page.slug}`}>
-                          <Eye className="h-3.5 w-3.5" />
-                        </Link>
-                      </Button>
+                          {/* Rename */}
+                          <RenamePageDialog slug={page.slug} title={page.title} />
 
-                      {/* Open in editor */}
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-muted-foreground h-8 w-8"
-                        asChild
-                        aria-label={`Éditer « ${page.title} »`}
-                      >
-                        <Link href={`/new-editor?page=${page.slug}`}>
-                          <LayoutTemplate className="h-3.5 w-3.5" />
-                        </Link>
-                      </Button>
+                          {/* Open in editor */}
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-muted-foreground h-8 w-8"
+                            asChild
+                            aria-label={`Éditer « ${page.title} »`}
+                          >
+                            <Link href={`/new-editor?page=${page.slug}`}>
+                              <LayoutTemplate className="h-3.5 w-3.5" />
+                            </Link>
+                          </Button>
 
-                      {/* Delete */}
-                      <DeletePageButton slug={page.slug} title={page.title} />
+                          {/* Delete */}
+                          <DeletePageButton slug={page.slug} title={page.title} />
+                        </>
+                      )}
                     </div>
                   </td>
                 </tr>
