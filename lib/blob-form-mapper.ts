@@ -358,8 +358,10 @@ export function mapFormDataToBlob(formData: BlobFormData): MappedBlobData {
   // Text content is only active when contentType is "text" (or unset, for backwards compat).
   // When contentType is "innerBlocks", the text content must not render.
   const isTextContent = !formData.contentType || formData.contentType === "text"
+  // Si contentText existe, on considère que le contenu doit être affiché (pour les items d'iterator)
+  const hasContentText = Boolean(formData.contentText && formData.contentText.trim())
   const content = {
-    enabled: showContentEnabled && isTextContent,
+    enabled: (showContentEnabled || hasContentText) && isTextContent,
     fontSize: formData.fontSize,
     text: formData.contentText || (showContentEnabled && isTextContent ? "Votre contenu ici..." : ""),
     // Expose showContent et contentType pour gérer les innerBlocks

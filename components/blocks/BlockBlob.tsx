@@ -86,7 +86,7 @@ export function BlobBlock({ data, renderInnerBlock, innerBlocks }: {
         </Blob.Header>
       )}
 
-      {content?.enabled && !innerBlocks && (
+      {content?.enabled && (!innerBlocks || innerBlocks.length === 0) && (
         <Blob.Content className={cn(appearanceConfig.contentClassName)}>
           <p>{content.text}</p>
         </Blob.Content>

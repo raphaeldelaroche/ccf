@@ -66,10 +66,10 @@ export function NewEditorToolbar({
       <div className="flex items-center gap-4">
 
         <div className="flex items-center gap-2">
-          <Link href="/sitemap">
+          <Link href="/">
             <Grid className="h-5 w-5 mr-2 text-primary" />
           </Link>
-          <div className="font-bold">Web Studio</div>
+          <div className="font-bold">Xview</div>
         </div>
 
         {/* Sélecteur de page + création */}

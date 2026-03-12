@@ -19,7 +19,7 @@ export const NAVIGATION_PAGES: Array<{ slug: string; title: string; href?: strin
   { slug: "about", title: "About" },
   { slug: "methodology", title: "Methodology" },
   { slug: "resources", title: "Resources" },
-  { slug: "contact", title: "Contact" },
+  // { slug: "contact", title: "Contact" },
   { slug: "benchmark", title: "Benchmark", href: "/benchmark" },
   { slug: "benchmark-report", title: "Benchmark Report", href: "/benchmark-report" },
 ]
