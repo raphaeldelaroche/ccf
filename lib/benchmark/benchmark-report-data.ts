@@ -30,7 +30,7 @@ export const PILLARS = [
     label: "Reduce",
     description:
       "Reduction of direct and indirect emissions (Scopes 1-2-3), transition plans, climate governance.",
-    color: "#D8E7FA", // Orange
+    color: "#D8E7FA",
   },
   {
     id: "beta",
@@ -38,7 +38,7 @@ export const PILLARS = [
     label: "Amplify",
     description:
       "Green revenues, low-carbon solutions, avoided emissions through your products and services.",
-    color: "#CFF8E3", // Blue
+    color: "#CFF8E3",
   },
   {
     id: "gamma",
@@ -46,6 +46,6 @@ export const PILLARS = [
     label: "Finance",
     description:
       "Carbon credits, climate philanthropy, investments in the transition.",
-    color: "#FCF2C8", // Green
+    color: "#FCF2C8",
   },
 ] as const;

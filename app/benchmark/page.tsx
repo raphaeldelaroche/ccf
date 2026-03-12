@@ -2,19 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { STEPS } from "./benchmark-data";
+import { STEPS } from "@/lib/benchmark/benchmark-data";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import {
   Command,
   CommandEmpty,
@@ -28,16 +20,20 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Check, ChevronsUpDown, Mail, X } from "lucide-react";
+import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { BenchmarkAside } from "@/components/benchmark/benchmark-aside";
+import { BenchmarkMobileHeader } from "@/components/benchmark/benchmark-mobile-header";
 import { BenchmarkConfirmation } from "@/components/benchmark/benchmark-confirmation";
+import { BenchmarkProgressSteps } from "@/components/benchmark/benchmark-progress-steps";
+import { BenchmarkQuestionCard } from "@/components/benchmark/benchmark-question-card";
+import { BenchmarkEmailDialog } from "@/components/benchmark/benchmark-email-dialog";
+import { BenchmarkNotification } from "@/components/benchmark/benchmark-notification";
 
 export default function BenchmarkPage() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [email, setEmail] = useState("");
   const [showEmailDialog, setShowEmailDialog] = useState(false);
   const [comboboxOpen, setComboboxOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -64,7 +60,6 @@ export default function BenchmarkPage() {
   };
 
   const handleEmailSubmit = () => {
-    if (!email) return;
     setShowEmailDialog(false);
     setSubmitted(true);
   };
@@ -88,7 +83,7 @@ export default function BenchmarkPage() {
               <ChevronsUpDown className="ml-2 h-5 w-5 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-[480px] p-0" align="center" sideOffset={8}>
+          <PopoverContent className="w-[calc(100vw-2rem)] sm:w-[480px] p-0" align="center" sideOffset={8}>
             <Command>
               <CommandInput placeholder="Search for a sector..." className="h-12 text-base" />
               <CommandList className="max-h-[350px]">
@@ -155,125 +150,46 @@ export default function BenchmarkPage() {
   };
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex flex-col lg:flex-row min-h-screen">
       <BenchmarkAside currentStep={submitted ? 2 : 1} />
+      <BenchmarkMobileHeader currentStep={submitted ? 2 : 1} />
 
-      <main className="flex-1 flex items-center justify-center p-8">
+      <main className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-8">
         {submitted ? (
           <BenchmarkConfirmation />
         ) : (
-        <div className="w-full max-w-3xl space-y-12">
-          {/* Progress indicator */}
-          <div className="flex gap-3">
-            {STEPS.map((_, index) => (
-              <div
-                key={index}
-                className={cn(
-                  "h-3 flex-1 rounded-full transition-all duration-300",
-                  index <= currentStep ? "bg-foreground" : "bg-muted"
-                )}
-              />
-            ))}
-          </div>
+          <>
+            <BenchmarkProgressSteps
+              totalSteps={STEPS.length}
+              currentStep={currentStep}
+            />
 
-          {/* Question */}
-          <div className="space-y-10">
-            <div>
-              <p className="text-base text-muted-foreground mb-3 tracking-wide">
-                Step {currentStep + 1} / {STEPS.length}
-              </p>
-              <h1 className="text-4xl font-semibold leading-tight">{step.title}</h1>
-            </div>
-
-            {/* Input */}
-            <div className="space-y-4">{renderInput()}</div>
-
-            {/* Navigation */}
-            <div className="flex gap-4 pt-4">
-              {currentStep > 0 && (
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="h-12 text-base px-8"
-                  onClick={() => setCurrentStep((prev) => prev - 1)}
-                >
-                  Back
-                </Button>
-              )}
-              <Button onClick={handleNext} disabled={!canProceed} size="lg" className="flex-1 h-12 text-base">
-                {step.nextLabel}
-              </Button>
-            </div>
-          </div>
-        </div>
-
+            <BenchmarkQuestionCard
+              currentStep={currentStep}
+              totalSteps={STEPS.length}
+              title={step.title}
+              nextLabel={step.nextLabel}
+              canProceed={canProceed}
+              onNext={handleNext}
+              onBack={currentStep > 0 ? () => setCurrentStep((prev) => prev - 1) : undefined}
+            >
+              {renderInput()}
+            </BenchmarkQuestionCard>
+          </>
         )}
 
-        {/* Email Dialog */}
-        <Dialog open={showEmailDialog} onOpenChange={setShowEmailDialog}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Receive your result</DialogTitle>
-              <DialogDescription>
-                Enter your email address to receive your climate
-                contributive potential.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-3">
-              <Label htmlFor="email" className="text-base">Email address</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="your@email.com"
-                className="h-12 text-base"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <DialogFooter>
-              <Button onClick={handleEmailSubmit} disabled={!email} size="lg" className="h-12 text-base">
-                Receive the result
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <BenchmarkEmailDialog
+          open={showEmailDialog}
+          onOpenChange={setShowEmailDialog}
+          onSubmit={handleEmailSubmit}
+        />
       </main>
 
-      {/* Fake email notification */}
       {showNotification && (
-        <div
-          className="fixed top-6 right-6 z-50 w-96 animate-in slide-in-from-right-full duration-500 cursor-pointer"
+        <BenchmarkNotification
+          onClose={() => setShowNotification(false)}
           onClick={() => router.push("/benchmark-report")}
-        >
-          <div className="bg-background border-2 border-border rounded-xl p-5 shadow-lg space-y-2">
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center shrink-0">
-                  <Mail className="w-5 h-5 text-muted-foreground" />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold">CCF Benchmark</p>
-                  <p className="text-xs text-muted-foreground">Just now</p>
-                </div>
-              </div>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowNotification(false);
-                }}
-                className="text-muted-foreground hover:text-foreground transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-            <div className="pl-[52px]">
-              <p className="text-sm font-medium">Your climate contribution potential is ready</p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Click to view your personalised result
-              </p>
-            </div>
-          </div>
-        </div>
+        />
       )}
     </div>
   );

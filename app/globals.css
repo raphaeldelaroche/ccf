@@ -160,3 +160,13 @@
 .block-select-wave {
   animation: block-select-wave 0.3s ease-out forwards;
 }
+
+/* ─── Step number pulse ─────────────────────────────────────── */
+@keyframes pulse-scale {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+}
