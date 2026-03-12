@@ -25,6 +25,7 @@ import { cn } from "@/lib/utils";
 import { BenchmarkAside } from "@/components/benchmark/benchmark-aside";
 import { BenchmarkMobileHeader } from "@/components/benchmark/benchmark-mobile-header";
 import { BenchmarkConfirmation } from "@/components/benchmark/benchmark-confirmation";
+import { BenchmarkHero } from "@/components/benchmark/benchmark-hero";
 import { BenchmarkProgressSteps } from "@/components/benchmark/benchmark-progress-steps";
 import { BenchmarkQuestionCard } from "@/components/benchmark/benchmark-question-card";
 import { BenchmarkEmailDialog } from "@/components/benchmark/benchmark-email-dialog";
@@ -77,23 +78,28 @@ export default function BenchmarkPage() {
               variant="outline"
               role="combobox"
               aria-expanded={comboboxOpen}
-              className="w-full justify-between h-12 text-base"
+              className={cn(
+                "w-full justify-between h-14 text-base font-medium transition-all duration-300",
+                selectedOption && "border-foreground/40"
+              )}
             >
-              {selectedOption ? selectedOption.label : "Select..."}
+              <span className={cn(!selectedOption && "text-muted-foreground")}>
+                {selectedOption ? selectedOption.label : "Select your sector..."}
+              </span>
               <ChevronsUpDown className="ml-2 h-5 w-5 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-[calc(100vw-2rem)] sm:w-[480px] p-0" align="center" sideOffset={8}>
+          <PopoverContent className="w-[calc(100vw-2rem)] sm:w-[520px] p-0" align="center" sideOffset={12}>
             <Command>
               <CommandInput placeholder="Search for a sector..." className="h-12 text-base" />
-              <CommandList className="max-h-[350px]">
+              <CommandList className="max-h-[400px]">
                 <CommandEmpty>No sector found.</CommandEmpty>
                 <CommandGroup>
                   {step.options.map((option) => (
                     <CommandItem
                       key={option.id}
                       value={option.label}
-                      className="py-3 text-sm"
+                      className="py-3 text-base cursor-pointer"
                       onSelect={() => {
                         setAnswers({ ...answers, [step.id]: option.id });
                         setComboboxOpen(false);
@@ -125,16 +131,16 @@ export default function BenchmarkPage() {
           onValueChange={(value) =>
             setAnswers({ ...answers, [step.id]: value })
           }
-          className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+          className="grid grid-cols-1 sm:grid-cols-2 gap-3"
         >
           {step.options.map((option) => (
             <Label
               key={option.id}
               htmlFor={option.id}
               className={cn(
-                "flex items-center justify-center text-center cursor-pointer rounded-xl border-2 p-8 text-lg font-medium transition-all duration-200 hover:border-foreground/50",
+                "flex items-center justify-center text-center cursor-pointer rounded-lg border-2 p-6 text-base font-medium transition-all duration-300 ease-out hover:border-foreground/40 hover:bg-muted/30",
                 answers[step.id] === option.id
-                  ? "border-foreground ring-2 ring-foreground/20"
+                  ? "border-foreground bg-muted/50 scale-[1.02]"
                   : "border-border"
               )}
             >
@@ -154,27 +160,36 @@ export default function BenchmarkPage() {
       <BenchmarkAside currentStep={submitted ? 2 : 1} />
       <BenchmarkMobileHeader currentStep={submitted ? 2 : 1} />
 
-      <main className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1">
         {submitted ? (
           <BenchmarkConfirmation />
         ) : (
           <>
-            <BenchmarkProgressSteps
+            <BenchmarkHero
+              currentStep={currentStep + 1}
               totalSteps={STEPS.length}
-              currentStep={currentStep}
             />
 
-            <BenchmarkQuestionCard
-              currentStep={currentStep}
-              totalSteps={STEPS.length}
-              title={step.title}
-              nextLabel={step.nextLabel}
-              canProceed={canProceed}
-              onNext={handleNext}
-              onBack={currentStep > 0 ? () => setCurrentStep((prev) => prev - 1) : undefined}
-            >
-              {renderInput()}
-            </BenchmarkQuestionCard>
+            <div className="flex items-center justify-center px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24">
+              <div className="w-full max-w-3xl space-y-10">
+                <BenchmarkProgressSteps
+                  totalSteps={STEPS.length}
+                  currentStep={currentStep}
+                />
+
+                <BenchmarkQuestionCard
+                  currentStep={currentStep}
+                  totalSteps={STEPS.length}
+                  title={step.title}
+                  nextLabel={step.nextLabel}
+                  canProceed={canProceed}
+                  onNext={handleNext}
+                  onBack={currentStep > 0 ? () => setCurrentStep((prev) => prev - 1) : undefined}
+                >
+                  {renderInput()}
+                </BenchmarkQuestionCard>
+              </div>
+            </div>
           </>
         )}
 

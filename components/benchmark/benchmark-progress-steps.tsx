@@ -7,16 +7,35 @@ interface BenchmarkProgressStepsProps {
 
 export function BenchmarkProgressSteps({ totalSteps, currentStep }: BenchmarkProgressStepsProps) {
   return (
-    <div className="flex gap-3">
-      {Array.from({ length: totalSteps }).map((_, index) => (
-        <div
-          key={index}
-          className={cn(
-            "h-3 flex-1 rounded-full transition-all duration-300",
-            index <= currentStep ? "bg-foreground" : "bg-muted"
-          )}
-        />
-      ))}
+    <div className="flex gap-2">
+      {Array.from({ length: totalSteps }).map((_, index) => {
+        const isCompleted = index < currentStep;
+        const isCurrent = index === currentStep;
+        const isUpcoming = index > currentStep;
+
+        return (
+          <div
+            key={index}
+            className="relative flex-1 h-2 rounded-full bg-muted overflow-hidden"
+          >
+            <div
+              className={cn(
+                "absolute inset-0 rounded-full transition-all duration-500 ease-out",
+                isCompleted && "bg-foreground w-full",
+                isCurrent && "bg-foreground animate-progress",
+                isUpcoming && "bg-transparent w-0"
+              )}
+              style={
+                isCurrent
+                  ? {
+                      animation: "progress-fill 0.6s ease-out forwards",
+                    }
+                  : undefined
+              }
+            />
+          </div>
+        );
+      })}
     </div>
   );
 }

@@ -25,20 +25,31 @@ export function BenchmarkQuestionCard({
   children,
 }: BenchmarkQuestionCardProps) {
   return (
-    <div className="w-full max-w-3xl space-y-12">
-      <div className="space-y-10">
-        <div>
-          <Badge variant="outline" className="mb-3">
+    <div className="w-full max-w-3xl space-y-10">
+      <div className="space-y-8">
+        <div
+          className="space-y-3 animate-in fade-in-0 slide-in-from-bottom-2"
+          style={{ animationDuration: "500ms" }}
+        >
+          <Badge variant="outline" className="text-sm font-medium">
             Step {currentStep + 1} / {totalSteps}
           </Badge>
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold leading-tight">
+          <div className="text-2xl sm:text-3xl font-semibold leading-tight">
             {title}
-          </h1>
+          </div>
         </div>
 
-        <div className="space-y-4">{children}</div>
+        <div
+          className="space-y-4 animate-in fade-in-0 slide-in-from-bottom-3"
+          style={{ animationDuration: "600ms", animationDelay: "100ms" }}
+        >
+          {children}
+        </div>
 
-        <div className="flex gap-4 pt-4">
+        <div
+          className="flex gap-3 pt-2 animate-in fade-in-0 slide-in-from-bottom-2"
+          style={{ animationDuration: "500ms", animationDelay: "200ms" }}
+        >
           {onBack && (
             <Button
               variant="outline"

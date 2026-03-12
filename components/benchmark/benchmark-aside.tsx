@@ -26,13 +26,13 @@ const STEPS = [
 // Extracted content component for reuse in both desktop sidebar and mobile sheet
 export function BenchmarkAsideContent({ currentStep }: BenchmarkAsideProps) {
   return (
-    <>
-      <div className="mb-12">
+    <div className="flex flex-col h-full">
+      <div className="mb-6">
         <h2 className="text-lg font-semibold mb-1">Climate Contribution Framework</h2>
         <p className="text-sm text-muted-foreground">CCF Benchmark</p>
       </div>
 
-      <nav className="flex-1 space-y-10 flex flex-col justify-center">
+      <nav className="mb-32 flex-1 space-y-10 flex flex-col justify-center">
         {STEPS.map((step, index) => {
           const isActive = step.number === currentStep;
           const isCompleted = step.number < currentStep;
@@ -123,14 +123,14 @@ export function BenchmarkAsideContent({ currentStep }: BenchmarkAsideProps) {
           );
         })}
       </nav>
-    </>
+    </div>
   );
 }
 
 // Desktop sidebar (hidden on mobile)
 export function BenchmarkAside({ currentStep }: BenchmarkAsideProps) {
   return (
-    <aside className="hidden lg:flex w-80 min-h-screen bg-muted/30 border-r border-border flex-col">
+    <aside className="hidden lg:flex w-80 min-h-screen bg-background border-r border-border flex-col">
       <div className="sticky top-0 p-8 h-screen">
         <BenchmarkAsideContent currentStep={currentStep} />
       </div>

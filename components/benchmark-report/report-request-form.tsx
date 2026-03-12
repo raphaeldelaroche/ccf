@@ -11,55 +11,52 @@ interface ReportRequestFormProps {
 
 export function ReportRequestForm({ onBack, onSubmit }: ReportRequestFormProps) {
   return (
-    <div className="flex items-center justify-center min-h-screen px-4 sm:px-6 lg:px-8 py-8">
-      <div className="w-full max-w-md space-y-8">
-        <div className="space-y-2">
-          <h1 className="text-2xl font-semibold">Request your full scorecard</h1>
-          <p className="text-muted-foreground text-sm">
-            A CCF expert will get back to you with your personalised scorecard.
-          </p>
-        </div>
-
-        <form className="space-y-5" onSubmit={onSubmit}>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div className="flex items-center justify-center px-4 sm:px-6 lg:px-8 py-16">
+      <div className="w-full max-w-xl">
+        <form className="space-y-6" onSubmit={onSubmit}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div className="space-y-2">
-              <Label htmlFor="firstname">First name</Label>
+              <Label htmlFor="firstname" className="text-base">First name</Label>
               <Input
                 id="firstname"
                 placeholder="Jane"
                 autoComplete="given-name"
+                className="h-12"
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="lastname">Last name</Label>
+              <Label htmlFor="lastname" className="text-base">Last name</Label>
               <Input
                 id="lastname"
                 placeholder="Smith"
                 autoComplete="family-name"
+                className="h-12"
                 required
               />
             </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="company">Company</Label>
+            <Label htmlFor="company" className="text-base">Company</Label>
             <Input
               id="company"
               placeholder="Acme Corp"
               autoComplete="organization"
+              className="h-12"
               required
             />
           </div>
-          <div className="flex gap-3 pt-2">
+          <div className="flex gap-4 pt-4">
             <Button
               type="button"
               variant="outline"
-              className="flex-1"
+              size="lg"
+              className="flex-1 h-12"
               onClick={onBack}
             >
               Back
             </Button>
-            <Button type="submit" className="flex-1">
+            <Button type="submit" size="lg" className="flex-1 h-12">
               Submit
             </Button>
           </div>
