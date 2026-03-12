@@ -331,7 +331,7 @@ function CreatePageDialog() {
 // Main table component
 // ─────────────────────────────────────────────────────────────────────────────
 
-export function SitemapClient({ pages, navSlugs, staticHrefs = {} }: SitemapClientProps) {
+export function SitemapClient({ pages, staticHrefs = {} }: SitemapClientProps) {
   const [search, setSearch] = useState("")
 
   const filtered = pages.filter(
