@@ -15,10 +15,11 @@
  * Pour la retirer : supprimer ou commenter la ligne.
  */
 export const NAVIGATION_PAGES: Array<{ slug: string; title: string; href?: string }> = [
-  { slug: "accueil", title: "Accueil" },
-  { slug: "a-propos", title: "À propos", href: "/a-propos" },
-  { slug: "methodologie", title: "Méthodologie", href: "/methodologie" },
-  { slug: "ressources", title: "Ressources", href: "/ressources" },
-  { slug: "contact", title: "Contact", href: "/contact" },
+  { slug: "home", title: "Home" },
+  { slug: "about", title: "About" },
+  { slug: "methodology", title: "Methodology" },
+  { slug: "resources", title: "Resources" },
+  { slug: "contact", title: "Contact" },
   { slug: "benchmark", title: "Benchmark", href: "/benchmark" },
+  { slug: "benchmark-report", title: "Benchmark Report", href: "/benchmark-report" },
 ]
