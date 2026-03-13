@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { STEPS } from "@/lib/benchmark/benchmark-data";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Command,

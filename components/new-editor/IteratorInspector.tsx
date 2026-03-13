@@ -10,6 +10,8 @@ import type { FormDataValue } from "@/types/editor"
 import type { BlockNode } from "@/lib/new-editor/block-types"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
+import { useUser } from "@/lib/auth/UserContext"
+import { canEditField } from "@/lib/auth/field-permissions"
 
 
 interface IteratorInspectorProps {
@@ -42,6 +44,7 @@ function parseJsonField<T>(value: unknown, fallback: T): T {
 }
 
 export function IteratorInspector({ blockId, data, onUpdate }: IteratorInspectorProps) {
+  const { user } = useUser()
   const itemFields = parseJsonField<string[]>(data.itemFields, DEFAULT_ITEM_FIELDS)
   // Les items peuvent être BlockNode (nouveau format) ou Record plat (legacy)
   const rawItems = parseJsonField<Array<BlockNode | Record<string, FormDataValue>>>(data.items, [])
@@ -60,6 +63,9 @@ export function IteratorInspector({ blockId, data, onUpdate }: IteratorInspector
       innerBlocks: []
     }
   })
+
+  // Check permissions - all fields in "Conteneur" and "Champs des items" are layout-style
+  const canEditLayoutFields = canEditField(user.role, 'select')
 
   const handleChange = (key: string, value: FormDataValue) => {
     onUpdate({ [key]: value })
@@ -92,83 +98,87 @@ export function IteratorInspector({ blockId, data, onUpdate }: IteratorInspector
 
   return (
     <div>
-      {/* Configuration du conteneur */}
-      <CollapsibleSection title="Conteneur" defaultOpen={true}>
-        <div className="pt-3 space-y-3">
-          <InspectorField
-            label="Disposition du conteneur"
-            value={(data.iteratorLayout as string) || "grid-3"}
-            type="select"
-            options={{
-              "grid-1": "Grille 1 colonne",
-              "grid-2": "Grille 2 colonnes",
-              "grid-3": "Grille 3 colonnes",
-              "grid-4": "Grille 4 colonnes",
-              "grid-5": "Grille 5 colonnes",
-              "grid-6": "Grille 6 colonnes",
-              "grid-auto": "Grille auto",
-              swiper: "Carrousel",
-            }}
-            onChange={(v) => handleChange("iteratorLayout", v)}
-          />
-          <InspectorField
-            label="Espacement horizontal"
-            value={(data.iteratorGapX as string) || "md"}
-            type="select"
-            options={{ auto: "Auto (défaut)", none: "Aucun (0)", ...arrayToOptions(SIZES) }}
-            onChange={(v) => handleChange("iteratorGapX", v)}
-          />
-          <InspectorField
-            label="Espacement vertical"
-            value={(data.iteratorGapY as string) || "md"}
-            type="select"
-            options={{ auto: "Auto (défaut)", none: "Aucun (0)", ...arrayToOptions(SIZES) }}
-            onChange={(v) => handleChange("iteratorGapY", v)}
-          />
-        </div>
-      </CollapsibleSection>
+      {/* Configuration du conteneur - Engineers only */}
+      {canEditLayoutFields && (
+        <CollapsibleSection title="Conteneur" defaultOpen={true}>
+          <div className="pt-3 space-y-3">
+            <InspectorField
+              label="Disposition du conteneur"
+              value={(data.iteratorLayout as string) || "grid-3"}
+              type="select"
+              options={{
+                "grid-1": "Grille 1 colonne",
+                "grid-2": "Grille 2 colonnes",
+                "grid-3": "Grille 3 colonnes",
+                "grid-4": "Grille 4 colonnes",
+                "grid-5": "Grille 5 colonnes",
+                "grid-6": "Grille 6 colonnes",
+                "grid-auto": "Grille auto",
+                swiper: "Carrousel",
+              }}
+              onChange={(v) => handleChange("iteratorLayout", v)}
+            />
+            <InspectorField
+              label="Espacement horizontal"
+              value={(data.iteratorGapX as string) || "md"}
+              type="select"
+              options={{ auto: "Auto (défaut)", none: "Aucun (0)", ...arrayToOptions(SIZES) }}
+              onChange={(v) => handleChange("iteratorGapX", v)}
+            />
+            <InspectorField
+              label="Espacement vertical"
+              value={(data.iteratorGapY as string) || "md"}
+              type="select"
+              options={{ auto: "Auto (défaut)", none: "Aucun (0)", ...arrayToOptions(SIZES) }}
+              onChange={(v) => handleChange("iteratorGapY", v)}
+            />
+          </div>
+        </CollapsibleSection>
+      )}
 
-      {/* Champs gérés par item */}
-      <CollapsibleSection title="Champs des items">
-        <div className="pt-3 space-y-1">
-          <p className="text-xs text-muted-foreground mb-3">
-            Sélectionnez les champs qui seront personnalisables pour chaque item.
-            Les autres champs seront partagés par tous les items.
-          </p>
-          {Object.entries(generateItemFieldsOptions()).map(([key, label]) => {
-            const isHeader = key.startsWith("section:")
+      {/* Champs gérés par item - Engineers only */}
+      {canEditLayoutFields && (
+        <CollapsibleSection title="Champs des items">
+          <div className="pt-3 space-y-1">
+            <p className="text-xs text-muted-foreground mb-3">
+              Sélectionnez les champs qui seront personnalisables pour chaque item.
+              Les autres champs seront partagés par tous les items.
+            </p>
+            {Object.entries(generateItemFieldsOptions()).map(([key, label]) => {
+              const isHeader = key.startsWith("section:")
 
-            if (isHeader) {
+              if (isHeader) {
+                return (
+                  <div
+                    key={key}
+                    className="text-xs font-semibold text-muted-foreground mt-3 mb-1 pointer-events-none select-none"
+                  >
+                    {label}
+                  </div>
+                )
+              }
+
               return (
-                <div
-                  key={key}
-                  className="text-xs font-semibold text-muted-foreground mt-3 mb-1 pointer-events-none select-none"
-                >
-                  {label}
+                <div key={key} className="flex items-center space-x-2 py-0.5">
+                  <Checkbox
+                    id={`itemField-${key}`}
+                    checked={itemFields.includes(key)}
+                    onCheckedChange={(checked) =>
+                      handleItemFieldsChange(key, checked === true)
+                    }
+                  />
+                  <Label
+                    htmlFor={`itemField-${key}`}
+                    className="text-sm font-normal cursor-pointer"
+                  >
+                    {label}
+                  </Label>
                 </div>
               )
-            }
-
-            return (
-              <div key={key} className="flex items-center space-x-2 py-0.5">
-                <Checkbox
-                  id={`itemField-${key}`}
-                  checked={itemFields.includes(key)}
-                  onCheckedChange={(checked) =>
-                    handleItemFieldsChange(key, checked === true)
-                  }
-                />
-                <Label
-                  htmlFor={`itemField-${key}`}
-                  className="text-sm font-normal cursor-pointer"
-                >
-                  {label}
-                </Label>
-              </div>
-            )
-          })}
-        </div>
-      </CollapsibleSection>
+            })}
+          </div>
+        </CollapsibleSection>
+      )}
 
       {/* Gestion des items */}
       <CollapsibleSection title="Items">

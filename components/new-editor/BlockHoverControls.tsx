@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { BlockPickerPopover } from "./BlockPickerPopover"
 import type { BlockType } from "@/lib/new-editor/block-types"
+import { useUser } from "@/lib/auth/UserContext"
 
 interface BlockHoverControlsProps {
   onMoveUp: () => void
@@ -33,6 +34,13 @@ export function BlockHoverControls({
   hasClipboard = false,
   className,
 }: BlockHoverControlsProps) {
+  const { user } = useUser()
+
+  // Hide controls for editors and reviewers
+  if (user.role === 'editor' || user.role === 'reviewer') {
+    return null
+  }
+
   return (
     <div
       className={cn(

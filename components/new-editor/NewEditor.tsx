@@ -8,13 +8,28 @@ import { NewEditorToolbar } from "./NewEditorToolbar"
 import { NewEditorSidebar, EditorView } from "./NewEditorSidebar"
 import { useEditorState } from "@/lib/new-editor/useEditorState"
 import { useKeyboardShortcuts } from "@/lib/new-editor/useKeyboardShortcuts"
+import { useUser } from "@/lib/auth/UserContext"
+import { canAccessEditor } from "@/lib/auth/permissions"
+import { AlertCircle } from "lucide-react"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
 
 interface NewEditorProps {
   initialPage?: string
 }
 
 export function NewEditor({ initialPage = "home" }: NewEditorProps) {
+  const { user } = useUser()
   const [activeView, setActiveView] = useState<EditorView>("visual")
+
+  // Force visual view for editors (they cannot access JSON)
+  const handleViewChange = (view: EditorView) => {
+    if (view === 'json' && user.role === 'editor') {
+      // Silently ignore - button is hidden anyway
+      return
+    }
+    setActiveView(view)
+  }
 
   const {
     blocks,
@@ -56,6 +71,25 @@ export function NewEditor({ initialPage = "home" }: NewEditorProps) {
     hasSelection: !!selectedBlockId,
   })
 
+  // Check if user has permission to access the editor (after all hooks)
+  if (!canAccessEditor(user.role)) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-background">
+        <div className="max-w-md text-center space-y-4">
+          <AlertCircle className="h-12 w-12 text-destructive mx-auto" />
+          <h1 className="text-2xl font-bold">Accès refusé</h1>
+          <p className="text-muted-foreground">
+            Vous n&apos;avez pas la permission d&apos;accéder à l&apos;éditeur visuel.
+            Seuls les rôles Engineer et Editor peuvent modifier les pages.
+          </p>
+          <Button asChild>
+            <Link href="/">Retour à la page d&apos;accueil</Link>
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="h-screen overflow-hidden bg-background">
       <NewEditorToolbar
@@ -79,7 +113,7 @@ export function NewEditor({ initialPage = "home" }: NewEditorProps) {
 
       <div className="flex h-[calc(100vh-3.5rem)] mt-14">
 
-        <NewEditorSidebar activeView={activeView} onViewChange={setActiveView} currentPage={currentPage} />
+        <NewEditorSidebar activeView={activeView} onViewChange={handleViewChange} currentPage={currentPage} />
 
         {activeView === "visual" ? (
           <>

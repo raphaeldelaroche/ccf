@@ -23,6 +23,10 @@ import { Label } from "@/components/ui/label"
 import { BlockPickerPopover } from "./BlockPickerPopover"
 import type { BlockType } from "@/lib/new-editor/block-types"
 import Link from "next/link"
+import { useUser } from "@/lib/auth/UserContext"
+import { canCreatePage, canEditPage, canSaveChanges } from "@/lib/auth/permissions"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { RoleBadge } from "@/components/auth/RoleBadge"
 
 interface NewEditorToolbarProps {
   currentPage: string
@@ -61,6 +65,11 @@ export function NewEditorToolbar({
   canUndo,
   canRedo,
 }: NewEditorToolbarProps) {
+  const { user } = useUser()
+  const userCanCreatePage = canCreatePage(user.role)
+  const userCanEdit = canEditPage(user.role)
+  const userCanSave = canSaveChanges(user.role)
+
   return (
     <div className="fixed top-0 left-0 right-0 h-14 border-b border-border bg-background z-50 flex items-center justify-between px-4">
       <div className="flex items-center gap-4">
@@ -87,84 +96,109 @@ export function NewEditorToolbar({
             </SelectContent>
           </Select>
 
-          <Dialog open={isCreatePageOpen} onOpenChange={setIsCreatePageOpen}>
-            <DialogTrigger asChild>
-              <Button variant="outline" size="sm">
-                <FileText className="h-4 w-4 mr-2" />
-                Nouvelle page
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Créer une nouvelle page</DialogTitle>
-                <DialogDescription>
-                  Entrez le nom de la nouvelle page. Les espaces seront remplacés par des tirets.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4 py-4">
-                <div className="space-y-2">
-                  <Label htmlFor="pageName">Nom de la page</Label>
-                  <Input
-                    id="pageName"
-                    placeholder="ma-nouvelle-page"
-                    value={newPageName}
-                    onChange={(e) => setNewPageName(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") onCreatePage()
-                    }}
-                  />
+          {userCanCreatePage && (
+            <Dialog open={isCreatePageOpen} onOpenChange={setIsCreatePageOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <FileText className="h-4 w-4 mr-2" />
+                  Nouvelle page
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Créer une nouvelle page</DialogTitle>
+                  <DialogDescription>
+                    Entrez le nom de la nouvelle page. Les espaces seront remplacés par des tirets.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="pageName">Nom de la page</Label>
+                    <Input
+                      id="pageName"
+                      placeholder="ma-nouvelle-page"
+                      value={newPageName}
+                      onChange={(e) => setNewPageName(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") onCreatePage()
+                      }}
+                    />
+                  </div>
                 </div>
-              </div>
-              <DialogFooter>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setIsCreatePageOpen(false)
-                    setNewPageName("")
-                  }}
-                >
-                  Annuler
-                </Button>
-                <Button onClick={onCreatePage} disabled={!newPageName.trim()}>
-                  Créer
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+                <DialogFooter>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setIsCreatePageOpen(false)
+                      setNewPageName("")
+                    }}
+                  >
+                    Annuler
+                  </Button>
+                  <Button onClick={onCreatePage} disabled={!newPageName.trim()}>
+                    Créer
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          )}
         </div>
 
         {/* Ajout de blocs */}
-        <div className="flex gap-2">
-          <BlockPickerPopover onSelect={onAddBlock}>
-            <Button variant="outline" size="sm">
-              <Plus className="h-4 w-4 mr-2" />
-              Ajouter un bloc
-            </Button>
-          </BlockPickerPopover>
-        </div>
+        {userCanEdit && (
+          <div className="flex gap-2">
+            <BlockPickerPopover onSelect={onAddBlock}>
+              <Button variant="outline" size="sm">
+                <Plus className="h-4 w-4 mr-2" />
+                Ajouter un bloc
+              </Button>
+            </BlockPickerPopover>
+          </div>
+        )}
 
         {/* Undo / Redo */}
-        <div className="flex gap-1">
-          <Button variant="ghost" size="icon" onClick={onUndo} disabled={!canUndo} title="Annuler (⌘Z)">
-            <Undo2 className="h-4 w-4" />
-          </Button>
-          <Button variant="ghost" size="icon" onClick={onRedo} disabled={!canRedo} title="Rétablir (⌘⇧Z)">
-            <Redo2 className="h-4 w-4" />
-          </Button>
-        </div>
+        {userCanEdit && (
+          <div className="flex gap-1">
+            <Button variant="ghost" size="icon" onClick={onUndo} disabled={!canUndo} title="Annuler (⌘Z)">
+              <Undo2 className="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={onRedo} disabled={!canRedo} title="Rétablir (⌘⇧Z)">
+              <Redo2 className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Sauvegarde */}
       <div className="flex items-center gap-4">
+        <RoleBadge />
         {lastSaved && (
           <span className="text-xs text-muted-foreground">
             Sauvegardé {lastSaved.toLocaleTimeString()}
           </span>
         )}
-        <Button onClick={onSave} disabled={isSaving} variant="default" size="sm">
-          <Save className="h-4 w-4 mr-2" />
-          {isSaving ? "Sauvegarde..." : "Sauvegarder"}
-        </Button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span>
+                <Button
+                  onClick={onSave}
+                  disabled={isSaving || !userCanSave}
+                  variant="default"
+                  size="sm"
+                >
+                  <Save className="h-4 w-4 mr-2" />
+                  {isSaving ? "Sauvegarde..." : "Sauvegarder"}
+                </Button>
+              </span>
+            </TooltipTrigger>
+            {!userCanSave && (
+              <TooltipContent>
+                <p>Vous n&apos;avez pas la permission de sauvegarder</p>
+              </TooltipContent>
+            )}
+          </Tooltip>
+        </TooltipProvider>
       </div>
     </div>
   )

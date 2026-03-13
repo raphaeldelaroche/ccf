@@ -10,6 +10,7 @@ import { z } from "zod"
 import { loadPage, savePage, deletePage } from "@/lib/page-storage"
 import { PageSchema } from "@/lib/schemas/page"
 import type { PageData } from "@/types/editor"
+import { requireEditPage, requireDeletePage, requireSaveChanges } from "@/lib/auth/api-auth"
 
 export async function GET(request: Request, { params }: { params: Promise<{ slug: string }> }) {
   try {
@@ -27,6 +28,12 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
 }
 
 export async function PUT(request: Request, { params }: { params: Promise<{ slug: string }> }) {
+  // Check permissions
+  const authCheck = requireSaveChanges(request)
+  if (!authCheck.authorized) {
+    return authCheck.error
+  }
+
   try {
     const { slug } = await params
     const body = await request.json()
@@ -73,6 +80,12 @@ export async function PUT(request: Request, { params }: { params: Promise<{ slug
 }
 
 export async function DELETE(request: Request, { params }: { params: Promise<{ slug: string }> }) {
+  // Check permissions
+  const authCheck = requireDeletePage(request)
+  if (!authCheck.authorized) {
+    return authCheck.error
+  }
+
   try {
     const { slug } = await params
     await deletePage(slug)
@@ -89,6 +102,12 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ s
  * - newSlug → migre la clé Redis vers le nouveau slug (+ met à jour le titre si fourni)
  */
 export async function PATCH(request: Request, { params }: { params: Promise<{ slug: string }> }) {
+  // Check permissions
+  const authCheck = requireEditPage(request)
+  if (!authCheck.authorized) {
+    return authCheck.error
+  }
+
   try {
     const { slug } = await params
     const body = await request.json()

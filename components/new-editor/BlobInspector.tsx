@@ -8,6 +8,8 @@ import fieldSections, { type Field } from "@/lib/blob-fields"
 import { evaluateShowIf } from "@/lib/new-editor/showif-evaluator"
 import { computeCompatibility, type OptionState } from "@/lib/use-blob-compatibility"
 import type { FormDataValue } from "@/types/editor"
+import { useUser } from "@/lib/auth/UserContext"
+import { canEditField } from "@/lib/auth/field-permissions"
 
 // Maps blob-fields types to InspectorField types
 const FIELD_TYPE_MAP: Partial<Record<string, "text" | "textarea" | "select" | "checkbox" | "icon">> = {
@@ -28,6 +30,7 @@ interface BlobInspectorProps {
 }
 
 export function BlobInspector({ data, onUpdate, hiddenFields = [] }: BlobInspectorProps) {
+  const { user } = useUser()
   const compat = useMemo(
     () => computeCompatibility(data as Record<string, unknown>),
     [data]
@@ -49,6 +52,7 @@ export function BlobInspector({ data, onUpdate, hiddenFields = [] }: BlobInspect
           value={(rawValue as string) || "[]"}
           fields={fieldDef.fields}
           onChange={(v) => onChange(v as string)}
+          parentKey={fieldKey}
         />
       )
     }
@@ -114,7 +118,27 @@ export function BlobInspector({ data, onUpdate, hiddenFields = [] }: BlobInspect
       {Object.entries(fieldSections).map(([sectionKey, section]) => {
         const visibleFields = Object.entries(section.fields).filter(([fieldKey, fieldDef]) => {
           if (hiddenFields.includes(fieldKey)) return false
-          return evaluateShowIf(fieldDef.showIf, data as unknown as Record<string, FormDataValue>)
+          if (!evaluateShowIf(fieldDef.showIf, data as unknown as Record<string, FormDataValue>)) return false
+
+          // Special handling for repeater fields (like buttons)
+          // Repeaters handle their own field-level permissions internally
+          if (fieldDef.type === "repeater") {
+            // For editors, only show repeaters that have editable fields
+            if (user.role === 'editor') {
+              // Check if at least one field in the repeater is editable
+              const hasEditableFields = Object.keys(fieldDef.fields).some(subFieldKey => {
+                const subFieldDef = fieldDef.fields[subFieldKey]
+                return canEditField(user.role, subFieldDef.type) ||
+                       (fieldKey === 'buttons' && ['label', 'internalHref', 'externalHref'].includes(subFieldKey))
+              })
+              return hasEditableFields
+            }
+            // Engineers and reviewers see all repeaters
+            return true
+          }
+
+          // Filter by role permissions - hide fields that the user cannot edit
+          return canEditField(user.role, fieldDef.type)
         })
 
         if (visibleFields.length === 0) return null

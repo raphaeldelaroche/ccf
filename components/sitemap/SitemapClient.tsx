@@ -26,8 +26,11 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
-import { Pencil, Trash2, Plus, LayoutTemplate, Eye } from "lucide-react"
+import { Trash2, Plus, Eye, Pencil, Database } from "lucide-react"
 import type { PageMeta } from "@/lib/page-storage"
+import { useUser } from "@/lib/auth/UserContext"
+import { canCreatePage, canEditPage, canDeletePage, canAccessEditor } from "@/lib/auth/permissions"
+import { api } from "@/lib/auth/api-client"
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -81,13 +84,9 @@ function RenamePageDialog({ slug, title }: { slug: string; title: string }) {
     setError(null)
     if (!newTitle.trim() || !newSlug.trim()) return
     try {
-      const res = await fetch(`/api/pages/${slug}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: newTitle.trim(),
-          ...(newSlug.trim() !== slug ? { newSlug: newSlug.trim() } : {}),
-        }),
+      const res = await api.patch(`/api/pages/${slug}`, {
+        title: newTitle.trim(),
+        ...(newSlug.trim() !== slug ? { newSlug: newSlug.trim() } : {}),
       })
       const data = await res.json()
       if (!res.ok) { setError(data?.error ?? "Erreur lors du renommage"); return }
@@ -107,7 +106,7 @@ function RenamePageDialog({ slug, title }: { slug: string; title: string }) {
           className="text-muted-foreground h-8 w-8"
           aria-label={`Renommer « ${title} »`}
         >
-          <Pencil className="h-3.5 w-3.5" />
+          <Database className="h-3.5 w-3.5" />
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
@@ -163,7 +162,7 @@ function DeletePageButton({ slug, title }: { slug: string; title: string }) {
   const [isPending, startTransition] = useTransition()
 
   async function handleDelete() {
-    await fetch(`/api/pages/${slug}`, { method: "DELETE" })
+    await api.delete(`/api/pages/${slug}`)
     startTransition(() => {
       router.refresh()
     })
@@ -242,10 +241,9 @@ function CreatePageDialog() {
     setError(null)
     if (!title.trim() || !slug.trim()) return
     try {
-      const res = await fetch("/api/pages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug: slug.trim(), title: title.trim() }),
+      const res = await api.post("/api/pages", {
+        slug: slug.trim(),
+        title: title.trim(),
       })
       const data = await res.json()
       if (!res.ok) {
@@ -332,6 +330,7 @@ function CreatePageDialog() {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function SitemapClient({ pages, staticHrefs = {} }: SitemapClientProps) {
+  const { user } = useUser()
   const [search, setSearch] = useState("")
 
   const filtered = pages.filter(
@@ -351,7 +350,7 @@ export function SitemapClient({ pages, staticHrefs = {} }: SitemapClientProps) {
           onChange={(e) => setSearch(e.target.value)}
           className="border-input bg-background placeholder:text-muted-foreground focus-visible:ring-ring h-9 w-64 rounded-md border px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1"
         />
-        <CreatePageDialog />
+        {canCreatePage(user.role) && <CreatePageDialog />}
       </div>
 
       {/* ── Table ── */}
@@ -450,24 +449,30 @@ export function SitemapClient({ pages, staticHrefs = {} }: SitemapClientProps) {
                             </Link>
                           </Button>
 
-                          {/* Rename */}
-                          <RenamePageDialog slug={page.slug} title={page.title} />
+                          {/* Rename - Only for Engineer and Editor */}
+                          {canEditPage(user.role) && (
+                            <RenamePageDialog slug={page.slug} title={page.title} />
+                          )}
 
-                          {/* Open in editor */}
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="text-muted-foreground h-8 w-8"
-                            asChild
-                            aria-label={`Éditer « ${page.title} »`}
-                          >
-                            <Link href={`/new-editor?page=${page.slug}`}>
-                              <LayoutTemplate className="h-3.5 w-3.5" />
-                            </Link>
-                          </Button>
+                          {/* Open in editor - Only if has access */}
+                          {canAccessEditor(user.role) && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="text-muted-foreground h-8 w-8"
+                              asChild
+                              aria-label={`Éditer « ${page.title} »`}
+                            >
+                              <Link href={`/new-editor?page=${page.slug}`}>
+                                <Pencil className="h-3.5 w-3.5" />
+                              </Link>
+                            </Button>
+                          )}
 
-                          {/* Delete */}
-                          <DeletePageButton slug={page.slug} title={page.title} />
+                          {/* Delete - Only for Engineer */}
+                          {canDeletePage(user.role) && (
+                            <DeletePageButton slug={page.slug} title={page.title} />
+                          )}
                         </>
                       )}
                     </div>

@@ -148,6 +148,7 @@ Un éditeur visuel simplifié et performant construit de zéro pour supporter pl
 * ✅ **Copier / Coller un bloc** : Menu contextuel (clic droit) sur chaque bloc avec actions Copier et Coller — presse-papiers interne à la session, fonctionne sur blocs racine et imbriqués
 * ✅ **Annuler / Rétablir** : Historique à 50 snapshots, raccourcis `⌘Z` / `⌘⇧Z`, boutons dans la toolbar avec état désactivé ; les éditions de texte sont groupées (debounce 800 ms) pour éviter un snapshot par frappe
 * ✅ **Système de vues** : Basculement via la sidebar entre Éditeur visuel (Canvas + Inspector) et Éditeur JSON — l'éditeur JSON affiche le JSON complet de la page dans une textarea monospace, permet l'édition directe, et applique les modifications via le bouton Appliquer ou `⌘S` ; les erreurs de parsing sont affichées inline ; l'application est enregistrée dans l'historique undo/redo
+* ✅ **Système de rôles et permissions** : L'éditeur est conscient du rôle de l'utilisateur — les champs de mise en page/style sont masqués pour les Editors, seuls les champs texte sont éditables ; la toolbar affiche le rôle courant via `RoleBadge`
 
 
 #### **Anciens éditeurs** (À retirer prochainement)
@@ -192,6 +193,43 @@ Migration vers BlockNote.js pour une expérience d'édition plus moderne :
 ### Fichiers principaux
 
 Le système Blob est organisé en plusieurs couches :
+
+#### 0. Système de rôles et permissions (`/lib/auth`)
+
+`types.ts` — Définitions et matrice de permissions
+
+* Types : `UserRole` ('engineer' | 'editor' | 'reviewer'), `Permission`, `User`
+* `ROLE_PERMISSIONS` : matrice complète `Record<UserRole, Record<Permission, boolean>>` — engineer a tous les droits, editor peut éditer les pages et sauvegarder mais pas créer/supprimer ni modifier les champs avancés, reviewer est en lecture seule
+* `ROLE_METADATA` / `ROLE_ICONS` : labels, descriptions, couleurs et emojis pour l'UI
+* `USER_ROLE_STORAGE_KEY` : clé localStorage pour la persistance du rôle
+
+`permissions.ts` — Fonctions de vérification de permissions
+
+* `hasPermission(role, permission)` — vérification générique
+* Helpers nommés : `canCreatePage`, `canEditPage`, `canDeletePage`, `canAccessEditor`, `canSaveChanges`
+* `getPermissionErrorMessage(permission)` — messages d'erreur en français
+
+`field-permissions.ts` — Permissions au niveau des champs de l'Inspector
+
+* `FieldCategory` : 'text-content' | 'media-url' | 'layout-style'
+* `getFieldCategory(fieldType)` — catégorise un champ selon son type
+* `canEditField(role, fieldType)` — engineer tout, reviewer rien, editor uniquement les champs texte
+* `canEditRepeaterField(role, parentKey, fieldKey, fieldType)` — logique spéciale pour les repeaters (boutons : label + URLs ; tooltips : tout)
+* `filterEditableFields(fields, role)` — filtre un Record de champs selon les permissions
+* `shouldShowField(role, fieldType)` et `getFieldRestrictionMessage(fieldType)` — pour l'UI
+
+`UserContext.tsx` — Context React avec persistance localStorage
+
+* `UserProvider` : fournit `user`, `setRole`, `clearRole`, `hasPermission`
+* Utilise `useSyncExternalStore` pour éviter les hydration mismatches (SSR/Client)
+* Persiste le rôle dans localStorage (`user-role`)
+
+`api-auth.ts` / `api-client.ts` — Auth pour les routes API
+
+**Composants UI** (`/components/auth`) :
+
+* `RoleBadge.tsx` — Badge affichant le rôle courant de l'utilisateur avec icône et couleur ; clic pour ouvrir la dialog de sélection
+* `RoleSelectionDialog.tsx` — Dialog (Radix) pour choisir son rôle parmi engineer / editor / reviewer avec descriptions
 
 #### 1. Configuration et données (`/lib`)
 

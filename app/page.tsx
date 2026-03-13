@@ -8,7 +8,7 @@
 
 import { listPagesWithDetails } from "@/lib/page-storage"
 import { SitemapClient } from "@/components/sitemap/SitemapClient"
-import { LayoutGrid } from "lucide-react"
+import { SitemapHeader } from "@/components/sitemap/SitemapHeader"
 import { NAVIGATION_PAGES } from "@/config/navigation"
 
 export const dynamic = "force-dynamic"
@@ -39,18 +39,7 @@ export default async function SitemapPage() {
       <div className="mx-auto max-w-6xl px-6 py-10">
 
         {/* ── Header ─────────────────────────────────────── */}
-        <header className="mb-8 flex items-start justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="bg-muted flex h-9 w-9 items-center justify-center rounded-lg">
-              <LayoutGrid className="text-muted-foreground h-4 w-4" />
-            </div>
-            <div>
-              <h1 className="text-xl font-semibold tracking-tight">Sitemap</h1>
-            </div>
-          </div>
-
-          {/* Future: bouton "Nouvelle page" */}
-        </header>
+        <SitemapHeader />
 
         {/* ── Stats (future: bloc de KPIs) ───────────────── */}
         {/* <SitemapStats pages={pages} /> */}

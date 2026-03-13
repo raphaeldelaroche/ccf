@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button"
 import { Plus, Trash2, GripVertical } from "lucide-react"
 import { iconOptions } from "@/lib/blob-fields"
 import type { FormDataValue } from "@/types/editor"
+import { useUser } from "@/lib/auth/UserContext"
+import { canEditField } from "@/lib/auth/field-permissions"
 
 interface ListItem {
   title: string
@@ -27,6 +29,7 @@ function parseItems(value: unknown): ListItem[] {
 }
 
 export function ListInspector({ data, onUpdate }: ListInspectorProps) {
+  const { user } = useUser()
   const items = parseItems(data.items)
 
   const commit = (next: ListItem[]) => onUpdate({ items: next as unknown as FormDataValue })
@@ -36,19 +39,24 @@ export function ListInspector({ data, onUpdate }: ListInspectorProps) {
   const updateItem = (i: number, field: keyof ListItem, value: string) =>
     commit(items.map((item, idx) => idx === i ? { ...item, [field]: value } : item))
 
+  // Check permissions
+  const canEditIcon = canEditField(user.role, 'icon')
+
   return (
     <div>
-      <CollapsibleSection title="Style" defaultOpen={true}>
-        <div className="pt-3 space-y-3">
-          <InspectorField
-            label="Icône"
-            value={(data.icon as string) || "arrowRight"}
-            type="icon"
-            iconOptions={iconOptions}
-            onChange={(v) => onUpdate({ icon: v })}
-          />
-        </div>
-      </CollapsibleSection>
+      {canEditIcon && (
+        <CollapsibleSection title="Style" defaultOpen={true}>
+          <div className="pt-3 space-y-3">
+            <InspectorField
+              label="Icône"
+              value={(data.icon as string) || "arrowRight"}
+              type="icon"
+              iconOptions={iconOptions}
+              onChange={(v) => onUpdate({ icon: v })}
+            />
+          </div>
+        </CollapsibleSection>
+      )}
       <CollapsibleSection title="Items" defaultOpen={true}>
         <div className="pt-3 space-y-3">
           {items.map((item, i) => (

@@ -7,6 +7,7 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
 import { listPagesWithMeta, createPage } from "@/lib/page-storage"
+import { requireCreatePage } from "@/lib/auth/api-auth"
 
 const CreatePageRequestSchema = z.object({
   slug: z
@@ -26,6 +27,12 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  // Check permissions
+  const authCheck = requireCreatePage(request)
+  if (!authCheck.authorized) {
+    return authCheck.error
+  }
+
   try {
     const body = await request.json()
 

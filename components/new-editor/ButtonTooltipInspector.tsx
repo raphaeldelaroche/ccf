@@ -6,6 +6,7 @@ import { RepeaterInspector } from "./RepeaterInspector"
 import { buttonTooltipFields } from "@/lib/button-tooltip-fields"
 import type { Field } from "@/lib/blob-fields"
 import type { FormDataValue } from "@/types/editor"
+import { useUser } from "@/lib/auth/UserContext"
 
 // Maps blob-fields types to InspectorField types
 const FIELD_TYPE_MAP: Partial<Record<string, "text" | "textarea" | "select" | "checkbox">> = {
@@ -21,6 +22,8 @@ interface ButtonTooltipInspectorProps {
 }
 
 export function ButtonTooltipInspector({ data, onUpdate }: ButtonTooltipInspectorProps) {
+  const { user } = useUser()
+
   const handleChange = (key: string, value: FormDataValue) => {
     onUpdate({ [key]: value })
   }
@@ -37,6 +40,7 @@ export function ButtonTooltipInspector({ data, onUpdate }: ButtonTooltipInspecto
           value={(rawValue as string) || "[]"}
           fields={fieldDef.fields}
           onChange={(v) => onChange(v)}
+          parentKey={fieldKey}
         />
       )
     }
@@ -68,7 +72,24 @@ export function ButtonTooltipInspector({ data, onUpdate }: ButtonTooltipInspecto
   return (
     <div>
       {Object.entries(buttonTooltipFields).map(([sectionKey, section]) => {
-        const visibleFields = Object.entries(section.fields)
+        const visibleFields = Object.entries(section.fields).filter(([, fieldDef]) => {
+          // Reviewers cannot edit anything
+          if (user.role === 'reviewer') return false
+
+          // Engineers can edit all fields
+          if (user.role === 'engineer') return true
+
+          // Editors can only edit repeater fields (tooltips section)
+          // Configuration and Style sections are blocked for editors
+          if (user.role === 'editor') {
+            // Allow repeater fields (tooltips)
+            if (fieldDef.type === 'repeater') return true
+            // Block all other fields (configuration, buttonStyle)
+            return false
+          }
+
+          return false
+        })
 
         if (visibleFields.length === 0) return null
 

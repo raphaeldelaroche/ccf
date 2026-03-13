@@ -16,7 +16,7 @@ export function ReportExplanation({ sector, beta }: ReportExplanationProps) {
           Most climate assessments are limited to your emissions. The CCF is the
           only framework that also integrates the solutions you develop and the
           climate finance you mobilise. For the {sector.toLowerCase()} sector, the
-          Solutions pillar ({beta}%) reflects the industry's key role in deploying
+          Solutions pillar ({beta}%) reflects the industry’s key role in deploying
           low-carbon mobility.
         </p>
         <p>

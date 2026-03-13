@@ -10,6 +10,8 @@ import { GripVertical, Plus, Copy, Trash2 } from "lucide-react"
 import { evaluateShowIf } from "@/lib/new-editor/showif-evaluator"
 import type { Field } from "@/lib/blob-fields"
 import { cn } from "@/lib/utils"
+import { useUser } from "@/lib/auth/UserContext"
+import { canEditRepeaterField } from "@/lib/auth/field-permissions"
 
 // Mirror of BlobInspector / ItemBlobInspector FIELD_TYPE_MAP (no compat, no sections)
 const FIELD_TYPE_MAP: Partial<Record<string, "text" | "textarea" | "select" | "checkbox">> = {
@@ -53,6 +55,8 @@ interface RepeaterInspectorProps {
   popoverWidth?: string
   /** Text shown when there are no rows */
   emptyMessage?: string
+  /** Parent field key for permission checking (e.g., "buttons") */
+  parentKey?: string
 }
 
 function parseRows(json: string): RepeaterRow[] {
@@ -105,7 +109,9 @@ export function RepeaterInspector({
   renderContent,
   popoverWidth = "w-72",
   emptyMessage,
+  parentKey,
 }: RepeaterInspectorProps) {
+  const { user } = useUser()
   const [rows, setRows] = useState<RepeaterRow[]>(() => parseRows(value))
   const [dragOver, setDragOver] = useState<number | null>(null)
   const dragIndex = useRef<number | null>(null)
@@ -230,6 +236,10 @@ export function RepeaterInspector({
                 <div className="p-3 space-y-3">
                   {Object.entries(fields).map(([key, fieldDef]) => {
                     if (!evaluateShowIf(fieldDef.showIf, row)) return null
+                    // Filter by role permissions for repeater fields
+                    if (parentKey && !canEditRepeaterField(user.role, parentKey, key, fieldDef.type)) {
+                      return null
+                    }
                     const type = FIELD_TYPE_MAP[fieldDef.type] ?? "text"
                     const options = fieldDef.type === "dropdown" ? fieldDef.options : undefined
                     const rawVal = row[key] ?? (fieldDef.type === "checkbox" ? "false" : "")

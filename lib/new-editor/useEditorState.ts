@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation"
 import { BlockNode, BlockType } from "@/lib/new-editor/block-types"
 import type { FormDataValue } from "@/types/editor"
 import { createNewBlock } from "@/lib/new-editor/block-registry"
+import { api } from "@/lib/auth/api-client"
 
 const MAX_HISTORY = 50
 
@@ -72,7 +73,7 @@ export function useEditorState(initialPage = "home") {
 
   const loadAvailablePages = useCallback(async () => {
     try {
-      const res = await fetch("/api/pages")
+      const res = await api.get("/api/pages")
       if (res.ok) {
         const data = await res.json()
         const pagesList = Array.isArray(data.pages)
@@ -92,7 +93,7 @@ export function useEditorState(initialPage = "home") {
 
   const loadPage = useCallback(async (pageName: string) => {
     try {
-      const res = await fetch(`/api/pages/${pageName}`)
+      const res = await api.get(`/api/pages/${pageName}`)
       if (!res.ok) {
         resetHistory([])
         setSelectedBlockId(null)
@@ -118,11 +119,7 @@ export function useEditorState(initialPage = "home") {
     const slug = newPageName.trim().toLowerCase().replace(/\s+/g, "-")
     const title = newPageName.trim()
     try {
-      const res = await fetch("/api/pages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug, title }),
-      })
+      const res = await api.post("/api/pages", { slug, title })
       if (!res.ok) {
         const error = await res.json()
         console.error("Failed to create page:", error)
@@ -142,11 +139,7 @@ export function useEditorState(initialPage = "home") {
   const savePage = useCallback(async () => {
     setIsSaving(true)
     try {
-      const res = await fetch(`/api/pages/${currentPage}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ blocks }),
-      })
+      const res = await api.put(`/api/pages/${currentPage}`, { blocks })
       if (!res.ok) {
         const error = await res.json()
         console.error("Failed to save page:", error)

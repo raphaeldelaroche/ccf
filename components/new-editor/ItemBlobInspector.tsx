@@ -8,6 +8,8 @@ import fieldSections, { type Field } from "@/lib/blob-fields"
 import { evaluateShowIf } from "@/lib/new-editor/showif-evaluator"
 import type { FormDataValue } from "@/types/editor"
 import { computeCompatibility, type OptionState } from "@/lib/use-blob-compatibility"
+import { useUser } from "@/lib/auth/UserContext"
+import { canEditField } from "@/lib/auth/field-permissions"
 
 // Mirror of BlobInspector's FIELD_TYPE_MAP
 const FIELD_TYPE_MAP: Partial<Record<string, "text" | "textarea" | "select" | "checkbox" | "icon">> = {
@@ -41,6 +43,8 @@ interface ItemBlobInspectorProps {
  * field is per-item.
  */
 export function ItemBlobInspector({ item, sharedData, itemFields, onUpdate }: ItemBlobInspectorProps) {
+  const { user } = useUser()
+
   // Merged context for showIf evaluation and compat computation
   const mergedContext = useMemo(
     () => ({ ...sharedData, ...item }),
@@ -64,6 +68,7 @@ export function ItemBlobInspector({ item, sharedData, itemFields, onUpdate }: It
           value={(rawValue as string) || "[]"}
           fields={fieldDef.fields}
           onChange={(v) => onUpdate(fieldKey, v)}
+          parentKey={fieldKey}
         />
       )
     }
@@ -136,7 +141,9 @@ export function ItemBlobInspector({ item, sharedData, itemFields, onUpdate }: It
             // Only show fields that are managed per-item
             if (!itemFields.includes(fieldKey)) return false
             // Evaluate showIf in merged context
-            return evaluateShowIf(fieldDef.showIf, mergedContext as unknown as Record<string, FormDataValue>)
+            if (!evaluateShowIf(fieldDef.showIf, mergedContext as unknown as Record<string, FormDataValue>)) return false
+            // Filter by role permissions - hide fields that the user cannot edit
+            return canEditField(user.role, fieldDef.type)
           })
 
           if (visibleFields.length === 0) return null

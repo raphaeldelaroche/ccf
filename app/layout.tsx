@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Outfit, Mulish, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
+import { UserProvider } from "@/lib/auth/UserContext";
+import { RoleSelectionDialog } from "@/components/auth/RoleSelectionDialog";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -32,7 +34,10 @@ export default function RootLayout({
       <body
         className={`${outfit.variable} ${mulish.variable} ${jakarta.variable} antialiased`}
       >
-        {children}
+        <UserProvider>
+          <RoleSelectionDialog />
+          {children}
+        </UserProvider>
       </body>
     </html>
   );
