@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useContext, useState, useSyncExternalStore } from 'react'
+import React, { createContext, useContext, useEffect, useState, useSyncExternalStore } from 'react'
 import type { User, UserRole, Permission } from './types'
 import { ROLE_PERMISSIONS, USER_ROLE_STORAGE_KEY } from './types'
 
@@ -39,6 +39,11 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   // Use useSyncExternalStore to avoid hydration mismatch
   const storedRole = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
   const [user, setUser] = useState<User>({ role: storedRole })
+
+  // Sync localStorage role into state after hydration
+  useEffect(() => {
+    setUser({ role: storedRole })
+  }, [storedRole])
 
   // Save role to localStorage when it changes
   const setRole = (role: UserRole) => {
