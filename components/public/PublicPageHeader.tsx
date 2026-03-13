@@ -2,9 +2,11 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { Menu, X, LayoutTemplate } from "lucide-react"
+import { Menu, X, Pencil } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { useUser } from "@/lib/auth/UserContext"
+import { canAccessEditor } from "@/lib/auth/permissions"
 
 interface PublicPageHeaderProps {
   currentSlug?: string
@@ -13,6 +15,7 @@ interface PublicPageHeaderProps {
 
 export function PublicPageHeader({ currentSlug, pages = [] }: PublicPageHeaderProps) {
   const [isOpen, setIsOpen] = useState(false)
+  const { user } = useUser();
 
   return (
     <>
@@ -100,13 +103,13 @@ export function PublicPageHeader({ currentSlug, pages = [] }: PublicPageHeaderPr
       <div className="h-[57px]" />
 
       {/* Bouton flottant → éditeur */}
-      {currentSlug && (
+      {currentSlug && canAccessEditor(user.role) && (
         <Link
           href={`/new-editor?page=${currentSlug}`}
           className="fixed bottom-6 right-6 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-background text-foreground shadow-lg border hover:bg-muted transition-colors"
           aria-label="Modifier cette page"
         >
-          <LayoutTemplate className="h-5 w-5" />
+          <Pencil className="h-5 w-5" />
         </Link>
       )}
     </>
