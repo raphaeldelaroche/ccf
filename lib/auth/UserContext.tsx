@@ -41,7 +41,11 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User>({ role: storedRole })
 
   // Sync localStorage role into state after hydration
+  // This is intentional: we're synchronizing an external store (localStorage) with React state.
+  // The warning about cascading renders is not applicable here as this is the recommended
+  // pattern for syncing external state sources. See: https://react.dev/reference/react/useSyncExternalStore
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setUser({ role: storedRole })
   }, [storedRole])
 

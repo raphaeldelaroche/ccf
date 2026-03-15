@@ -6,6 +6,8 @@ import { BlockNode, BlockType } from "@/lib/new-editor/block-types"
 import type { FormDataValue } from "@/types/editor"
 import { createNewBlock } from "@/lib/new-editor/block-registry"
 import { api } from "@/lib/auth/api-client"
+import { migrateResponsiveFields, migrateXsToBaseAll } from "@/lib/new-editor/migrate-responsive-fields"
+import { refreshBlockRecursive, type RefreshMode } from "@/lib/new-editor/refresh-helpers"
 
 const MAX_HISTORY = 50
 
@@ -57,6 +59,9 @@ export function useEditorState(initialPage = "home") {
   const [isSaving, setIsSaving] = useState(false)
   const [lastSaved, setLastSaved] = useState<Date | null>(null)
 
+  // ─── Preview breakpoint ─────────────────────────────────────────────────
+  const [previewBreakpoint, setPreviewBreakpoint] = useState<'base' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'auto'>('auto')
+
   // ─── Dialog état ────────────────────────────────────────────────────────
   const [isCreatePageOpen, setIsCreatePageOpen] = useState(false)
   const [newPageName, setNewPageName] = useState("")
@@ -100,7 +105,14 @@ export function useEditorState(initialPage = "home") {
         return
       }
       const data = await res.json()
-      resetHistory(data.blocks || [])
+
+      // Phase 1: Extract non-responsive fields from responsive.base to data root
+      let migratedBlocks = migrateResponsiveFields(data.blocks || [])
+
+      // Phase 2: Rename xs → base in responsive object
+      migratedBlocks = migrateXsToBaseAll(migratedBlocks)
+
+      resetHistory(migratedBlocks)
       setSelectedBlockId(null)
     } catch (error) {
       console.error("Failed to load page:", error)
@@ -514,6 +526,40 @@ export function useEditorState(initialPage = "home") {
     [clipboardData, commit]
   )
 
+  const handleRefreshBlock = useCallback((blockId: string, mode: RefreshMode = 'clean') => {
+    commit((prev) => {
+      const refreshIn = (blocks: BlockNode[]): BlockNode[] =>
+        blocks.map((block) => {
+          if (block.id === blockId) {
+            // Rafraîchir ce bloc (récursivement avec innerBlocks)
+            return refreshBlockRecursive(block, mode)
+          }
+
+          // Rafraîchir récursivement dans les innerBlocks normaux
+          const updatedBlock = block.innerBlocks
+            ? { ...block, innerBlocks: refreshIn(block.innerBlocks) }
+            : block
+
+          // Rafraîchir aussi dans les innerBlocks des items d'iterator
+          if (updatedBlock.blockType === 'blobIterator' && updatedBlock.data.items) {
+            const items = updatedBlock.data.items as unknown as BlockNode[]
+            const updatedItems = items.map((item) =>
+              item.innerBlocks
+                ? { ...item, innerBlocks: refreshIn(item.innerBlocks) }
+                : item
+            )
+            return {
+              ...updatedBlock,
+              data: { ...updatedBlock.data, items: updatedItems as unknown as FormDataValue }
+            }
+          }
+
+          return updatedBlock
+        })
+      return refreshIn(prev)
+    })
+  }, [commit])
+
   // ─── Undo / Redo ─────────────────────────────────────────────────────────
 
   const handleUndo = useCallback(() => {
@@ -615,6 +661,7 @@ export function useEditorState(initialPage = "home") {
     handleCopyBlock,
     handlePasteBlock,
     handleInsertFromClipboard,
+    handleRefreshBlock,
     hasClipboard: clipboardData !== null,
     // Undo / Redo
     handleUndo,
@@ -623,5 +670,8 @@ export function useEditorState(initialPage = "home") {
     canRedo,
     // JSON editor
     handleSetBlocks,
+    // Preview
+    previewBreakpoint,
+    setPreviewBreakpoint,
   }
 }

@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react"
 import { createPortal } from "react-dom"
 import { BlockNode, BlockType } from "@/lib/new-editor/block-types"
 import { BlockPickerPopover } from "./BlockPickerPopover"
+import { usePreview } from "./PreviewContext"
 import { Blob } from "@/components/blob/blob"
 import { BlobIterator } from "@/components/blob/blob-iterator"
 import { Eyebrow } from "@/components/blob/eyebrow"
@@ -17,7 +18,7 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu"
-import { Copy, Clipboard } from "lucide-react"
+import { Copy, Clipboard, Code } from "lucide-react"
 import { mapFormDataToBlob } from "@/lib/blob-form-mapper"
 import { mapIteratorFormData } from "@/lib/blob-iterator-mapper"
 import { mapButtonTooltipFormData } from "@/lib/button-tooltip-mapper"
@@ -45,6 +46,7 @@ interface BlockRendererProps {
   onDelete: () => void
   onCopy: () => void
   onPaste: () => void
+  onRefresh?: (mode: import("@/lib/new-editor/refresh-helpers").RefreshMode) => void
   onInsertBelow?: () => void
   onInsertBelowChild?: (parentId: string, position: number) => void
   hasClipboard: boolean
@@ -58,6 +60,7 @@ interface BlockRendererProps {
   onDeleteChild?: (childId: string) => void
   onCopyChild?: (childId: string) => void
   onPasteChild?: (childId: string) => void
+  onRefreshChild?: (childId: string, mode: import("@/lib/new-editor/refresh-helpers").RefreshMode) => void
 }
 
 export function BlockRenderer({
@@ -72,6 +75,7 @@ export function BlockRenderer({
   onDelete,
   onCopy,
   onPaste,
+  onRefresh,
   onInsertBelow,
   onInsertBelowChild,
   hasClipboard,
@@ -84,7 +88,10 @@ export function BlockRenderer({
   onDeleteChild,
   onCopyChild,
   onPasteChild,
+  onRefreshChild,
 }: BlockRendererProps) {
+  const { isPreviewMode } = usePreview()
+
   // Rendu du bloc selon son type
   const renderBlockContent = () => {
     if (block.blockType === "blob") {
@@ -119,6 +126,7 @@ export function BlockRenderer({
           onDelete={() => onDeleteChild?.(childBlock.id)}
           onCopy={() => onCopyChild?.(childBlock.id)}
           onPaste={() => onPasteChild?.(childBlock.id)}
+          onRefresh={(mode) => onRefreshChild?.(childBlock.id, mode)}
           onInsertBelow={() => onInsertBelowChild?.(block.id, index + 1)}
           onInsertBelowChild={onInsertBelowChild}
           hasClipboard={hasClipboard}
@@ -131,11 +139,12 @@ export function BlockRenderer({
           onDeleteChild={onDeleteChild}
           onCopyChild={onCopyChild}
           onPasteChild={onPasteChild}
+          onRefreshChild={onRefreshChild}
         />
       ))
 
       return (
-        <Blob {...blobProps} className={cn(appearanceConfig.blobClassName, blobProps.className)}>
+        <Blob {...blobProps} useContainerQueries={isPreviewMode} className={cn(appearanceConfig.blobClassName, blobProps.className)}>
           {header && (header.eyebrow || header.title || header.subtitle) && (
             <Blob.Header className={cn(appearanceConfig.headerClassName)}>
               {header.eyebrow && (
@@ -266,6 +275,7 @@ export function BlockRenderer({
                 onDelete={() => onDeleteChild?.(childBlock.id)}
                 onCopy={() => onCopyChild?.(childBlock.id)}
                 onPaste={() => onPasteChild?.(childBlock.id)}
+                onRefresh={(mode) => onRefreshChild?.(childBlock.id, mode)}
                 onInsertBelow={() => onInsertBelowChild?.(itemId, childIndex + 1)}
                 onInsertBelowChild={onInsertBelowChild}
                 hasClipboard={hasClipboard}
@@ -278,6 +288,7 @@ export function BlockRenderer({
                 onDeleteChild={onDeleteChild}
                 onCopyChild={onCopyChild}
                 onPasteChild={onPasteChild}
+                onRefreshChild={onRefreshChild}
               />
             ))
 
@@ -285,6 +296,7 @@ export function BlockRenderer({
               <Blob
                 key={index}
                 {...mergedBlobProps}
+                useContainerQueries={isPreviewMode}
                 className={cn(itemAppearanceConfig.blobClassName, mergedBlobProps.className)}
               >
                 {header && (header.eyebrow || header.title || header.subtitle) && (
@@ -424,6 +436,16 @@ export function BlockRenderer({
     prevSelected.current = isSelected
   }, [isSelected])
 
+  // Fonction pour copier le JSON du bloc
+  const handleCopyJSON = async () => {
+    try {
+      const jsonString = JSON.stringify(block, null, 2)
+      await navigator.clipboard.writeText(jsonString)
+    } catch (err) {
+      console.error('Failed to copy JSON:', err)
+    }
+  }
+
   return (
     <ContextMenu>
       <ContextMenuTrigger asChild>
@@ -453,12 +475,14 @@ export function BlockRenderer({
             document.body
           )}
           <BlockHoverControls
+            block={block}
             onMoveUp={onMoveUp}
             onMoveDown={onMoveDown}
             onAddBelow={onAddBelow}
             onInsertBelow={onInsertBelow}
             onDuplicate={onDuplicate}
             onDelete={onDelete}
+            onRefresh={onRefresh}
             canMoveUp={canMoveUp}
             canMoveDown={canMoveDown}
             isVisible={isHovered}
@@ -471,6 +495,10 @@ export function BlockRenderer({
         <ContextMenuItem onClick={onCopy}>
           <Copy className="h-4 w-4 mr-2" />
           Copier
+        </ContextMenuItem>
+        <ContextMenuItem onClick={handleCopyJSON}>
+          <Code className="h-4 w-4 mr-2" />
+          Copier JSON
         </ContextMenuItem>
         <ContextMenuItem onClick={onPaste} disabled={!hasClipboard}>
           <Clipboard className="h-4 w-4 mr-2" />

@@ -6,11 +6,32 @@
  * seuls les champs listés dans itemFields sont gérés individuellement.
  */
 
-import type { BlobComposableProps } from "@/lib/blob-compose"
+import type { BlobComposableProps, ResponsiveProps, ResponsiveBreakpointProps } from "@/lib/blob-compose"
+import { convertResponsiveToString } from "@/lib/blob-compose"
 import { mapFormDataToBlob, type BlobFormData, type MappedBlobData } from "@/lib/blob-form-mapper"
 import type { SwiperOptions } from "swiper/types"
 import type { BlockNode } from "@/lib/new-editor/block-types"
 import type { FormDataValue } from "@/types/editor"
+
+/**
+ * Helper function to assign form values to responsive breakpoint props in a type-safe way.
+ * Uses type assertion to convert FormData values to the specific union types
+ * expected by ResponsiveBreakpointProps (e.g., Layout, Direction, SizeValue, etc.)
+ */
+function setResponsiveValue<K extends keyof ResponsiveBreakpointProps>(
+  responsive: ResponsiveProps,
+  breakpoint: 'base',
+  key: K,
+  value: FormDataValue | undefined
+): void {
+  if (!value) return
+  if (!responsive[breakpoint]) {
+    responsive[breakpoint] = {}
+  }
+  // Type assertion: we trust that form values match the expected union types
+  // FormDataValue can be string | boolean | arrays, but responsive fields are typically strings
+  responsive[breakpoint]![key] = value as ResponsiveBreakpointProps[K]
+}
 
 export interface BlobIteratorFormData {
   // Iterator container config
@@ -34,17 +55,20 @@ export interface BlobIteratorFormData {
   markerPosition?: string
   appearance?: string
 
+  // Responsive breakpoint values (from BreakpointDialog)
+  responsive?: ResponsiveProps
+
   // Items (array of BlockNode) - toujours des BlockNode complets maintenant
   items?: BlockNode[]
 
   // Allow any other FormDataValue
-  [key: string]: FormDataValue | BlockNode[] | undefined
+  [key: string]: FormDataValue | BlockNode[] | ResponsiveProps | undefined
 }
 
 export interface MappedIteratorData {
-  // Props pour BlobIterator
+  // Props pour BlobIterator (always strings in final output)
   iteratorLayout: string
-  iteratorGapX: string;
+  iteratorGapX: string
   iteratorGapY: string
   swiperOptions?: Partial<SwiperOptions>
 
@@ -74,62 +98,58 @@ function buildSharedBlobProps(formData: BlobIteratorFormData): {
   blobProps: Partial<BlobComposableProps>
   appearance?: string
 } {
-  const sharedProps: Partial<BlobComposableProps> = {}
   const itemFields = parseJsonField<string[]>(formData.itemFields, [])
 
   // Helper: un champ est partagé s'il n'est pas dans itemFields
   const isShared = (key: string) => !itemFields.includes(key)
 
-  // Layout props
-  if (isShared("size") && formData.size) {
-    sharedProps.size = formData.size as BlobComposableProps["size"]
+  // Build responsive object from base values + responsive overrides
+  const responsive: ResponsiveProps = {
+    base: {},
+    ...(formData.responsive || {}),
   }
 
-  if (isShared("theme") && formData.theme) {
-    sharedProps.theme = formData.theme
+  // Add base values to base breakpoint if fields are shared
+  if (isShared("size")) {
+    setResponsiveValue(responsive, 'base', 'size', formData.size as FormDataValue)
+  }
+  if (isShared("layout")) {
+    setResponsiveValue(responsive, 'base', 'layout', formData.layout as FormDataValue)
+  }
+  if (isShared("direction")) {
+    setResponsiveValue(responsive, 'base', 'direction', formData.direction as FormDataValue)
+  }
+  if (isShared("align")) {
+    setResponsiveValue(responsive, 'base', 'align', formData.align as FormDataValue)
+  }
+  if (isShared("markerPosition")) {
+    setResponsiveValue(responsive, 'base', 'marker', formData.markerPosition as FormDataValue)
+  }
+  if (isShared("paddingX")) {
+    setResponsiveValue(responsive, 'base', 'paddingX', formData.paddingX as FormDataValue)
+  }
+  if (isShared("paddingY")) {
+    setResponsiveValue(responsive, 'base', 'paddingY', formData.paddingY as FormDataValue)
+  }
+  if (isShared("gapX")) {
+    setResponsiveValue(responsive, 'base', 'gapX', formData.gapX as FormDataValue)
+  }
+  if (isShared("gapY")) {
+    setResponsiveValue(responsive, 'base', 'gapY', formData.gapY as FormDataValue)
+  }
+  if (isShared("figureWidth")) {
+    setResponsiveValue(responsive, 'base', 'figureWidth', formData.figureWidth as FormDataValue)
+  }
+  if (isShared("figureBleed")) {
+    setResponsiveValue(responsive, 'base', 'figureBleed', formData.figureBleed as FormDataValue)
+  }
+  if (isShared("actions")) {
+    setResponsiveValue(responsive, 'base', 'actions', formData.actions as FormDataValue)
   }
 
-  if (isShared("layout") && formData.layout) {
-    sharedProps.layout = formData.layout as BlobComposableProps["layout"]
-  }
-
-  if (isShared("direction") && formData.direction) {
-    sharedProps.direction = formData.direction as BlobComposableProps["direction"]
-  }
-
-  if (isShared("align") && formData.align) {
-    sharedProps.align = formData.align as BlobComposableProps["align"]
-  }
-
-  if (isShared("markerPosition") && formData.markerPosition) {
-    sharedProps.marker = formData.markerPosition as BlobComposableProps["marker"]
-  }
-
-  // Spacing props
-  if (isShared("paddingX") && formData.paddingX) {
-    sharedProps.paddingX = formData.paddingX as string
-  }
-
-  if (isShared("paddingY") && formData.paddingY) {
-    sharedProps.paddingY = formData.paddingY as string
-  }
-
-  if (isShared("gapX") && formData.gapX) {
-    sharedProps.gapX = formData.gapX as string
-  }
-
-  // Figure props
-  if (isShared("figureWidth") && formData.figureWidth) {
-    sharedProps.figureWidth = formData.figureWidth as string
-  }
-
-  if (isShared("figureBleed") && formData.figureBleed) {
-    sharedProps.figureBleed = formData.figureBleed as string
-  }
-
-  // Actions position
-  if (isShared("actions") && formData.actions) {
-    sharedProps.actions = formData.actions as BlobComposableProps["actions"]
+  const sharedProps: Partial<BlobComposableProps> = {
+    responsive,
+    theme: isShared("theme") ? formData.theme : undefined,
   }
 
   return {
@@ -172,8 +192,8 @@ function buildSwiperOptions(formData: BlobIteratorFormData): Partial<SwiperOptio
 
 /**
  * Mappe un item individuel (BlockNode) en tenant compte des champs par item.
- * Si un champ est dans itemFields → valeur de l'item.
- * Sinon → valeur partagée (depuis formData global).
+ * Si un champ est dans itemFields → valeur de l'item (peut inclure responsive).
+ * Sinon → valeur partagée (depuis sharedProps).
  * Préserve les innerBlocks et l'ID de l'item.
  */
 function mapIteratorItem(
@@ -187,21 +207,28 @@ function mapIteratorItem(
   const actualData = item.data;
   const itemFields = parseJsonField<string[]>(formData.itemFields, [])
 
-  // Helper: si le champ est dans itemFields, utiliser la valeur de l'item, sinon la valeur globale
-  const getFieldValue = (fieldKey: string): FormDataValue | undefined => {
-    if (itemFields.includes(fieldKey)) {
-      return actualData[fieldKey]
-    }
-    const value = formData[fieldKey]
-    // Si c'est le champ items qui contient des BlockNode, on ne le retourne pas ici
-    if (fieldKey === "items") return undefined
-    return value as FormDataValue | undefined
+  // Build responsive object for this item
+  const globalResponsive = formData.responsive as ResponsiveProps | undefined
+  const itemResponsive = actualData.responsive as ResponsiveProps | undefined
+
+  // Merge global responsive with item responsive (item overrides global)
+  const mergedResponsive: ResponsiveProps = {
+    base: {},
+    ...globalResponsive,
+    ...itemResponsive,
   }
 
-  // Convertir actualData en BlobFormData
-  const itemFormData: BlobFormData = {
-    ...actualData,
+  // Helper: si le champ est dans itemFields, utiliser la valeur de l'item
+  // Sinon, utiliser la valeur globale
+  const getFieldValue = (fieldKey: string): FormDataValue | undefined => {
+    if (itemFields.includes(fieldKey)) {
+      return actualData[fieldKey] as FormDataValue | undefined
+    }
+    return formData[fieldKey] as FormDataValue | undefined
+  }
 
+  // Convertir en BlobFormData avec les valeurs et le responsive object
+  const itemFormData: BlobFormData = {
     // Header fields
     title: getFieldValue("title") as string | undefined,
     emphasisText: getFieldValue("emphasisText") as string | undefined,
@@ -245,7 +272,8 @@ function mapIteratorItem(
     // Spacing fields
     paddingX: getFieldValue("paddingX") as string | undefined,
     paddingY: getFieldValue("paddingY") as string | undefined,
-    gapX: getFieldValue("gapX") as string | undefined, gapY: getFieldValue("gapY") as string | undefined,
+    gapX: getFieldValue("gapX") as string | undefined,
+    gapY: getFieldValue("gapY") as string | undefined,
 
     // Style fields
     theme: getFieldValue("theme") as string | undefined,
@@ -264,6 +292,9 @@ function mapIteratorItem(
     // SEO fields
     titleAs: getFieldValue("titleAs") as string | undefined,
     eyebrowAs: getFieldValue("eyebrowAs") as string | undefined,
+
+    // Responsive object (merged global + item)
+    responsive: mergedResponsive,
   }
 
   // Utiliser le mapper blob existant et préserver les innerBlocks et l'ID
@@ -288,10 +319,27 @@ export function mapIteratorFormData(formData: BlobIteratorFormData): MappedItera
   const rawItems = parseJsonField<BlockNode[]>(formData.items, [])
   const items = rawItems.map((item) => mapIteratorItem(item, sharedBlobProps, formData))
 
+  // Convert responsive container props to strings (if responsive mode is active)
+  const responsive = formData.responsive as ResponsiveProps | undefined
+
+  // Helper to get container prop as string (responsive or simple)
+  const getContainerPropString = (key: "iteratorLayout" | "iteratorGapX" | "iteratorGapY", fallback: string): string => {
+    if (responsive) {
+      // Try to convert responsive object to string
+      const responsiveString = convertResponsiveToString(responsive, key)
+      if (responsiveString) {
+        return responsiveString
+      }
+    }
+
+    // Fallback to simple string (backward compatibility)
+    return formData[key] as string || fallback
+  }
+
   return {
-    iteratorLayout: formData.iteratorLayout || "grid-auto",
-    iteratorGapX: formData.iteratorGapX ?? "md",
-    iteratorGapY: formData.iteratorGapY ?? "md",
+    iteratorLayout: getContainerPropString("iteratorLayout", "grid-auto"),
+    iteratorGapX: getContainerPropString("iteratorGapX", "md"),
+    iteratorGapY: getContainerPropString("iteratorGapY", "md"),
     swiperOptions,
     sharedBlobProps,
     sharedAppearance,

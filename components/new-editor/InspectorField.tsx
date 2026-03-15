@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils"
 import type { OptionState } from "@/lib/use-blob-compatibility"
 import type { IconData } from "@/lib/blob-fields"
 import { renderIconObject } from "@/lib/render-icon"
+import { getBreakpointValue, type Breakpoint, type ResponsiveProps } from "@/lib/responsive-utils"
 
 interface InspectorFieldProps {
   label: string
@@ -33,6 +34,12 @@ interface InspectorFieldProps {
   disabled?: boolean
   disabledReason?: string
   onChange: (value: string | boolean) => void
+  /** Current breakpoint being edited (for responsive mode) */
+  currentBreakpoint?: Breakpoint
+  /** Responsive values object (for determining inherited values) */
+  responsiveValues?: ResponsiveProps
+  /** Field key (needed for responsive value lookup) */
+  fieldKey?: string
 }
 
 export function InspectorField({
@@ -45,20 +52,46 @@ export function InspectorField({
   disabled = false,
   disabledReason,
   onChange,
+  currentBreakpoint,
+  responsiveValues,
+  fieldKey,
 }: InspectorFieldProps) {
-  // Local state keeps the input controlled and avoids cursor-jump on re-renders
-  const [localValue, setLocalValue] = useState(value)
+  // Compute responsive value and inheritance info
+  const { effectiveValue, inheritedFrom } = React.useMemo(() => {
+    if (currentBreakpoint && fieldKey && responsiveValues) {
+      const result = getBreakpointValue(responsiveValues, currentBreakpoint, fieldKey)
+      // If no value found in responsive, use the provided value as fallback
+      return {
+        effectiveValue: result.value !== undefined ? result.value : value,
+        inheritedFrom: result.inheritedFrom
+      }
+    }
+    return { effectiveValue: value, inheritedFrom: null }
+  }, [value, currentBreakpoint, responsiveValues, fieldKey])
 
-  // Sync local value when the block selection changes externally
+  // Local state keeps the input controlled and avoids cursor-jump on re-renders
+  const [localValue, setLocalValue] = useState(effectiveValue)
+
+  // Sync local value when the block selection changes externally or breakpoint changes
   useEffect(() => {
     // Guard avoids a no-op setState (and its subsequent re-render)
     // when value arrives equal to what we already have locally
-    if (value !== localValue) {
-      setLocalValue(value)
+    if (effectiveValue !== localValue) {
+      setLocalValue(effectiveValue)
     }
   // localValue intentionally excluded: we only want to react to external changes
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value])
+  }, [effectiveValue])
+
+  // Helper to render inheritance badge
+  const InheritanceBadge = () => {
+    if (!inheritedFrom) return null
+    return (
+      <span className="ml-2 text-[10px] text-muted-foreground italic">
+        (from {inheritedFrom})
+      </span>
+    )
+  }
 
   if (type === "checkbox") {
     // Normalize: propSchema stores "true"/"false" strings, not booleans.
@@ -79,6 +112,7 @@ export function InspectorField({
         />
         <Label htmlFor={label} className="text-sm font-normal">
           {label}
+          <InheritanceBadge />
         </Label>
       </div>
     )
@@ -89,7 +123,10 @@ export function InspectorField({
     const selectedIcon = selectedKey ? iconOptions[selectedKey] : undefined
     return (
       <div className="space-y-2">
-        <Label className="text-[11px] uppercase font-semibold tracking-wide mb-1">{label}</Label>
+        <Label className="text-[11px] uppercase font-semibold tracking-wide mb-1">
+          {label}
+          <InheritanceBadge />
+        </Label>
         <Select
           value={selectedKey || ""}
           onValueChange={(v) => {
@@ -131,7 +168,10 @@ export function InspectorField({
 
     const fieldContent = (
       <div className={cn("space-y-2", disabled && "opacity-40 pointer-events-none")}>
-        <Label className="text-[11px] uppercase font-semibold tracking-wide mb-1">{label}</Label>
+        <Label className="text-[11px] uppercase font-semibold tracking-wide mb-1">
+          {label}
+          <InheritanceBadge />
+        </Label>
         <Select
           disabled={disabled}
           value={toSelect(localValue as string)}
@@ -183,7 +223,10 @@ export function InspectorField({
   if (type === "textarea") {
     return (
       <div className="space-y-2">
-        <Label className="text-[11px] uppercase font-semibold tracking-wide mb-1">{label}</Label>
+        <Label className="text-[11px] uppercase font-semibold tracking-wide mb-1">
+          {label}
+          <InheritanceBadge />
+        </Label>
         <Textarea
           value={localValue as string}
           onChange={(e) => {
@@ -198,7 +241,10 @@ export function InspectorField({
 
   return (
     <div className="space-y-2">
-      <Label className="text-[11px] uppercase font-semibold tracking-wide mb-1">{label}</Label>
+      <Label className="text-[11px] uppercase font-semibold tracking-wide mb-1">
+        {label}
+        <InheritanceBadge />
+      </Label>
       <Input
         value={localValue as string}
         onChange={(e) => {

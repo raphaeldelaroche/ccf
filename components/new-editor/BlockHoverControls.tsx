@@ -1,19 +1,32 @@
 "use client"
 
-import { ArrowUp, ArrowDown, Plus, Copy, Trash2 } from "lucide-react"
+import { useState } from "react"
+import { ArrowUp, ArrowDown, Plus, Copy, Trash2, Code, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { BlockPickerPopover } from "./BlockPickerPopover"
-import type { BlockType } from "@/lib/new-editor/block-types"
+import type { BlockType, BlockNode } from "@/lib/new-editor/block-types"
 import { useUser } from "@/lib/auth/UserContext"
+import { canAccessBlockControls } from "@/lib/auth/permissions"
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverHeader,
+  PopoverTitle,
+} from "@/components/ui/popover"
+import { RefreshBlockDialog } from "./RefreshBlockDialog"
+import type { RefreshMode } from "@/lib/new-editor/refresh-helpers"
 
 interface BlockHoverControlsProps {
+  block: BlockNode
   onMoveUp: () => void
   onMoveDown: () => void
   onAddBelow: (blockType: BlockType) => void
   onInsertBelow?: () => void
   onDuplicate: () => void
   onDelete: () => void
+  onRefresh?: (mode: RefreshMode) => void
   canMoveUp: boolean
   canMoveDown: boolean
   isVisible?: boolean
@@ -22,12 +35,14 @@ interface BlockHoverControlsProps {
 }
 
 export function BlockHoverControls({
+  block,
   onMoveUp,
   onMoveDown,
   onAddBelow,
   onInsertBelow,
   onDuplicate,
   onDelete,
+  onRefresh,
   canMoveUp,
   canMoveDown,
   isVisible = false,
@@ -35,10 +50,21 @@ export function BlockHoverControls({
   className,
 }: BlockHoverControlsProps) {
   const { user } = useUser()
+  const [isJsonPopoverOpen, setIsJsonPopoverOpen] = useState(false)
+  const [isRefreshDialogOpen, setIsRefreshDialogOpen] = useState(false)
 
-  // Hide controls for editors and reviewers
-  if (user.role === 'editor' || user.role === 'reviewer') {
+  // Hide controls for editors and reviewers - engineers only
+  if (!canAccessBlockControls(user.role)) {
     return null
+  }
+
+  const handleCopyJSON = async () => {
+    try {
+      const jsonString = JSON.stringify(block, null, 2)
+      await navigator.clipboard.writeText(jsonString)
+    } catch (err) {
+      console.error('Failed to copy JSON:', err)
+    }
   }
 
   return (
@@ -107,6 +133,62 @@ export function BlockHoverControls({
         <Copy className="h-3 w-3" />
       </Button>
 
+      {onRefresh && (
+        <Button
+          variant="outline"
+          size="icon"
+          className="h-7 w-7 bg-background shadow-sm"
+          onClick={(e) => {
+            e.stopPropagation()
+            setIsRefreshDialogOpen(true)
+          }}
+          title="Rafraîchir le bloc (réinitialiser la structure)"
+        >
+          <RefreshCw className="h-3 w-3" />
+        </Button>
+      )}
+
+      <Popover open={isJsonPopoverOpen} onOpenChange={setIsJsonPopoverOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-7 w-7 bg-background shadow-sm"
+            onClick={(e) => e.stopPropagation()}
+            title="Afficher le JSON"
+          >
+            <Code className="h-3 w-3" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent
+          className="w-[500px] max-h-[600px] overflow-auto"
+          side="right"
+          align="start"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <PopoverHeader>
+            <PopoverTitle>JSON du bloc</PopoverTitle>
+          </PopoverHeader>
+          <div className="mt-4 space-y-2">
+            <pre className="text-xs bg-muted p-3 rounded-md overflow-auto max-h-[500px]">
+              <code>{JSON.stringify(block, null, 2)}</code>
+            </pre>
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full"
+              onClick={(e) => {
+                e.stopPropagation()
+                handleCopyJSON()
+              }}
+            >
+              <Copy className="h-3 w-3 mr-2" />
+              Copier le JSON
+            </Button>
+          </div>
+        </PopoverContent>
+      </Popover>
+
       <Button
         variant="outline"
         size="icon"
@@ -119,6 +201,17 @@ export function BlockHoverControls({
       >
         <Trash2 className="h-3 w-3" />
       </Button>
+
+      {onRefresh && (
+        <RefreshBlockDialog
+          open={isRefreshDialogOpen}
+          onOpenChange={setIsRefreshDialogOpen}
+          onConfirm={(mode) => {
+            onRefresh(mode)
+          }}
+          blockType={block.blockType}
+        />
+      )}
     </div>
   )
 }

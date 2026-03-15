@@ -29,10 +29,14 @@ export function BlockList({ items, icon = "arrowRight" }: BlockListProps) {
       {items.map((item, i) => (
         <Blob
           key={i}
-          size="xs"
-          marker="left"
-          paddingX="none"
-          paddingY="none"
+          responsive={{
+            base: {
+              size: "xs",
+              marker: "left",
+              paddingX: "none",
+              paddingY: "none",
+            }
+          }}
           className={appearanceConfig.blobClassName}
         >
           <Marker variant="ghost" className={appearanceConfig.markerClassName}>

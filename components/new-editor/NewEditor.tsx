@@ -9,10 +9,11 @@ import { NewEditorSidebar, EditorView } from "./NewEditorSidebar"
 import { useEditorState } from "@/lib/new-editor/useEditorState"
 import { useKeyboardShortcuts } from "@/lib/new-editor/useKeyboardShortcuts"
 import { useUser } from "@/lib/auth/UserContext"
-import { canAccessEditor } from "@/lib/auth/permissions"
+import { canAccessEditor, canAccessJsonEditor } from "@/lib/auth/permissions"
 import { AlertCircle } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { PreviewProvider } from "./PreviewContext"
 
 interface NewEditorProps {
   initialPage?: string
@@ -24,7 +25,7 @@ export function NewEditor({ initialPage = "home" }: NewEditorProps) {
 
   // Force visual view for editors (they cannot access JSON)
   const handleViewChange = (view: EditorView) => {
-    if (view === 'json' && user.role === 'editor') {
+    if (view === 'json' && !canAccessJsonEditor(user.role)) {
       // Silently ignore - button is hidden anyway
       return
     }
@@ -55,12 +56,15 @@ export function NewEditor({ initialPage = "home" }: NewEditorProps) {
     handleCopyBlock,
     handlePasteBlock,
     handleInsertFromClipboard,
+    handleRefreshBlock,
     hasClipboard,
     handleUndo,
     handleRedo,
     canUndo,
     canRedo,
     handleSetBlocks,
+    previewBreakpoint,
+    setPreviewBreakpoint,
   } = useEditorState(initialPage)
 
   useKeyboardShortcuts({
@@ -109,6 +113,8 @@ export function NewEditor({ initialPage = "home" }: NewEditorProps) {
         onRedo={handleRedo}
         canUndo={canUndo}
         canRedo={canRedo}
+        previewBreakpoint={previewBreakpoint}
+        onPreviewBreakpointChange={setPreviewBreakpoint}
       />
 
       <div className="flex h-[calc(100vh-3.5rem)] mt-14">
@@ -116,7 +122,7 @@ export function NewEditor({ initialPage = "home" }: NewEditorProps) {
         <NewEditorSidebar activeView={activeView} onViewChange={handleViewChange} currentPage={currentPage} />
 
         {activeView === "visual" ? (
-          <>
+          <PreviewProvider value={{ isPreviewMode: previewBreakpoint !== 'auto' }}>
             {/* Canvas (center) */}
             <div className="flex-1 pl-11 overflow-y-auto">
               <BlockCanvas
@@ -132,8 +138,10 @@ export function NewEditor({ initialPage = "home" }: NewEditorProps) {
                 onDeleteBlock={handleDeleteBlock}
                 onCopyBlock={handleCopyBlock}
                 onPasteBlock={handlePasteBlock}
+                onRefreshBlock={handleRefreshBlock}
                 onInsertFromClipboard={handleInsertFromClipboard}
                 hasClipboard={hasClipboard}
+                previewBreakpoint={previewBreakpoint}
               />
             </div>
 
@@ -144,7 +152,7 @@ export function NewEditor({ initialPage = "home" }: NewEditorProps) {
                 onUpdateBlock={handleUpdateBlock}
               />
             </div>
-          </>
+          </PreviewProvider>
         ) : (
           /* JSON Editor (full width) */
           <div className="flex-1 pl-11 overflow-hidden flex flex-col">

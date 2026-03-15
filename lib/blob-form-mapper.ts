@@ -11,13 +11,13 @@
  *    - Marquées comme "unmapped" pour inspection
  */
 
-import type { BlobComposableProps } from "@/lib/blob-compose"
+import type { BlobComposableProps, ResponsiveProps, ResponsiveBreakpointProps } from "@/lib/blob-compose"
 import { iconOptions, type IconData } from "@/lib/blob-fields"
 
 // Re-export IconData pour faciliter les imports
 export type { IconData }
 
-type FormDataValue = string | boolean | string[] | Array<Record<string, unknown>>
+type FormDataValue = string | boolean | string[] | Array<Record<string, unknown>> | ResponsiveProps
 
 export interface BlobFormData {
   [key: string]: FormDataValue | undefined
@@ -93,6 +93,9 @@ export interface BlobFormData {
   // SEO
   titleAs?: string
   eyebrowAs?: string
+
+  // Responsive
+  responsive?: ResponsiveProps
 }
 
 export type ButtonVariant = 'default' | 'secondary' | 'outline' | 'ghost' | 'link';
@@ -231,43 +234,79 @@ export function mapFormDataToBlob(formData: BlobFormData): MappedBlobData {
   }
 
   // ── Spacing mapping ──
+  // paddingX/paddingY "auto" → use size value (e.g., size=lg → paddingX=lg)
   const paddingX = (!formData.paddingX || formData.paddingX === "auto")
     ? formData.size
     : formData.paddingX
   const paddingY = (!formData.paddingY || formData.paddingY === "auto")
     ? formData.size
     : formData.paddingY
+  // headerPadding "auto" → undefined (use default from token)
   const headerPaddingX = (!formData.headerPaddingX || formData.headerPaddingX === "auto")
     ? undefined
     : formData.headerPaddingX
   const headerPaddingY = (!formData.headerPaddingY || formData.headerPaddingY === "auto")
     ? undefined
     : formData.headerPaddingY
-  // "auto" signifie que gapX/Y = size, donc on utilise la valeur de size
-  const gapX = formData.gapX === "auto" ? formData.size : (formData.gapX || undefined);
-  const gapY = formData.gapY === "auto" ? formData.size : (formData.gapY || undefined);
+  // gap "auto" → undefined (use default gap from the size token)
+  const gapX = (!formData.gapX || formData.gapX === "auto") ? undefined : formData.gapX
+  const gapY = (!formData.gapY || formData.gapY === "auto") ? undefined : formData.gapY
 
   // ── Figure Bleed mapping ──
   const figureBleed = formData.figureBleed && formData.figureType && formData.figureType !== "none"
     ? formData.figureBleed
     : undefined
 
-  // ── Blob Props ──
+  // ── Blob Props (responsive object) ──
+  // Build base values from legacy fields
+  // Note: Using 'as ResponsiveBreakpointProps' because formData values are strings validated by the form,
+  // and TypeScript can't statically verify they match the literal union types
+  const baseValues = {
+    layout,
+    direction,
+    marker,
+    actions: formData.actions || "after",
+    align: formData.align,
+    figureWidth,
+    size: formData.size,
+    gapX,
+    gapY,
+    paddingX,
+    paddingY,
+    headerPaddingX,
+    headerPaddingY,
+    figureBleed,
+  } as ResponsiveBreakpointProps
+
+  // Helper: filter out undefined keys from an object to avoid spread operator issues
+  const cleanBaseValues = Object.fromEntries(
+    Object.entries(baseValues).filter(([_, v]) => v !== undefined)
+  )
+
+  const cleanBase = formData.responsive?.base
+    ? Object.fromEntries(
+        Object.entries(formData.responsive.base).filter(([_, v]) => v !== undefined)
+      )
+    : {}
+
+  // Merge responsive overrides, but only defined values
+  // Priority: formData.responsive.base > baseValues (from legacy fields)
+  // This ensures that when user selects "auto" (which deletes the key),
+  // the value is removed, but when a value exists in responsive.base, it takes precedence
+  const responsive: ResponsiveProps = {
+    base: {
+      ...cleanBaseValues,
+      ...cleanBase,
+    },
+    sm: formData.responsive?.sm,
+    md: formData.responsive?.md,
+    lg: formData.responsive?.lg,
+    xl: formData.responsive?.xl,
+    "2xl": formData.responsive?.["2xl"],
+  }
+
   const blobProps: BlobComposableProps = {
-    layout: layout as BlobComposableProps["layout"],
-    direction: direction as BlobComposableProps["direction"],
-    marker: marker as BlobComposableProps["marker"],
-    actions: (formData.actions || "after") as BlobComposableProps["actions"],
-    align: formData.align as BlobComposableProps["align"],
-    figureWidth: figureWidth as BlobComposableProps["figureWidth"],
-    size: formData.size as BlobComposableProps["size"],
-    gapX: gapX as BlobComposableProps["gapX"],
-    gapY: gapY as BlobComposableProps["gapY"],
-    paddingX: paddingX as BlobComposableProps["paddingX"],
-    paddingY: paddingY as BlobComposableProps["paddingY"],
-    headerPaddingX: headerPaddingX as BlobComposableProps["headerPaddingX"],
-    headerPaddingY: headerPaddingY as BlobComposableProps["headerPaddingY"],
-    figureBleed: figureBleed as BlobComposableProps["figureBleed"],
+    responsive,
     theme: formData.theme,
   }
 

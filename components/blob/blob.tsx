@@ -9,30 +9,19 @@ import { composeBlobClasses, type BlobComposableProps } from "@/lib/blob-compose
    ======================================= */
 
 type BlobProps = React.ComponentProps<"div"> &
-  BlobComposableProps
+  BlobComposableProps & {
+    useContainerQueries?: boolean
+  }
 
 function Blob({
   className,
-  layout = "stack",
-  direction = "default",
-  marker,
-  actions = "after",
-  align = "left",
-  figureWidth,
-  size,
-  gapX,
-  gapY,
-  paddingX,
-  paddingY,
-  headerPaddingX,
-  headerPaddingY,
-  figureBleed,
+  responsive,
   theme,
+  useContainerQueries = false,
   children,
   ...props
 }: BlobProps) {
-  const composedClasses = composeBlobClasses({ layout, direction, marker, actions, align, figureWidth, size, gapX,
-  gapY, paddingX, paddingY, headerPaddingX, headerPaddingY, figureBleed, theme })
+  const composedClasses = composeBlobClasses({ responsive, theme }, useContainerQueries)
 
   return (
     <div

@@ -1,15 +1,22 @@
 "use client"
 
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import { InspectorField } from "./InspectorField"
 import { CollapsibleSection } from "./CollapsibleSection"
 import { RepeaterInspector } from "./RepeaterInspector"
+import { BreakpointTabs } from "./BreakpointTabs"
 import fieldSections, { type Field } from "@/lib/blob-fields"
 import { evaluateShowIf } from "@/lib/new-editor/showif-evaluator"
 import { computeCompatibility, type OptionState } from "@/lib/use-blob-compatibility"
 import type { FormDataValue } from "@/types/editor"
 import { useUser } from "@/lib/auth/UserContext"
 import { canEditField } from "@/lib/auth/field-permissions"
+import {
+  type Breakpoint,
+  type ResponsiveProps,
+  getBreakpointsWithOverrides
+} from "@/lib/responsive-utils"
+import type { ResponsiveBreakpointProps } from "@/lib/blob-compose"
 
 // Maps blob-fields types to InspectorField types
 const FIELD_TYPE_MAP: Partial<Record<string, "text" | "textarea" | "select" | "checkbox" | "icon">> = {
@@ -27,10 +34,32 @@ interface BlobInspectorProps {
   onUpdate: (updates: Record<string, unknown>) => void
   /** Fields to skip — used when BlobInspector is delegated from IteratorInspector for shared props */
   hiddenFields?: string[]
+  /** External active breakpoint (when delegated from parent like IteratorInspector) */
+  externalActiveBreakpoint?: Breakpoint
+  /** Hide the BreakpointTabs (when delegated from parent that already shows them) */
+  hideBreakpointTabs?: boolean
 }
 
-export function BlobInspector({ data, onUpdate, hiddenFields = [] }: BlobInspectorProps) {
+export function BlobInspector({
+  data,
+  onUpdate,
+  hiddenFields = [],
+  externalActiveBreakpoint,
+  hideBreakpointTabs = false
+}: BlobInspectorProps) {
   const { user } = useUser()
+  const [internalActiveBreakpoint, setInternalActiveBreakpoint] = useState<Breakpoint>("base")
+  const [copiedBreakpointValues, setCopiedBreakpointValues] = useState<ResponsiveBreakpointProps | null>(null)
+
+  // Use external breakpoint if provided, otherwise use internal state
+  const activeBreakpoint = externalActiveBreakpoint || internalActiveBreakpoint
+
+  const responsiveData = useMemo(
+    () => (data.responsive as ResponsiveProps) || {},
+    [data.responsive]
+  )
+  const overrides = useMemo(() => getBreakpointsWithOverrides(responsiveData), [responsiveData])
+
   const compat = useMemo(
     () => computeCompatibility(data as Record<string, unknown>),
     [data]
@@ -40,8 +69,74 @@ export function BlobInspector({ data, onUpdate, hiddenFields = [] }: BlobInspect
     onUpdate({ [key]: value })
   }
 
+  const handleResponsiveChange = (key: string, value: string | boolean) => {
+    const newResponsive = { ...responsiveData }
+
+    if (!newResponsive[activeBreakpoint]) {
+      newResponsive[activeBreakpoint] = {}
+    }
+
+    // If value is empty/undefined, remove it from the breakpoint
+    if (value === "" || value === undefined || value === null || value === "auto") {
+      const breakpointData = { ...newResponsive[activeBreakpoint] }
+      delete breakpointData[key as keyof typeof breakpointData]
+
+      // If breakpoint is now empty, remove it entirely (except base)
+      if (Object.keys(breakpointData).length === 0 && activeBreakpoint !== "base") {
+        delete newResponsive[activeBreakpoint]
+      } else {
+        newResponsive[activeBreakpoint] = breakpointData
+      }
+    } else {
+      newResponsive[activeBreakpoint] = {
+        ...newResponsive[activeBreakpoint],
+        [key]: value
+      }
+    }
+
+    onUpdate({ responsive: newResponsive })
+  }
+
+  const handleResetBreakpoint = (breakpoint: Breakpoint) => {
+    if (breakpoint === "base") return
+
+    const newResponsive = { ...responsiveData }
+    delete newResponsive[breakpoint]
+    onUpdate({ responsive: newResponsive })
+  }
+
+  const handleCopyBreakpoint = (breakpoint: Breakpoint) => {
+    const breakpointData = responsiveData[breakpoint] || {}
+    setCopiedBreakpointValues(breakpointData)
+  }
+
+  const handlePasteBreakpoint = (breakpoint: Breakpoint) => {
+    if (!copiedBreakpointValues) return
+
+    const newResponsive = { ...responsiveData }
+    newResponsive[breakpoint] = { ...copiedBreakpointValues }
+    onUpdate({ responsive: newResponsive })
+  }
+
   function renderField(fieldKey: string, fieldDef: Field, onChange: (v: string | boolean) => void) {
-    const rawValue = data[fieldKey]
+    // Check if field is responsive
+    const isResponsive = "responsive" in fieldDef && fieldDef.responsive === true
+
+    // For responsive fields on non-base tabs, or non-responsive fields on non-base tabs, handle appropriately
+    if (activeBreakpoint !== "base") {
+      if (!isResponsive) {
+        // Non-responsive fields don't appear on non-base tabs
+        return null
+      }
+    }
+
+    // Get the value
+    // For responsive fields: InspectorField will handle breakpoint resolution itself using responsiveValues prop
+    // So we just pass a default value here
+    // For non-responsive fields: get the value directly from data
+    const rawValue = isResponsive
+      ? (fieldDef.type === "checkbox" ? false : "")  // Default value, will be overridden by InspectorField
+      : data[fieldKey]
 
     // ── Repeater → RepeaterInspector ──────────────────────────────────────
     if (fieldDef.type === "repeater") {
@@ -109,16 +204,40 @@ export function BlobInspector({ data, onUpdate, hiddenFields = [] }: BlobInspect
         disabled={disabled}
         disabledReason={disabledReason}
         onChange={onChange}
+        currentBreakpoint={isResponsive && canSeeResponsive ? activeBreakpoint : undefined}
+        responsiveValues={isResponsive && canSeeResponsive ? responsiveData : undefined}
+        fieldKey={isResponsive && canSeeResponsive ? fieldKey : undefined}
       />
     )
   }
 
+  // Only show BreakpointTabs for engineers and reviewers
+  const canSeeResponsive = user.role === 'engineer' || user.role === 'reviewer'
+
   return (
     <div>
+      {canSeeResponsive && !hideBreakpointTabs && (
+        <BreakpointTabs
+          activeTab={activeBreakpoint}
+          onTabChange={setInternalActiveBreakpoint}
+          overrides={overrides}
+          onResetBreakpoint={handleResetBreakpoint}
+          onCopyBreakpoint={handleCopyBreakpoint}
+          onPasteBreakpoint={handlePasteBreakpoint}
+          hasCopiedValues={copiedBreakpointValues !== null}
+        />
+      )}
+
       {Object.entries(fieldSections).map(([sectionKey, section]) => {
         const visibleFields = Object.entries(section.fields).filter(([fieldKey, fieldDef]) => {
           if (hiddenFields.includes(fieldKey)) return false
           if (!evaluateShowIf(fieldDef.showIf, data as unknown as Record<string, FormDataValue>)) return false
+
+          // On non-base tabs, only show responsive fields
+          const isResponsive = "responsive" in fieldDef && fieldDef.responsive === true
+          if (canSeeResponsive && activeBreakpoint !== "base" && !isResponsive) {
+            return false
+          }
 
           // Special handling for repeater fields (like buttons)
           // Repeaters handle their own field-level permissions internally
@@ -150,9 +269,11 @@ export function BlobInspector({ data, onUpdate, hiddenFields = [] }: BlobInspect
             defaultOpen={sectionKey === "header"}
           >
             <div className="pt-3 space-y-3">
-              {visibleFields.map(([fieldKey, fieldDef]) =>
-                renderField(fieldKey, fieldDef, (v) => handleChange(fieldKey, v))
-              )}
+              {visibleFields.map(([fieldKey, fieldDef]) => {
+                const isResponsive = "responsive" in fieldDef && fieldDef.responsive === true
+                const onChange = isResponsive ? handleResponsiveChange : handleChange
+                return renderField(fieldKey, fieldDef, (v) => onChange(fieldKey, v))
+              })}
             </div>
           </CollapsibleSection>
         )

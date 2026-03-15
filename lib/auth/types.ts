@@ -84,9 +84,9 @@ export const ROLE_METADATA: Record<
  * Role icons (emojis) for UI display
  */
 export const ROLE_ICONS: Record<UserRole, string> = {
-  engineer: '🤓',
-  editor: '✍️',
   reviewer: '😎',
+  editor: '✍️',
+  engineer: '🤓',
 }
 
 /**

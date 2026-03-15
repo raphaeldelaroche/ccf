@@ -189,6 +189,8 @@ export interface ShowIfCondition {
 interface BaseField {
   label: string;
   inheritable?: boolean;
+  /** Whether this field supports responsive breakpoint values */
+  responsive?: boolean;
   showIf?: ShowIfCondition | ShowIfCondition[];
   /** Key into CompatibilityState for compat-aware option resolution in the inspector */
   compatKey?: "marker" | "align" | "figureWidth" | "actions";
@@ -306,6 +308,7 @@ const fieldSections: Record<string, FieldSection> = {
         showIf: { field: "markerType", value: ["text", "icon"] },
         compatKey: "marker",
         inheritable: true,
+        responsive: true,
       },
       markerStyle: {
         type: "dropdown",
@@ -372,6 +375,7 @@ const fieldSections: Record<string, FieldSection> = {
         compatKey: "figureWidth",
         emptyLabel: "Par défaut",
         inheritable: true,
+        responsive: true,
       },
       figureBleed: {
         type: "dropdown",
@@ -382,6 +386,7 @@ const fieldSections: Record<string, FieldSection> = {
         },
         showIf: { field: "figureType", value: ["image", "video"] },
         inheritable: true,
+        responsive: true,
       },
       image: {
         type: "image",
@@ -411,6 +416,7 @@ const fieldSections: Record<string, FieldSection> = {
         compatKey: "actions",
         emptyLabel: "Par défaut",
         inheritable: true,
+        responsive: true,
       },
       buttons: {
         type: "repeater",
@@ -531,7 +537,7 @@ const fieldSections: Record<string, FieldSection> = {
   layout: {
     label: "Disposition",
     fields: {
-      size: { type: "dropdown", label: "Taille", options: allSizes, inheritable: true },
+      size: { type: "dropdown", label: "Taille", options: allSizes, inheritable: true, responsive: true },
       layout: {
         type: "dropdown",
         label: "Disposition",
@@ -541,6 +547,7 @@ const fieldSections: Record<string, FieldSection> = {
           bar:   "En barre",
         },
         inheritable: true,
+        responsive: true,
       },
       direction: {
         type: "dropdown",
@@ -550,6 +557,7 @@ const fieldSections: Record<string, FieldSection> = {
           reverse: "Inversé",
         },
         inheritable: true,
+        responsive: true,
       },
       align: {
         type: "dropdown",
@@ -561,6 +569,7 @@ const fieldSections: Record<string, FieldSection> = {
         },
         compatKey: "align",
         inheritable: true,
+        responsive: true,
       },
     },
   },
@@ -568,12 +577,12 @@ const fieldSections: Record<string, FieldSection> = {
   spacing: {
     label: "Espacement",
     fields: {
-      paddingX: { type: "dropdown", label: "Espacement horizontal", options: paddingXOptions, inheritable: true },
-      paddingY: { type: "dropdown", label: "Espacement vertical",   options: gapOptions, inheritable: true },
-      headerPaddingX: { type: "dropdown", label: "Header X", options: paddingXOptions, inheritable: true },
-      headerPaddingY: { type: "dropdown", label: "Header Y", options: paddingXOptions, inheritable: true },
-      gapX: { type: "dropdown", label: "Espacement interne X", options: gapOptions, inheritable: true },
-      gapY: { type: "dropdown", label: "Espacement interne Y", options: gapOptions, inheritable: true },
+      paddingX: { type: "dropdown", label: "Espacement horizontal", options: paddingXOptions, inheritable: true, responsive: true },
+      paddingY: { type: "dropdown", label: "Espacement vertical",   options: gapOptions, inheritable: true, responsive: true },
+      headerPaddingX: { type: "dropdown", label: "Header X", options: paddingXOptions, inheritable: true, responsive: true },
+      headerPaddingY: { type: "dropdown", label: "Header Y", options: paddingXOptions, inheritable: true, responsive: true },
+      gapX: { type: "dropdown", label: "Espacement interne X", options: gapOptions, inheritable: true, responsive: true },
+      gapY: { type: "dropdown", label: "Espacement interne Y", options: gapOptions, inheritable: true, responsive: true },
     },
   },
 

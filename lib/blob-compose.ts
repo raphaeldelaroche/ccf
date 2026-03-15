@@ -22,44 +22,87 @@ import {
 const REGISTRY = generateRegistry()
 
 const BREAKPOINT_ORDER = ["base", "sm", "md", "lg", "xl", "2xl"] as const
-type Breakpoint = (typeof BREAKPOINT_ORDER)[number]
+export type Breakpoint = (typeof BREAKPOINT_ORDER)[number]
 
 export type { AlignValue, FigureWidthValue, SizeValue } from "@/lib/blob-compatibility"
 
 /* ── Responsive value types ── */
-type ResponsiveValue<T extends string> = string & { __brand?: T }
-
 export type FigureBleedValue = "full" | "none"
+export type PaddingValue = SizeValue | "container-sm" | "container-md" | "container-lg" | "container-xl" | "container-2xl"
+
+/**
+ * Props responsive pour un breakpoint donné
+ */
+export interface ResponsiveBreakpointProps {
+  layout?: Layout
+  direction?: Direction
+  marker?: Marker
+  actions?: Action
+  align?: AlignValue
+  figureWidth?: FigureWidthValue
+  size?: SizeValue
+  gapX?: SizeValue
+  gapY?: SizeValue
+  paddingX?: PaddingValue
+  paddingY?: SizeValue
+  headerPaddingX?: PaddingValue
+  headerPaddingY?: PaddingValue
+  figureBleed?: FigureBleedValue
+  // Iterator container props
+  iteratorLayout?: string
+  iteratorGapX?: SizeValue
+  iteratorGapY?: SizeValue
+}
+
+/**
+ * Objet responsive : valeurs par breakpoint
+ */
+export interface ResponsiveProps {
+  base?: ResponsiveBreakpointProps
+  sm?: ResponsiveBreakpointProps
+  md?: ResponsiveBreakpointProps
+  lg?: ResponsiveBreakpointProps
+  xl?: ResponsiveBreakpointProps
+  "2xl"?: ResponsiveBreakpointProps
+}
 
 export type BlobComposableProps = {
-  /** Layout responsive (ex: "stack md:row lg:bar") */
-  layout?: ResponsiveValue<Layout>
-  /** Direction responsive (ex: "default md:reverse") */
-  direction?: ResponsiveValue<Direction>
-  /** Position du marker (ex: "top md:left") */
-  marker?: ResponsiveValue<Marker>
-  /** Position des actions (ex: "after") */
-  actions?: ResponsiveValue<Action>
-  /** Alignement (ex: "left md:center") */
-  align?: ResponsiveValue<AlignValue>
-  /** Largeur de la figure dans les layouts row/row-reverse (ex: "md:1-3") */
-  figureWidth?: ResponsiveValue<FigureWidthValue>
-  /** Taille (ex: "md" ou "sm lg:xl") */
-  size?: ResponsiveValue<SizeValue>
-  /** Gutter - gap entre les enfants (override de size, ex: "xs sm:md") */
-  gapX?: ResponsiveValue<SizeValue>; gapY?: ResponsiveValue<SizeValue>
-  /** Padding inline du container (ex: "xs sm:md") */
-  paddingX?: ResponsiveValue<SizeValue | "container-sm" | "container-md" | "container-lg" | "container-xl" | "container-2xl">
-  /** Padding block du container (ex: "xs sm:md") */
-  paddingY?: ResponsiveValue<SizeValue>
-  /** Padding inline du header uniquement (ex: "xs sm:md" ou "container-lg") */
-  headerPaddingX?: ResponsiveValue<SizeValue | "container-sm" | "container-md" | "container-lg" | "container-xl" | "container-2xl">
-  /** Padding block du header uniquement (ex: "xs sm:md") */
-  headerPaddingY?: ResponsiveValue<SizeValue | "container-sm" | "container-md" | "container-lg" | "container-xl" | "container-2xl">
-  /** Figure bleed - débordement de la figure sur le padding (ex: "full" ou "none md:full") */
-  figureBleed?: ResponsiveValue<FigureBleedValue>
+  /** Objet responsive contenant toutes les props par breakpoint */
+  responsive?: ResponsiveProps
   /** Thème de couleur (ex: "brand", "blue", "red") */
   theme?: string
+}
+
+/* ── Conversion objet → string ── */
+
+/**
+ * Convertit un objet responsive en format string pour une propriété donnée
+ * Ex: { xs: { layout: "stack" }, md: { layout: "row" } } → "stack md:row"
+ */
+export function convertResponsiveToString(
+  responsiveObj: ResponsiveProps | undefined,
+  propKey: keyof ResponsiveBreakpointProps
+): string | undefined {
+  if (!responsiveObj) return undefined
+
+  const parts: string[] = []
+
+  for (const bp of BREAKPOINT_ORDER) {
+    const breakpointProps = responsiveObj[bp as keyof ResponsiveProps]
+    const value = breakpointProps?.[propKey]
+
+    if (value !== undefined && value !== null && String(value).trim() !== "") {
+      if (bp === "base") {
+        // base values are unprefixed (mobile-first)
+        parts.push(String(value))
+      } else {
+        // Other breakpoints get prefix
+        parts.push(`${bp}:${String(value)}`)
+      }
+    }
+  }
+
+  return parts.length > 0 ? parts.join(" ") : undefined
 }
 
 /* ── Parser ── */
@@ -146,12 +189,13 @@ function resolveBreakpoints(
 /**
  * Parse "left md:center" → "blob-align-left md:blob-align-center"
  * Normalise "/" → "-" pour les fractions (ex: "1/2" → "blob-figure-w-1-2")
+ * En mode container, transforme "md:" → "@md:"
  */
 function normalizeSlashes(val: string): string {
   return val.replace(/\//g, "-")
 }
 
-function parseResponsiveClass(value: string, prefix: string): string {
+function parseResponsiveClass(value: string, prefix: string, containerMode = false): string {
   return value
     .trim()
     .split(/\s+/)
@@ -160,7 +204,9 @@ function parseResponsiveClass(value: string, prefix: string): string {
       if (colonIdx !== -1) {
         const bp = part.slice(0, colonIdx)
         const val = normalizeSlashes(part.slice(colonIdx + 1))
-        return `${bp}:${prefix}-${val}`
+        // Container mode: breakpoint prefix with @
+        const bpPrefix = containerMode ? `@${bp}` : bp
+        return `${bpPrefix}:${prefix}-${val}`
       }
       return `${prefix}-${normalizeSlashes(part)}`
     })
@@ -170,11 +216,28 @@ function parseResponsiveClass(value: string, prefix: string): string {
 /**
  * Compose les classes CSS pour un Blob à partir des props sémantiques.
  * Gère la syntaxe responsive Tailwind-like sur toutes les props.
+ * @param props - Les propriétés du Blob
+ * @param containerMode - Si true, utilise les container queries (@sm:, @md:, etc.) au lieu des media queries (sm:, md:, etc.)
  */
-export function composeBlobClasses(props: BlobComposableProps): string {
-  const { layout, direction, marker, actions, align, figureWidth, size, gapX,
-  gapY, paddingX, paddingY, headerPaddingX, headerPaddingY, figureBleed, theme } = props
+export function composeBlobClasses(props: BlobComposableProps, containerMode = false): string {
+  const { responsive, theme } = props
   const classes: string[] = []
+
+  // Convertir l'objet responsive en strings pour chaque propriété
+  const layout = convertResponsiveToString(responsive, "layout")
+  const direction = convertResponsiveToString(responsive, "direction")
+  const marker = convertResponsiveToString(responsive, "marker")
+  const actions = convertResponsiveToString(responsive, "actions")
+  const align = convertResponsiveToString(responsive, "align")
+  const figureWidth = convertResponsiveToString(responsive, "figureWidth")
+  const size = convertResponsiveToString(responsive, "size")
+  const gapX = convertResponsiveToString(responsive, "gapX")
+  const gapY = convertResponsiveToString(responsive, "gapY")
+  const paddingX = convertResponsiveToString(responsive, "paddingX")
+  const paddingY = convertResponsiveToString(responsive, "paddingY")
+  const headerPaddingX = convertResponsiveToString(responsive, "headerPaddingX")
+  const headerPaddingY = convertResponsiveToString(responsive, "headerPaddingY")
+  const figureBleed = convertResponsiveToString(responsive, "figureBleed")
 
   // ── Props dépendantes : layout + direction + marker + actions ──
   const breakpoints = resolveBreakpoints(layout, direction, marker, actions)
@@ -201,7 +264,9 @@ export function composeBlobClasses(props: BlobComposableProps): string {
       continue
     }
 
-    const prefix = bp === "base" ? "" : `${bp}:`
+    // base is always unprefixed (mobile-first)
+    const shouldSkipPrefix = bp === "base"
+    const prefix = shouldSkipPrefix ? "" : containerMode ? `@${bp}:` : `${bp}:`
     classes.push(`${prefix}${entry.className}`)
   }
 
@@ -268,20 +333,20 @@ export function composeBlobClasses(props: BlobComposableProps): string {
     }
   }
 
-  if (align) classes.push(parseResponsiveClass(align, "blob-align"))
-  if (figureWidth) classes.push(parseResponsiveClass(figureWidth, "blob-figure-w"))
-  if (size) classes.push(parseResponsiveClass(size, "blob-size"))
+  if (align) classes.push(parseResponsiveClass(align, "blob-align", containerMode))
+  if (figureWidth) classes.push(parseResponsiveClass(figureWidth, "blob-figure-w", containerMode))
+  if (size) classes.push(parseResponsiveClass(size, "blob-size", containerMode))
   if (gapX) classes.push(parseResponsiveClass(gapX,
-  "blob-gap-x"));
-  if (gapY) classes.push(parseResponsiveClass(gapY, "blob-gap-y"))
-  if (paddingX) classes.push(parseResponsiveClass(paddingX, "blob-padding-x"))
-  if (paddingY) classes.push(parseResponsiveClass(paddingY, "blob-padding-y"))
-  if (headerPaddingX) classes.push(parseResponsiveClass(headerPaddingX, "blob-header-padding-x"))
-  if (headerPaddingY) classes.push(parseResponsiveClass(headerPaddingY, "blob-header-padding-y"))
+  "blob-gap-x", containerMode));
+  if (gapY) classes.push(parseResponsiveClass(gapY, "blob-gap-y", containerMode))
+  if (paddingX) classes.push(parseResponsiveClass(paddingX, "blob-padding-x", containerMode))
+  if (paddingY) classes.push(parseResponsiveClass(paddingY, "blob-padding-y", containerMode))
+  if (headerPaddingX) classes.push(parseResponsiveClass(headerPaddingX, "blob-header-padding-x", containerMode))
+  if (headerPaddingY) classes.push(parseResponsiveClass(headerPaddingY, "blob-header-padding-y", containerMode))
 
   // ── Figure bleed : applique la bonne classe en fonction du layout + direction ──
   if (figureBleed) {
-    const bleedClasses = computeFigureBleedClasses(figureBleed, layout, direction)
+    const bleedClasses = computeFigureBleedClasses(figureBleed, layout, direction, containerMode)
     if (bleedClasses) classes.push(bleedClasses)
   }
 
@@ -305,7 +370,8 @@ export function composeBlobClasses(props: BlobComposableProps): string {
 function computeFigureBleedClasses(
   bleedValue: string,
   layoutStr: string | undefined,
-  directionStr: string | undefined
+  directionStr: string | undefined,
+  containerMode = false
 ): string {
   const layoutMap = parseResponsiveValue<Layout>(layoutStr, "stack")
   const directionMap = parseResponsiveValue<Direction>(directionStr, "default")
@@ -342,7 +408,9 @@ function computeFigureBleedClasses(
 
     // Ajoute la classe uniquement si elle a changé ou si c'est le premier breakpoint
     if (prevBleedClass === null || bleedClass !== prevBleedClass) {
-      const prefix = bp === "base" ? "" : `${bp}:`
+      // base is always unprefixed
+      const shouldSkipPrefix = bp === "base"
+      const prefix = shouldSkipPrefix ? "" : containerMode ? `@${bp}:` : `${bp}:`
       bleedClasses.push(`${prefix}${bleedClass}`)
       prevBleedClass = bleedClass
     }

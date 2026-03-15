@@ -29,10 +29,22 @@ export const BLOCK_REGISTRY: Record<BlockType, BlockDefinition> = {
     allowedInnerBlocks: 'all', // Peut contenir n'importe quel bloc (récursif)
     sections: fieldSections,
     initialValues: {
-      size: 'md',
-      layout: 'stack',
-      align: 'left',
-      direction: 'default',
+      // Non-responsive fields (stored directly in data)
+      markerType: 'none',
+      figureType: 'none',
+      showContent: false,
+      contentType: 'text',
+      // Responsive fields (will be stored in responsive.base by BlobInspector)
+      responsive: {
+        base: {
+          size: 'md',
+          layout: 'stack',
+          align: 'left',
+          direction: 'default',
+          marker: 'top',
+          actions: 'after',
+        }
+      }
     },
   },
 

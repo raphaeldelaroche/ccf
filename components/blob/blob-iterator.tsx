@@ -22,8 +22,9 @@ export interface BlobIteratorProps {
   children: ReactNode
   /** Layout responsive du conteneur (ex: "swiper lg:grid-2") */
   containerLayout?: ResponsiveIteratorLayout
-  /** Espacement entre les éléments (tokens de taille, via blob-gutter-*) */
-  gapX?: SizeValue; gapY?: SizeValue
+  /** Espacement entre les éléments (tokens de taille, via blob-gutter-*, supports responsive syntax "md lg:xl") */
+  gapX?: string
+  gapY?: string
   /** Options Swiper.js (utilisées si swiper présent dans containerLayout) */
   swiperOptions?: Partial<SwiperOptions>
   /** Classes CSS supplémentaires */
@@ -105,6 +106,40 @@ function resolveBreakpoints(
 /* ── Composant principal ── */
 
 /**
+ * Parse "md lg:xl" → ["blob-gap-x-md", "lg:blob-gap-x-xl"]
+ */
+function parseResponsiveGap(value: string | undefined, axis: "x" | "y"): string {
+  if (!value) return ""
+
+  const parts = value.trim().split(/\s+/)
+  const classes: string[] = []
+
+  for (const part of parts) {
+    const colonIdx = part.indexOf(":")
+    if (colonIdx !== -1) {
+      const bp = part.slice(0, colonIdx)
+      const val = part.slice(colonIdx + 1)
+      if (val !== "auto") {
+        classes.push(`${bp}:blob-gap-${axis}-${val}`)
+      }
+    } else {
+      if (part !== "auto") {
+        classes.push(`blob-gap-${axis}-${part}`)
+      }
+    }
+  }
+
+  return classes.join(" ")
+}
+
+/**
+ * Check if a gap value contains responsive syntax (has ":")
+ */
+function isResponsiveGap(value: string | undefined): boolean {
+  return !!value && value.includes(":")
+}
+
+/**
  * BlobIterator - Composant pour itérer sur des blobs avec layouts responsives
  *
  * Devient automatiquement un Client Component si swiper est utilisé dans containerLayout.
@@ -130,12 +165,26 @@ export function BlobIterator({
   const breakpoints = resolveBreakpoints(containerLayout)
   const needsClient = requiresClientComponent(layoutMap)
 
+  // Parse responsive gap classes
+  const gapXResponsive = isResponsiveGap(gapX)
+  const gapYResponsive = isResponsiveGap(gapY)
+  const gapXClasses = gapXResponsive ? parseResponsiveGap(gapX, "x") : ""
+  const gapYClasses = gapYResponsive ? parseResponsiveGap(gapY, "y") : ""
+
+  // Combine className with responsive gap classes
+  const combinedClassName = [className, gapXClasses, gapYClasses].filter(Boolean).join(" ")
+
   // Si un seul breakpoint et c'est une grid, retourne directement BlobGrid (Server Component)
   if (!needsClient) {
     const singleLayout = breakpoints[0]?.layout || "grid-auto"
     const columns = extractGridColumns(singleLayout)
     return (
-      <BlobGrid columns={columns} gapX={gapX} gapY={gapY} className={className}>
+      <BlobGrid
+        columns={columns}
+        gapX={!gapXResponsive ? (gapX as SizeValue) : undefined}
+        gapY={!gapYResponsive ? (gapY as SizeValue) : undefined}
+        className={combinedClassName}
+      >
         {children}
       </BlobGrid>
     )
@@ -157,7 +206,11 @@ export function BlobIterator({
         if (isSwiperLayout) {
           return (
             <div key={`swiper-${bp}`} className={displayClass}>
-              <BlobSwiper gapX={gapX} swiperOptions={swiperOptions} className={className}>
+              <BlobSwiper
+                gapX={!gapXResponsive ? (gapX as SizeValue) : undefined}
+                swiperOptions={swiperOptions}
+                className={combinedClassName}
+              >
                 {children}
               </BlobSwiper>
             </div>
@@ -165,7 +218,12 @@ export function BlobIterator({
         } else {
           return (
             <div key={`grid-${bp}`} className={displayClass}>
-              <BlobGrid columns={columns} gapX={gapX} gapY={gapY} className={className}>
+              <BlobGrid
+                columns={columns}
+                gapX={!gapXResponsive ? (gapX as SizeValue) : undefined}
+                gapY={!gapYResponsive ? (gapY as SizeValue) : undefined}
+                className={combinedClassName}
+              >
                 {children}
               </BlobGrid>
             </div>

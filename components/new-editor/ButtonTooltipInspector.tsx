@@ -7,6 +7,7 @@ import { buttonTooltipFields } from "@/lib/button-tooltip-fields"
 import type { Field } from "@/lib/blob-fields"
 import type { FormDataValue } from "@/types/editor"
 import { useUser } from "@/lib/auth/UserContext"
+import { isEngineer, isEditor, isReviewer } from "@/lib/auth/permissions"
 
 // Maps blob-fields types to InspectorField types
 const FIELD_TYPE_MAP: Partial<Record<string, "text" | "textarea" | "select" | "checkbox">> = {
@@ -74,14 +75,14 @@ export function ButtonTooltipInspector({ data, onUpdate }: ButtonTooltipInspecto
       {Object.entries(buttonTooltipFields).map(([sectionKey, section]) => {
         const visibleFields = Object.entries(section.fields).filter(([, fieldDef]) => {
           // Reviewers cannot edit anything
-          if (user.role === 'reviewer') return false
+          if (isReviewer(user.role)) return false
 
           // Engineers can edit all fields
-          if (user.role === 'engineer') return true
+          if (isEngineer(user.role)) return true
 
           // Editors can only edit repeater fields (tooltips section)
           // Configuration and Style sections are blocked for editors
-          if (user.role === 'editor') {
+          if (isEditor(user.role)) {
             // Allow repeater fields (tooltips)
             if (fieldDef.type === 'repeater') return true
             // Block all other fields (configuration, buttonStyle)

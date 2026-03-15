@@ -34,6 +34,39 @@ export function canSaveChanges(role: UserRole | null): boolean {
 }
 
 /**
+ * Role-based feature access functions
+ * These check roles directly for features not tied to CRUD permissions
+ */
+
+export function canAccessResponsivePreview(role: UserRole | null): boolean {
+  return role === 'engineer'
+}
+
+export function canAccessBreakpointTabs(role: UserRole | null): boolean {
+  return role === 'engineer' || role === 'reviewer'
+}
+
+export function canAccessJsonEditor(role: UserRole | null): boolean {
+  return role === 'engineer' || role === 'reviewer'
+}
+
+export function canAccessBlockControls(role: UserRole | null): boolean {
+  return role === 'engineer'
+}
+
+export function isEngineer(role: UserRole | null): boolean {
+  return role === 'engineer'
+}
+
+export function isEditor(role: UserRole | null): boolean {
+  return role === 'editor'
+}
+
+export function isReviewer(role: UserRole | null): boolean {
+  return role === 'reviewer'
+}
+
+/**
  * Get user-friendly permission error message
  */
 export function getPermissionErrorMessage(permission: Permission): string {

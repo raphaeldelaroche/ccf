@@ -11,6 +11,7 @@ import {
   ALIGNS,
   FIGURE_WIDTHS,
 } from './blob-compatibility';
+import { getBreakpointValue, type ResponsiveProps, type Breakpoint } from './responsive-utils';
 
 type FormData = Record<string, unknown>;
 
@@ -55,18 +56,44 @@ export function useCompatibleOptions(formData: FormData): CompatibilityState {
 }
 
 /**
- * Calcule l'état de compatibilité (version non-hook pour usage dans callbacks)
+ * Résout la valeur effective pour un champ donné, en tenant compte du breakpoint actif
  */
-export function computeCompatibility(formData: FormData): CompatibilityState {
-  const layout = (formData.layout as Layout) || 'stack';
-  const direction = (formData.direction as string) || 'default';
+function resolveEffectiveValue(
+  formData: FormData,
+  fieldKey: string,
+  activeBreakpoint?: Breakpoint
+): unknown {
+  const responsiveValues = formData.responsive as ResponsiveProps | undefined
+
+  // Si pas de mode responsive, retourner undefined
+  if (!activeBreakpoint || !responsiveValues) {
+    return undefined
+  }
+
+  // En mode responsive avec un breakpoint actif, résoudre la valeur mobile-first
+  const { value } = getBreakpointValue(responsiveValues, activeBreakpoint, fieldKey)
+  return value
+}
+
+/**
+ * Calcule l'état de compatibilité (version non-hook pour usage dans callbacks)
+ * @param formData - Les données du formulaire
+ * @param activeBreakpoint - Le breakpoint actuellement actif dans l'éditeur (optionnel)
+ */
+export function computeCompatibility(
+  formData: FormData,
+  activeBreakpoint?: Breakpoint
+): CompatibilityState {
+  // Résoudre les valeurs effectives pour le breakpoint actif
+  const layout = (resolveEffectiveValue(formData, 'layout', activeBreakpoint) as Layout) || 'stack';
+  const direction = (resolveEffectiveValue(formData, 'direction', activeBreakpoint) as string) || 'default';
   const compat = COMPATIBILITY[layout];
 
-  // Contexte actuel pour les contraintes croisées
+  // Contexte actuel pour les contraintes croisées (résolu pour le breakpoint)
   const context = {
-    marker: formData.markerPosition as Marker | undefined,
-    actions: formData.actions as Action | undefined,
-    align: formData.align as AlignValue | undefined,
+    marker: resolveEffectiveValue(formData, 'markerPosition', activeBreakpoint) as Marker | undefined,
+    actions: resolveEffectiveValue(formData, 'actions', activeBreakpoint) as Action | undefined,
+    align: resolveEffectiveValue(formData, 'align', activeBreakpoint) as AlignValue | undefined,
   };
 
   // Affichage du layout pour les messages d'erreur

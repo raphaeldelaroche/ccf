@@ -48,6 +48,11 @@
   --radius-4xl: calc(var(--radius) + 16px);
   --container-8xl: 1280px;
   --container-9xl: 1440px;
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1280px;
+  --container-2xl: 1536px;
 }
 
 

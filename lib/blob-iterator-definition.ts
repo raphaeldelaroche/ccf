@@ -65,12 +65,19 @@ export const IteratorBlockDefinition: BlockDefinition = {
             "grid-6": "Grille 6 colonnes",
             swiper: "Swiper (carrousel)",
           },
+          responsive: true,
         },
-        iteratorGapX: { type: "dropdown", label: "Espacement X", options: gapSizes },
-      iteratorGapY: {
+        iteratorGapX: {
+          type: "dropdown",
+          label: "Espacement X",
+          options: gapSizes,
+          responsive: true,
+        },
+        iteratorGapY: {
           type: "dropdown",
           label: "Espacement entre les items",
           options: gapSizes,
+          responsive: true,
         },
         enableSwiper: {
           type: "checkbox",

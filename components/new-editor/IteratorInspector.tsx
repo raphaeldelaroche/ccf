@@ -1,17 +1,24 @@
 "use client"
 
+import { useState, useMemo } from "react"
 import { InspectorField } from "./InspectorField"
 import { CollapsibleSection } from "./CollapsibleSection"
 import { BlobInspector } from "./BlobInspector"
 import { ItemBlobInspector } from "./ItemBlobInspector"
 import { RepeaterInspector } from "./RepeaterInspector"
+import { BreakpointTabs } from "./BreakpointTabs"
+import { ItemFieldsCombobox } from "./ItemFieldsCombobox"
 import { SIZES, generateItemFieldsOptions } from "@/lib/blob-fields"
 import type { FormDataValue } from "@/types/editor"
 import type { BlockNode } from "@/lib/new-editor/block-types"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Label } from "@/components/ui/label"
 import { useUser } from "@/lib/auth/UserContext"
 import { canEditField } from "@/lib/auth/field-permissions"
+import {
+  type Breakpoint,
+  type ResponsiveProps,
+  getBreakpointsWithOverrides
+} from "@/lib/responsive-utils"
+import type { ResponsiveBreakpointProps } from "@/lib/blob-compose"
 
 
 interface IteratorInspectorProps {
@@ -45,9 +52,18 @@ function parseJsonField<T>(value: unknown, fallback: T): T {
 
 export function IteratorInspector({ blockId, data, onUpdate }: IteratorInspectorProps) {
   const { user } = useUser()
+  const [activeBreakpoint, setActiveBreakpoint] = useState<Breakpoint>("base")
+  const [copiedBreakpointValues, setCopiedBreakpointValues] = useState<ResponsiveBreakpointProps | null>(null)
+
   const itemFields = parseJsonField<string[]>(data.itemFields, DEFAULT_ITEM_FIELDS)
   // Les items peuvent être BlockNode (nouveau format) ou Record plat (legacy)
   const rawItems = parseJsonField<Array<BlockNode | Record<string, FormDataValue>>>(data.items, [])
+
+  const responsiveData = useMemo(
+    () => (data.responsive as ResponsiveProps) || {},
+    [data.responsive]
+  )
+  const overrides = useMemo(() => getBreakpointsWithOverrides(responsiveData), [responsiveData])
 
   // Convertir en BlockNode si nécessaire (migration à la volée)
   const items: BlockNode[] = rawItems.map((item, index) => {
@@ -66,45 +82,122 @@ export function IteratorInspector({ blockId, data, onUpdate }: IteratorInspector
 
   // Check permissions - all fields in "Conteneur" and "Champs des items" are layout-style
   const canEditLayoutFields = canEditField(user.role, 'select')
+  const canSeeResponsive = user.role === 'engineer' || user.role === 'reviewer'
 
   const handleChange = (key: string, value: FormDataValue) => {
     onUpdate({ [key]: value })
   }
 
-  const handleItemFieldsChange = (fieldKey: string, checked: boolean) => {
-    const current = [...itemFields]
-    if (checked && !current.includes(fieldKey)) {
-      handleChange("itemFields", [...current, fieldKey])
-    } else if (!checked && current.includes(fieldKey)) {
-      // Retirer le champ de itemFields
-      const newItemFields = current.filter((k) => k !== fieldKey)
-      handleChange("itemFields", newItemFields)
+  const handleResponsiveChange = (key: string, value: string | boolean) => {
+    const newResponsive = { ...responsiveData }
 
-      // Nettoyer ce champ de tous les items existants
-      // pour éviter que les valeurs d'items écrasent les valeurs partagées
-      if (items.length > 0) {
-        const cleanedItems = items.map((item) => {
-          // Retirer fieldKey de item.data
-          const { [fieldKey]: _, ...restData } = item.data
-          return { ...item, data: restData }
-        })
-        handleChange("items", cleanedItems as unknown as FormDataValue)
+    if (!newResponsive[activeBreakpoint]) {
+      newResponsive[activeBreakpoint] = {}
+    }
+
+    // If value is empty/undefined, remove it from the breakpoint
+    if (value === "" || value === undefined || value === null || value === "auto") {
+      const breakpointData = { ...newResponsive[activeBreakpoint] }
+      delete breakpointData[key as keyof typeof breakpointData]
+
+      // If breakpoint is now empty, remove it entirely (except base)
+      if (Object.keys(breakpointData).length === 0 && activeBreakpoint !== "base") {
+        delete newResponsive[activeBreakpoint]
+      } else {
+        newResponsive[activeBreakpoint] = breakpointData
       }
+    } else {
+      newResponsive[activeBreakpoint] = {
+        ...newResponsive[activeBreakpoint],
+        [key]: value
+      }
+    }
+
+    onUpdate({ responsive: newResponsive })
+  }
+
+  const handleResetBreakpoint = (breakpoint: Breakpoint) => {
+    if (breakpoint === "base") return
+
+    const newResponsive = { ...responsiveData }
+    delete newResponsive[breakpoint]
+    onUpdate({ responsive: newResponsive })
+  }
+
+  const handleCopyBreakpoint = (breakpoint: Breakpoint) => {
+    const breakpointData = responsiveData[breakpoint] || {}
+    setCopiedBreakpointValues(breakpointData)
+  }
+
+  const handlePasteBreakpoint = (breakpoint: Breakpoint) => {
+    if (!copiedBreakpointValues) return
+
+    const newResponsive = { ...responsiveData }
+    newResponsive[breakpoint] = { ...copiedBreakpointValues }
+    onUpdate({ responsive: newResponsive })
+  }
+
+  const handleItemFieldsChange = (newItemFields: string[]) => {
+    const current = [...itemFields]
+
+    // Détecter les champs retirés
+    const removedFields = current.filter(field => !newItemFields.includes(field))
+
+    // Mettre à jour itemFields
+    handleChange("itemFields", newItemFields)
+
+    // Nettoyer les champs retirés de tous les items existants
+    // pour éviter que les valeurs d'items écrasent les valeurs partagées
+    if (removedFields.length > 0 && items.length > 0) {
+      const cleanedItems = items.map((item) => {
+        const newData = { ...item.data }
+        removedFields.forEach(fieldKey => {
+          delete newData[fieldKey]
+        })
+        return { ...item, data: newData }
+      })
+      handleChange("items", cleanedItems as unknown as FormDataValue)
     }
   }
 
   const arrayToOptions = (arr: readonly string[]) =>
     Object.fromEntries(arr.map((v) => [v, v]))
 
+  // Helper to get responsive value for iterator fields
+  const getIteratorValue = (fieldKey: string, defaultValue: string) => {
+    if (canSeeResponsive && responsiveData[activeBreakpoint]?.[fieldKey as keyof typeof responsiveData[typeof activeBreakpoint]]) {
+      return responsiveData[activeBreakpoint][fieldKey as keyof typeof responsiveData[typeof activeBreakpoint]] as string
+    }
+    // Check base breakpoint
+    if (canSeeResponsive && activeBreakpoint !== "base" && responsiveData.base?.[fieldKey as keyof typeof responsiveData.base]) {
+      return responsiveData.base[fieldKey as keyof typeof responsiveData.base] as string
+    }
+    // Fallback to legacy direct field
+    return (data[fieldKey] as string) || defaultValue
+  }
+
   return (
     <div>
+      {/* BreakpointTabs - Engineers/Reviewers only */}
+      {canSeeResponsive && (
+        <BreakpointTabs
+          activeTab={activeBreakpoint}
+          onTabChange={setActiveBreakpoint}
+          overrides={overrides}
+          onResetBreakpoint={handleResetBreakpoint}
+          onCopyBreakpoint={handleCopyBreakpoint}
+          onPasteBreakpoint={handlePasteBreakpoint}
+          hasCopiedValues={copiedBreakpointValues !== null}
+        />
+      )}
+
       {/* Configuration du conteneur - Engineers only */}
       {canEditLayoutFields && (
         <CollapsibleSection title="Conteneur" defaultOpen={true}>
           <div className="pt-3 space-y-3">
             <InspectorField
               label="Disposition du conteneur"
-              value={(data.iteratorLayout as string) || "grid-3"}
+              value={getIteratorValue("iteratorLayout", "grid-3")}
               type="select"
               options={{
                 "grid-1": "Grille 1 colonne",
@@ -116,73 +209,74 @@ export function IteratorInspector({ blockId, data, onUpdate }: IteratorInspector
                 "grid-auto": "Grille auto",
                 swiper: "Carrousel",
               }}
-              onChange={(v) => handleChange("iteratorLayout", v)}
+              onChange={(v) => canSeeResponsive ? handleResponsiveChange("iteratorLayout", v) : handleChange("iteratorLayout", v)}
+              currentBreakpoint={canSeeResponsive ? activeBreakpoint : undefined}
+              responsiveValues={canSeeResponsive ? responsiveData : undefined}
+              fieldKey="iteratorLayout"
             />
             <InspectorField
               label="Espacement horizontal"
-              value={(data.iteratorGapX as string) || "md"}
+              value={getIteratorValue("iteratorGapX", "md")}
               type="select"
               options={{ auto: "Auto (défaut)", none: "Aucun (0)", ...arrayToOptions(SIZES) }}
-              onChange={(v) => handleChange("iteratorGapX", v)}
+              onChange={(v) => canSeeResponsive ? handleResponsiveChange("iteratorGapX", v) : handleChange("iteratorGapX", v)}
+              currentBreakpoint={canSeeResponsive ? activeBreakpoint : undefined}
+              responsiveValues={canSeeResponsive ? responsiveData : undefined}
+              fieldKey="iteratorGapX"
             />
             <InspectorField
               label="Espacement vertical"
-              value={(data.iteratorGapY as string) || "md"}
+              value={getIteratorValue("iteratorGapY", "md")}
               type="select"
               options={{ auto: "Auto (défaut)", none: "Aucun (0)", ...arrayToOptions(SIZES) }}
-              onChange={(v) => handleChange("iteratorGapY", v)}
+              onChange={(v) => canSeeResponsive ? handleResponsiveChange("iteratorGapY", v) : handleChange("iteratorGapY", v)}
+              currentBreakpoint={canSeeResponsive ? activeBreakpoint : undefined}
+              responsiveValues={canSeeResponsive ? responsiveData : undefined}
+              fieldKey="iteratorGapY"
             />
           </div>
         </CollapsibleSection>
       )}
 
-      {/* Champs gérés par item - Engineers only */}
-      {canEditLayoutFields && (
-        <CollapsibleSection title="Champs des items">
-          <div className="pt-3 space-y-1">
-            <p className="text-xs text-muted-foreground mb-3">
-              Sélectionnez les champs qui seront personnalisables pour chaque item.
-              Les autres champs seront partagés par tous les items.
-            </p>
-            {Object.entries(generateItemFieldsOptions()).map(([key, label]) => {
-              const isHeader = key.startsWith("section:")
-
-              if (isHeader) {
-                return (
-                  <div
-                    key={key}
-                    className="text-xs font-semibold text-muted-foreground mt-3 mb-1 pointer-events-none select-none"
-                  >
-                    {label}
-                  </div>
-                )
-              }
-
-              return (
-                <div key={key} className="flex items-center space-x-2 py-0.5">
-                  <Checkbox
-                    id={`itemField-${key}`}
-                    checked={itemFields.includes(key)}
-                    onCheckedChange={(checked) =>
-                      handleItemFieldsChange(key, checked === true)
-                    }
-                  />
-                  <Label
-                    htmlFor={`itemField-${key}`}
-                    className="text-sm font-normal cursor-pointer"
-                  >
-                    {label}
-                  </Label>
-                </div>
-              )
-            })}
-          </div>
-        </CollapsibleSection>
-      )}
-
-      {/* Gestion des items */}
+      {/* Gestion des items - Only on Base tab */}
+      {activeBreakpoint === "base" && (
       <CollapsibleSection title="Items">
-        <div className="pt-3">
+        <div className="pt-3 space-y-4">
+          {/* Champs gérés par item - Engineers only */}
+          {canEditLayoutFields && (
+            <div className="space-y-2">
+              <label className="text-sm font-medium">
+                Champs pour chaque item
+              </label>
+              <p className="text-xs text-muted-foreground">
+                Sélectionnez les champs personnalisables par item. Les autres seront partagés.
+              </p>
+              <ItemFieldsCombobox
+                options={Object.entries(generateItemFieldsOptions())
+                  .filter(([key]) => !key.startsWith("section:"))
+                  .map(([value, label]) => {
+                    // Déterminer la section basée sur les clés précédentes
+                    const allEntries = Object.entries(generateItemFieldsOptions())
+                    const currentIndex = allEntries.findIndex(([k]) => k === value)
+                    let section = "Autres"
+
+                    for (let i = currentIndex - 1; i >= 0; i--) {
+                      const [key, label] = allEntries[i]
+                      if (key.startsWith("section:")) {
+                        section = label
+                        break
+                      }
+                    }
+
+                    return { value, label, section }
+                  })}
+                value={itemFields}
+                onChange={handleItemFieldsChange}
+                placeholder="Tous les champs sont partagés"
+              />
+            </div>
+          )}
+
           <RepeaterInspector
             label="Items"
             value={JSON.stringify(items)}
@@ -242,11 +336,18 @@ export function IteratorInspector({ blockId, data, onUpdate }: IteratorInspector
           />
         </div>
       </CollapsibleSection>
+      )}
 
       {/* Champs partagés — délégués à BlobInspector */}
       {/* Les champs dans itemFields sont gérés par item, innerBlocks est toujours masqué ici
           car géré via le canvas pour les items */}
-      <BlobInspector data={data as Record<string, unknown>} onUpdate={onUpdate as (updates: Record<string, unknown>) => void} hiddenFields={[...itemFields, "innerBlocks"]} />
+      <BlobInspector
+        data={data as Record<string, unknown>}
+        onUpdate={onUpdate as (updates: Record<string, unknown>) => void}
+        hiddenFields={[...itemFields, "innerBlocks"]}
+        externalActiveBreakpoint={canSeeResponsive ? activeBreakpoint : undefined}
+        hideBreakpointTabs={true}
+      />
     </div>
   )
 }

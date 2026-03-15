@@ -24,9 +24,10 @@ import { BlockPickerPopover } from "./BlockPickerPopover"
 import type { BlockType } from "@/lib/new-editor/block-types"
 import Link from "next/link"
 import { useUser } from "@/lib/auth/UserContext"
-import { canCreatePage, canEditPage, canSaveChanges } from "@/lib/auth/permissions"
+import { canCreatePage, canEditPage, canSaveChanges, canAccessResponsivePreview } from "@/lib/auth/permissions"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { RoleBadge } from "@/components/auth/RoleBadge"
+import { BreakpointPreviewSelector } from "./BreakpointPreviewSelector"
 
 interface NewEditorToolbarProps {
   currentPage: string
@@ -45,6 +46,8 @@ interface NewEditorToolbarProps {
   onRedo: () => void
   canUndo: boolean
   canRedo: boolean
+  previewBreakpoint: 'base' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'auto'
+  onPreviewBreakpointChange: (breakpoint: 'base' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'auto') => void
 }
 
 export function NewEditorToolbar({
@@ -64,11 +67,14 @@ export function NewEditorToolbar({
   onRedo,
   canUndo,
   canRedo,
+  previewBreakpoint,
+  onPreviewBreakpointChange,
 }: NewEditorToolbarProps) {
   const { user } = useUser()
   const userCanCreatePage = canCreatePage(user.role)
   const userCanEdit = canEditPage(user.role)
   const userCanSave = canSaveChanges(user.role)
+  const userCanAccessPreview = canAccessResponsivePreview(user.role)
 
   return (
     <div className="fixed top-0 left-0 right-0 h-14 border-b border-border bg-background z-50 flex items-center justify-between px-4">
@@ -78,7 +84,7 @@ export function NewEditorToolbar({
           <Link href="/">
             <Grid className="h-5 w-5 mr-2 text-primary" />
           </Link>
-          <div className="font-bold">Xview</div>
+          <div className="font-bold">xView</div>
         </div>
 
         {/* Sélecteur de page + création */}
@@ -166,6 +172,17 @@ export function NewEditorToolbar({
               <Redo2 className="h-4 w-4" />
             </Button>
           </div>
+        )}
+
+        {/* Séparateur vertical */}
+        {userCanAccessPreview && <div className="h-6 w-px bg-border" />}
+
+        {/* Sélecteur de breakpoint - Engineers only */}
+        {userCanAccessPreview && (
+          <BreakpointPreviewSelector
+            value={previewBreakpoint}
+            onChange={onPreviewBreakpointChange}
+          />
         )}
       </div>
 

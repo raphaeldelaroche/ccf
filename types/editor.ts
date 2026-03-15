@@ -1,7 +1,7 @@
 /**
  * Valeur générique d'un champ de formulaire
  */
-export type FormDataValue = string | boolean | string[] | Array<Record<string, unknown>>;
+export type FormDataValue = string | boolean | string[] | Array<Record<string, unknown>> | Record<string, unknown>;
 
 /**
  * Représente un bloc dans l'éditeur avec sa hiérarchie
