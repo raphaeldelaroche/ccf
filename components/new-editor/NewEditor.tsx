@@ -22,6 +22,7 @@ interface NewEditorProps {
 export function NewEditor({ initialPage = "home" }: NewEditorProps) {
   const { user } = useUser()
   const [activeView, setActiveView] = useState<EditorView>("visual")
+  const [isInspectorCollapsed, setIsInspectorCollapsed] = useState(false)
 
   // Force visual view for editors (they cannot access JSON)
   const handleViewChange = (view: EditorView) => {
@@ -30,6 +31,11 @@ export function NewEditor({ initialPage = "home" }: NewEditorProps) {
       return
     }
     setActiveView(view)
+  }
+
+  // Toggle inspector collapse/expand
+  const toggleInspector = () => {
+    setIsInspectorCollapsed(prev => !prev)
   }
 
   const {
@@ -115,6 +121,8 @@ export function NewEditor({ initialPage = "home" }: NewEditorProps) {
         canRedo={canRedo}
         previewBreakpoint={previewBreakpoint}
         onPreviewBreakpointChange={setPreviewBreakpoint}
+        onToggleInspector={toggleInspector}
+        isInspectorCollapsed={isInspectorCollapsed}
       />
 
       <div className="flex h-[calc(100vh-3.5rem)] mt-14">
@@ -123,34 +131,38 @@ export function NewEditor({ initialPage = "home" }: NewEditorProps) {
 
         {activeView === "visual" ? (
           <PreviewProvider value={{ isPreviewMode: previewBreakpoint !== 'auto' }}>
-            {/* Canvas (center) */}
-            <div className="flex-1 pl-11 overflow-y-auto">
-              <BlockCanvas
-                blocks={blocks}
-                selectedBlockId={selectedBlockId}
-                onSelectBlock={setSelectedBlockId}
-                onMoveBlock={handleMoveBlock}
-                onAddBlockBelow={(afterId, blockType) => handleAddBlock(blockType, afterId)}
-                onAddBlockBelowChild={(parentId, position, blockType) =>
-                  handleAddBlock(blockType, undefined, parentId, position)
-                }
-                onDuplicateBlock={handleDuplicateBlock}
-                onDeleteBlock={handleDeleteBlock}
-                onCopyBlock={handleCopyBlock}
-                onPasteBlock={handlePasteBlock}
-                onRefreshBlock={handleRefreshBlock}
-                onInsertFromClipboard={handleInsertFromClipboard}
-                hasClipboard={hasClipboard}
-                previewBreakpoint={previewBreakpoint}
-              />
-            </div>
+            <div className="flex flex-1 pl-11">
+              {/* Canvas (center) */}
+              <div className="flex-1 overflow-y-auto">
+                <BlockCanvas
+                  blocks={blocks}
+                  selectedBlockId={selectedBlockId}
+                  onSelectBlock={setSelectedBlockId}
+                  onMoveBlock={handleMoveBlock}
+                  onAddBlockBelow={(afterId, blockType) => handleAddBlock(blockType, afterId)}
+                  onAddBlockBelowChild={(parentId, position, blockType) =>
+                    handleAddBlock(blockType, undefined, parentId, position)
+                  }
+                  onDuplicateBlock={handleDuplicateBlock}
+                  onDeleteBlock={handleDeleteBlock}
+                  onCopyBlock={handleCopyBlock}
+                  onPasteBlock={handlePasteBlock}
+                  onRefreshBlock={handleRefreshBlock}
+                  onInsertFromClipboard={handleInsertFromClipboard}
+                  hasClipboard={hasClipboard}
+                  previewBreakpoint={previewBreakpoint}
+                />
+              </div>
 
-            {/* Inspector (right) */}
-            <div className="w-80 flex-shrink-0 overflow-y-auto border-l border-border">
-              <BlockInspector
-                selectedBlock={selectedBlock}
-                onUpdateBlock={handleUpdateBlock}
-              />
+              {/* Inspector (right) */}
+              {!isInspectorCollapsed && (
+                <div className="w-64 2xl:w-80 flex-shrink-0 overflow-y-auto border-l border-border transition-all duration-200">
+                  <BlockInspector
+                    selectedBlock={selectedBlock}
+                    onUpdateBlock={handleUpdateBlock}
+                  />
+                </div>
+              )}
             </div>
           </PreviewProvider>
         ) : (
