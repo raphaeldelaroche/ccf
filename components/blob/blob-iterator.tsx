@@ -2,6 +2,8 @@ import { ReactNode } from "react"
 import { BlobGrid, type GridColumns, type SizeValue } from "./blob-grid"
 import { BlobSwiper } from "./blob-swiper"
 import type { SwiperOptions } from "swiper/types"
+import type { SwiperResponsiveConfig } from "@/lib/blob-iterator-mapper"
+import { cn } from "@/lib/utils"
 
 /* ========================================================
    BLOB ITERATOR — Layout responsive pour collections de blobs
@@ -27,8 +29,14 @@ export interface BlobIteratorProps {
   gapY?: string
   /** Options Swiper.js (utilisées si swiper présent dans containerLayout) */
   swiperOptions?: Partial<SwiperOptions>
+  /** Largeur CSS de chaque slide en mode slidesPerView:"auto" (ex: "300px", "80%") */
+  swiperSlideWidth?: string
+  /** Per-breakpoint responsive config for CSS-driven behavior (nav/pagination/slideWidth) */
+  swiperResponsiveConfig?: SwiperResponsiveConfig
   /** Classes CSS supplémentaires */
   className?: string
+  /** Active les container queries (@md:) au lieu des media queries (md:) — éditeur uniquement */
+  useContainerQueries?: boolean
 }
 
 /* ── Parser responsive ── */
@@ -107,8 +115,9 @@ function resolveBreakpoints(
 
 /**
  * Parse "md lg:xl" → ["blob-gap-x-md", "lg:blob-gap-x-xl"]
+ * En mode container : "md lg:xl" → ["blob-gap-x-md", "@lg:blob-gap-x-xl"]
  */
-function parseResponsiveGap(value: string | undefined, axis: "x" | "y"): string {
+function parseResponsiveGap(value: string | undefined, axis: "x" | "y", containerMode = false): string {
   if (!value) return ""
 
   const parts = value.trim().split(/\s+/)
@@ -120,7 +129,8 @@ function parseResponsiveGap(value: string | undefined, axis: "x" | "y"): string 
       const bp = part.slice(0, colonIdx)
       const val = part.slice(colonIdx + 1)
       if (val !== "auto") {
-        classes.push(`${bp}:blob-gap-${axis}-${val}`)
+        const bpPrefix = containerMode ? `@${bp}` : bp
+        classes.push(`${bpPrefix}:blob-gap-${axis}-${val}`)
       }
     } else {
       if (part !== "auto") {
@@ -137,6 +147,27 @@ function parseResponsiveGap(value: string | undefined, axis: "x" | "y"): string 
  */
 function isResponsiveGap(value: string | undefined): boolean {
   return !!value && value.includes(":")
+}
+
+/**
+ * Génère les classes CSS responsive pour la grille
+ * e.g. [{ bp: "base", layout: "grid-1" }, { bp: "md", layout: "grid-3" }]
+ *   → "blob-iterator-grid-1 md:blob-iterator-grid-3"
+ * En mode container : → "blob-iterator-grid-1 @md:blob-iterator-grid-3"
+ */
+function buildResponsiveGridClasses(
+  breakpoints: Array<{ bp: Breakpoint; layout: IteratorLayout }>,
+  containerMode = false
+): string {
+  return breakpoints
+    .map(({ bp, layout }) => {
+      const columns = extractGridColumns(layout)
+      const cls = `blob-iterator-grid-${columns}`
+      if (bp === "base") return cls
+      const prefix = containerMode ? `@${bp}` : bp
+      return `${prefix}:${cls}`
+    })
+    .join(" ")
 }
 
 /**
@@ -159,8 +190,12 @@ export function BlobIterator({
   gapX,
   gapY,
   swiperOptions,
-  className
+  swiperSlideWidth,
+  swiperResponsiveConfig,
+  className,
+  useContainerQueries = false,
 }: BlobIteratorProps) {
+  const containerMode = useContainerQueries
   const layoutMap = parseResponsiveLayout(containerLayout, "grid-auto")
   const breakpoints = resolveBreakpoints(containerLayout)
   const needsClient = requiresClientComponent(layoutMap)
@@ -168,19 +203,18 @@ export function BlobIterator({
   // Parse responsive gap classes
   const gapXResponsive = isResponsiveGap(gapX)
   const gapYResponsive = isResponsiveGap(gapY)
-  const gapXClasses = gapXResponsive ? parseResponsiveGap(gapX, "x") : ""
-  const gapYClasses = gapYResponsive ? parseResponsiveGap(gapY, "y") : ""
+  const gapXClasses = gapXResponsive ? parseResponsiveGap(gapX, "x", containerMode) : ""
+  const gapYClasses = gapYResponsive ? parseResponsiveGap(gapY, "y", containerMode) : ""
 
   // Combine className with responsive gap classes
   const combinedClassName = [className, gapXClasses, gapYClasses].filter(Boolean).join(" ")
 
-  // Si un seul breakpoint et c'est une grid, retourne directement BlobGrid (Server Component)
+  // Aucun swiper → Server Component avec classes CSS responsive
   if (!needsClient) {
-    const singleLayout = breakpoints[0]?.layout || "grid-auto"
-    const columns = extractGridColumns(singleLayout)
+    const responsiveLayout = buildResponsiveGridClasses(breakpoints, containerMode)
     return (
       <BlobGrid
-        columns={columns}
+        responsiveLayout={responsiveLayout}
         gapX={!gapXResponsive ? (gapX as SizeValue) : undefined}
         gapY={!gapYResponsive ? (gapY as SizeValue) : undefined}
         className={combinedClassName}
@@ -191,7 +225,6 @@ export function BlobIterator({
   }
 
   // Si swiper est présent, on doit gérer le responsive avec CSS + composants conditionnels
-  // Pour l'instant, on va utiliser une approche simple avec CSS media queries
   // et rendre les deux types de conteneurs avec display conditionnels
 
   return (
@@ -201,14 +234,17 @@ export function BlobIterator({
         const columns = extractGridColumns(layout)
 
         // Générer la classe CSS pour afficher ce conteneur au bon breakpoint
-        const displayClass = getDisplayClassForBreakpoint(bp, breakpoints)
+        const displayClass = getDisplayClassForBreakpoint(bp, breakpoints, containerMode)
 
         if (isSwiperLayout) {
           return (
-            <div key={`swiper-${bp}`} className={displayClass}>
+            <div key={`swiper-${bp}`} className={cn(displayClass, "w-full min-w-0 overflow-hidden")}>
               <BlobSwiper
                 gapX={!gapXResponsive ? (gapX as SizeValue) : undefined}
                 swiperOptions={swiperOptions}
+                swiperSlideWidth={swiperSlideWidth}
+                responsiveConfig={swiperResponsiveConfig}
+                useContainerQueries={containerMode}
                 className={combinedClassName}
               >
                 {children}
@@ -236,26 +272,30 @@ export function BlobIterator({
 
 /**
  * Génère la classe CSS pour afficher un conteneur uniquement au bon breakpoint
+ * En mode container, utilise @md:block/@md:hidden au lieu de md:block/md:hidden
  */
 function getDisplayClassForBreakpoint(
   currentBp: Breakpoint,
-  allBreakpoints: Array<{ bp: Breakpoint; layout: IteratorLayout }>
+  allBreakpoints: Array<{ bp: Breakpoint; layout: IteratorLayout }>,
+  containerMode = false
 ): string {
   const currentIndex = BREAKPOINT_ORDER.indexOf(currentBp)
   const nextBreakpoint = allBreakpoints.find(
     ({ bp }) => BREAKPOINT_ORDER.indexOf(bp) > currentIndex
   )
 
+  const p = (bp: string) => containerMode ? `@${bp}` : bp
+
   if (currentBp === "base") {
     if (nextBreakpoint) {
-      return `block ${nextBreakpoint.bp}:hidden`
+      return `block ${p(nextBreakpoint.bp)}:hidden`
     }
     return "block"
   }
 
   if (nextBreakpoint) {
-    return `hidden ${currentBp}:block ${nextBreakpoint.bp}:hidden`
+    return `hidden ${p(currentBp)}:block ${p(nextBreakpoint.bp)}:hidden`
   }
 
-  return `hidden ${currentBp}:block`
+  return `hidden ${p(currentBp)}:block`
 }

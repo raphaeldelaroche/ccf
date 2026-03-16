@@ -7,6 +7,7 @@ export type SizeValue = "none" | "auto" | "xs" | "sm" | "md" | "lg" | "xl" | "2x
 interface BlobGridProps {
   children: ReactNode
   columns?: GridColumns
+  responsiveLayout?: string
   gapX?: SizeValue; gapY?: SizeValue
   className?: string
 }
@@ -21,6 +22,7 @@ interface BlobGridProps {
 export function BlobGrid({
   children,
   columns = "auto",
+  responsiveLayout,
   gapX,
   gapY,
   className
@@ -29,7 +31,7 @@ export function BlobGrid({
     <div
       data-slot="blob-grid"
       className={cn(
-        `blob-iterator-grid-${columns}`,
+        responsiveLayout ?? `blob-iterator-grid-${columns}`,
         gapX && gapX !== "auto" && `blob-gap-x-${gapX}`,
         gapY && gapY !== "auto" && `blob-gap-y-${gapY}`,
         className

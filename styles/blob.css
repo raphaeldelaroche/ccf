@@ -81,6 +81,8 @@
 @source inline("{blob-iterator-grid-1,blob-iterator-grid-2,blob-iterator-grid-3,blob-iterator-grid-4,blob-iterator-grid-5,blob-iterator-grid-6,blob-iterator-grid-auto,blob-iterator-swiper}");
 @source inline("{sm,md,lg,xl,2xl}:{blob-iterator-grid-1,blob-iterator-grid-2,blob-iterator-grid-3,blob-iterator-grid-4,blob-iterator-grid-5,blob-iterator-grid-6,blob-iterator-grid-auto,blob-iterator-swiper}");
 @source inline("{@sm,@md,@lg,@xl,@2xl}:{blob-iterator-grid-1,blob-iterator-grid-2,blob-iterator-grid-3,blob-iterator-grid-4,blob-iterator-grid-5,blob-iterator-grid-6,blob-iterator-grid-auto,blob-iterator-swiper}");
+@source inline("{sm,md,lg,xl,2xl}:{block,hidden}");
+@source inline("{@sm,@md,@lg,@xl,@2xl}:{block,hidden}");
 
 /* ── Grid areas base : consomme les variables CSS injectées par les classes composées ── */
 @layer base {
@@ -107,8 +109,8 @@
 
     & [data-slot="marker"]       { grid-area: marker; align-self: start; }
     & [data-slot="blob-header"]  { grid-area: header; justify-self: stretch; align-self: start; align-items: var(--blob-align-flex, flex-start); padding-inline: var(--spacing-header-padding-x, 0); padding-block: var(--spacing-header-padding-y, 0); }
-    & [data-slot="blob-actions"] { grid-area: actions; align-self: start; }
-    & [data-slot="blob-content"] { grid-area: content; align-self: start; }
+    & [data-slot="blob-actions"] { grid-area: actions; align-self: start; justify-content: var(--blob-align-flex, flex-start); }
+    & [data-slot="blob-content"] { grid-area: content; align-self: start; min-width: 0; }
     & [data-slot="blob-figure"]  { grid-area: figure; align-self: start; }
   }
 }
@@ -269,15 +271,14 @@
 
 @utility blob-iterator-swiper {
   width: 100%;
+  overflow: hidden;
   position: relative;
 
   & .swiper {
     width: 100%;
-    height: 100%;
   }
 
   & .swiper-slide {
-    width: auto;
     height: auto;
     display: flex;
     align-items: stretch;

@@ -1,12 +1,12 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useCallback } from "react"
 import { createPortal } from "react-dom"
 import { BlockNode, BlockType } from "@/lib/new-editor/block-types"
 import { BlockPickerPopover } from "./BlockPickerPopover"
-import { usePreview } from "./PreviewContext"
 import { Blob } from "@/components/blob/blob"
-import { BlobIterator } from "@/components/blob/blob-iterator"
+import { ClientBlob } from "./ClientBlob"
+import { ClientBlobIterator } from "./ClientBlobIterator"
 import { Eyebrow } from "@/components/blob/eyebrow"
 import { Title } from "@/components/blob/title"
 import { Subtitle } from "@/components/blob/subtitle"
@@ -31,6 +31,7 @@ import { renderIconObject } from "@/lib/render-icon"
 import { resolveAppearance } from "@/config/blob-appearances"
 import type { BlobIteratorProps } from "@/components/blob/blob-iterator"
 import { cn } from "@/lib/utils"
+import { useHoveredBlock } from "./HoveredBlockContext"
 import Image from "next/image"
 import Link from "next/link"
 
@@ -90,8 +91,6 @@ export function BlockRenderer({
   onPasteChild,
   onRefreshChild,
 }: BlockRendererProps) {
-  const { isPreviewMode } = usePreview()
-
   // Rendu du bloc selon son type
   const renderBlockContent = () => {
     if (block.blockType === "blob") {
@@ -144,7 +143,7 @@ export function BlockRenderer({
       ))
 
       return (
-        <Blob {...blobProps} useContainerQueries={isPreviewMode} className={cn(appearanceConfig.blobClassName, blobProps.className)}>
+        <ClientBlob {...blobProps} className={cn(appearanceConfig.blobClassName, blobProps.className)}>
           {header && (header.eyebrow || header.title || header.subtitle) && (
             <Blob.Header className={cn(appearanceConfig.headerClassName)}>
               {header.eyebrow && (
@@ -224,7 +223,7 @@ export function BlockRenderer({
                 )}
               </Blob.Content>
             )}
-        </Blob>
+        </ClientBlob>
       )
     }
 
@@ -234,6 +233,8 @@ export function BlockRenderer({
         iteratorGapX,
         iteratorGapY,
         swiperOptions,
+        swiperSlideWidth,
+        swiperResponsiveConfig,
         sharedBlobProps,
         sharedAppearance,
         items
@@ -242,11 +243,13 @@ export function BlockRenderer({
       const sharedAppearanceConfig = resolveAppearance(sharedAppearance)
 
       return (
-        <BlobIterator
+        <ClientBlobIterator
           containerLayout={iteratorLayout as BlobIteratorProps["containerLayout"]}
           gapX={iteratorGapX as BlobIteratorProps["gapX"]}
           gapY={iteratorGapY as BlobIteratorProps["gapY"]}
           swiperOptions={swiperOptions}
+          swiperSlideWidth={swiperSlideWidth}
+          swiperResponsiveConfig={swiperResponsiveConfig}
         >
           {items.map((itemData, index) => {
             const { blobProps, appearance, header, marker, figure, actions, content, innerBlocks: itemInnerBlocks, itemId } = itemData
@@ -293,10 +296,9 @@ export function BlockRenderer({
             ))
 
             return (
-              <Blob
+              <ClientBlob
                 key={index}
                 {...mergedBlobProps}
-                useContainerQueries={isPreviewMode}
                 className={cn(itemAppearanceConfig.blobClassName, mergedBlobProps.className)}
               >
                 {header && (header.eyebrow || header.title || header.subtitle) && (
@@ -380,10 +382,10 @@ export function BlockRenderer({
                     ))}
                   </Blob.Actions>
                 )}
-              </Blob>
+              </ClientBlob>
             )
           })}
-        </BlobIterator>
+        </ClientBlobIterator>
       )
     }
 
@@ -422,9 +424,12 @@ export function BlockRenderer({
     return <div className="p-4 bg-muted text-sm">Type de bloc inconnu: {block.blockType}</div>
   }
 
-  const [isHovered, setIsHovered] = useState(false)
+  const { hoveredBlockId, setHoveredBlockId } = useHoveredBlock()
+  const isBlockHovered = hoveredBlockId === block.id
+
   const [waveKey, setWaveKey] = useState(0)
   const [waveRect, setWaveRect] = useState<DOMRect | null>(null)
+  const [controlsRect, setControlsRect] = useState<DOMRect | null>(null)
   const wrapperRef = useRef<HTMLDivElement>(null)
   const prevSelected = useRef(false)
 
@@ -435,6 +440,43 @@ export function BlockRenderer({
     }
     prevSelected.current = isSelected
   }, [isSelected])
+
+  // Update controls position when hovered, track scroll/resize
+  useEffect(() => {
+    if (!isBlockHovered || !wrapperRef.current) {
+      setControlsRect(null)
+      return
+    }
+
+    const update = () => {
+      const rect = wrapperRef.current?.getBoundingClientRect()
+      if (rect) setControlsRect(rect)
+    }
+
+    update()
+
+    const scrollContainer = wrapperRef.current.closest('[data-editor-scroll]')
+    scrollContainer?.addEventListener('scroll', update, { passive: true })
+    window.addEventListener('scroll', update, { passive: true })
+    window.addEventListener('resize', update, { passive: true })
+
+    return () => {
+      scrollContainer?.removeEventListener('scroll', update)
+      window.removeEventListener('scroll', update)
+      window.removeEventListener('resize', update)
+    }
+  }, [isBlockHovered])
+
+  const handleMouseOver = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation()
+    setHoveredBlockId(block.id)
+  }, [block.id, setHoveredBlockId])
+
+  const handleMouseLeave = useCallback(() => {
+    if (hoveredBlockId === block.id) {
+      setHoveredBlockId(null)
+    }
+  }, [hoveredBlockId, block.id, setHoveredBlockId])
 
   // Fonction pour copier le JSON du bloc
   const handleCopyJSON = async () => {
@@ -451,9 +493,12 @@ export function BlockRenderer({
       <ContextMenuTrigger asChild>
         <div
           ref={wrapperRef}
-          className={cn("relative")}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
+          className={cn(
+            "relative rounded-sm transition-shadow duration-150",
+            isBlockHovered && "ring-1 ring-blue-300/50"
+          )}
+          onMouseOver={handleMouseOver}
+          onMouseLeave={handleMouseLeave}
           onClick={(e) => {
             e.stopPropagation()
             onSelect()
@@ -474,20 +519,24 @@ export function BlockRenderer({
             />,
             document.body
           )}
-          <BlockHoverControls
-            block={block}
-            onMoveUp={onMoveUp}
-            onMoveDown={onMoveDown}
-            onAddBelow={onAddBelow}
-            onInsertBelow={onInsertBelow}
-            onDuplicate={onDuplicate}
-            onDelete={onDelete}
-            onRefresh={onRefresh}
-            canMoveUp={canMoveUp}
-            canMoveDown={canMoveDown}
-            isVisible={isHovered}
-            hasClipboard={hasClipboard}
-          />
+          {isBlockHovered && controlsRect && createPortal(
+            <BlockHoverControls
+              block={block}
+              onMoveUp={onMoveUp}
+              onMoveDown={onMoveDown}
+              onAddBelow={onAddBelow}
+              onInsertBelow={onInsertBelow}
+              onDuplicate={onDuplicate}
+              onDelete={onDelete}
+              onRefresh={onRefresh}
+              canMoveUp={canMoveUp}
+              canMoveDown={canMoveDown}
+              isVisible
+              hasClipboard={hasClipboard}
+              anchorRect={controlsRect}
+            />,
+            document.body
+          )}
           {renderBlockContent()}
         </div>
       </ContextMenuTrigger>

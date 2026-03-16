@@ -20,7 +20,11 @@ Le BlobIterator est un système de conteneur pour créer des collections de blob
 ### `blob-grid.tsx` / `blob-swiper.tsx` — Implémentations spécialisées
 
 * `BlobGrid` : Server Component pour les grilles statiques, gap via `blob-gutter-*` → `var(--spacing-section)`
-* `BlobSwiper` : Client Component avec Swiper.js (navigation, pagination, autoplay, etc.)
+* `BlobSwiper` : Client Component avec Swiper.js — options responsive per-breakpoint :
+  * `slidesPerView`, `centeredSlides` → Swiper native `breakpoints` (pixel-keyed)
+  * `navigation`, `pagination`, `slideWidth` → CSS scoped `<style>` via `data-swiper-scope` (`@media` en production, `@container` en éditeur preview)
+  * `loop`, `autoplay` → valeur base resolved (structurel, non CSS-toggable)
+  * `key` sur `<Swiper>` force le remontage quand les options structurelles changent
 * Prop `gutter` : utilise les mêmes tokens de taille que Blob (via `blob-gutter-*` CSS utilities)
 
 ## Système de champs partagés (Iterator)
@@ -138,6 +142,23 @@ export default function FeaturesSection() {
 </BlobIterator>
 ```
 
-**Layouts disponibles** : `grid-1`, `grid-2`, `grid-3`, `grid-4`, `grid-auto` (Server Component), `swiper` (Client Component)
+**Layouts disponibles** : `grid-1`, `grid-2`, `grid-3`, `grid-4`, `grid-5`, `grid-6`, `grid-auto` (Server Component), `swiper` (Client Component)
 
-**Options Swiper** : Le composant accepte toutes les [options Swiper.js](https://swiperjs.com/swiper-api) via la prop `swiperOptions`.
+### Options Swiper — Responsive par breakpoint
+
+Toutes les options swiper sont stockées dans `responsive.{breakpoint}` et supportent le système de breakpoints :
+
+| Option | Responsive | Mécanisme technique |
+|--------|------------|---------------------|
+| `slidesPerView` | ✅ | Swiper native `breakpoints` |
+| `centeredSlides` | ✅ | Swiper native `breakpoints` |
+| `slideWidth` | ✅ | CSS scoped `<style>` per bp |
+| `navigation` | ✅ | Activé si any bp true, CSS `display` per bp |
+| `pagination` | ✅ | Activé si any bp true, CSS `display` per bp |
+| `autoplay` | ❌ base | Structurel (mobile-first resolved) |
+| `loop` | ❌ base | Structurel (mobile-first resolved) |
+
+**Flux de données** :
+1. Inspector stocke dans `responsive.{bp}.swiperNavigation` etc.
+2. `buildSwiperConfig()` produit `swiperOptions` (Swiper.js) + `swiperResponsiveConfig` (maps per-bp)
+3. `BlobSwiper` génère un `<style>` scoped (`@media` ou `@container`) pour nav/pagination/slideWidth

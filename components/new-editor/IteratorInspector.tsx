@@ -9,6 +9,8 @@ import { RepeaterInspector } from "./RepeaterInspector"
 import { BreakpointTabs } from "./BreakpointTabs"
 import { ItemFieldsCombobox } from "./ItemFieldsCombobox"
 import { SIZES, generateItemFieldsOptions } from "@/lib/blob-fields"
+import { evaluateShowIf } from "@/lib/new-editor/showif-evaluator"
+import { IteratorBlockDefinition } from "@/lib/blob-iterator-definition"
 import type { FormDataValue } from "@/types/editor"
 import type { BlockNode } from "@/lib/new-editor/block-types"
 import { useUser } from "@/lib/auth/UserContext"
@@ -16,6 +18,7 @@ import { canEditField } from "@/lib/auth/field-permissions"
 import {
   type Breakpoint,
   type ResponsiveProps,
+  getBreakpointValue,
   getBreakpointsWithOverrides
 } from "@/lib/responsive-utils"
 import type { ResponsiveBreakpointProps } from "@/lib/blob-compose"
@@ -82,6 +85,23 @@ export function IteratorInspector({ blockId, data, onUpdate }: IteratorInspector
 
   // Check permissions - all fields in "Conteneur" and "Champs des items" are layout-style
   const canEditLayoutFields = canEditField(user.role, 'select')
+
+  // Contexte résolu pour l'évaluation des showIf :
+  // Résout iteratorLayout avec héritage mobile-first depuis le breakpoint actif
+  const resolvedIteratorLayout = useMemo(() => {
+    const { value } = getBreakpointValue(responsiveData, activeBreakpoint, "iteratorLayout")
+    return (value as string) || (data.iteratorLayout as string) || "grid-auto"
+  }, [responsiveData, activeBreakpoint, data.iteratorLayout])
+
+  const resolvedContext = useMemo<Record<string, FormDataValue>>(() => ({
+    ...(data as Record<string, FormDataValue>),
+    iteratorLayout: resolvedIteratorLayout,
+  }), [data, resolvedIteratorLayout])
+
+  // Helper : évalue la condition showIf d'un champ de la section "iterator" depuis la définition
+  const iteratorFieldDefs = IteratorBlockDefinition.extraSections!.iterator.fields
+  const showField = (fieldKey: string) =>
+    evaluateShowIf(iteratorFieldDefs[fieldKey]?.showIf, resolvedContext)
   const canSeeResponsive = user.role === 'engineer' || user.role === 'reviewer'
 
   const handleChange = (key: string, value: FormDataValue) => {
@@ -163,17 +183,28 @@ export function IteratorInspector({ blockId, data, onUpdate }: IteratorInspector
   const arrayToOptions = (arr: readonly string[]) =>
     Object.fromEntries(arr.map((v) => [v, v]))
 
-  // Helper to get responsive value for iterator fields
+  // Helper to get responsive value for iterator fields (strings)
   const getIteratorValue = (fieldKey: string, defaultValue: string) => {
-    if (canSeeResponsive && responsiveData[activeBreakpoint]?.[fieldKey as keyof typeof responsiveData[typeof activeBreakpoint]]) {
-      return responsiveData[activeBreakpoint][fieldKey as keyof typeof responsiveData[typeof activeBreakpoint]] as string
+    if (canSeeResponsive) {
+      const { value } = getBreakpointValue(responsiveData, activeBreakpoint, fieldKey)
+      if (value !== undefined) return value as string
     }
-    // Check base breakpoint
-    if (canSeeResponsive && activeBreakpoint !== "base" && responsiveData.base?.[fieldKey as keyof typeof responsiveData.base]) {
-      return responsiveData.base[fieldKey as keyof typeof responsiveData.base] as string
+    // Fallback to direct field, then legacy field name (containerLayout → iteratorLayout)
+    const directValue = data[fieldKey] as string
+    const legacyValue = fieldKey === "iteratorLayout" ? data.containerLayout as string : undefined
+    return directValue || legacyValue || defaultValue
+  }
+
+  // Helper to get responsive value for iterator boolean fields
+  const getIteratorBoolValue = (fieldKey: string, defaultValue: boolean) => {
+    if (canSeeResponsive) {
+      const { value } = getBreakpointValue(responsiveData, activeBreakpoint, fieldKey)
+      if (value !== undefined) return value === true || value === "true"
     }
-    // Fallback to legacy direct field
-    return (data[fieldKey] as string) || defaultValue
+    // Fallback to direct field (legacy flat storage)
+    const directValue = data[fieldKey]
+    if (directValue !== undefined) return directValue === true || directValue === "true"
+    return defaultValue
   }
 
   return (
@@ -234,6 +265,92 @@ export function IteratorInspector({ blockId, data, onUpdate }: IteratorInspector
               responsiveValues={canSeeResponsive ? responsiveData : undefined}
               fieldKey="iteratorGapY"
             />
+            {showField("swiperSlidesPerView") && (
+              <InspectorField
+                label="Slides par vue (slidesPerView)"
+                value={getIteratorValue("swiperSlidesPerView", "auto")}
+                type="select"
+                options={{
+                  auto: "Auto (largeur contenu)",
+                  "1": "1",
+                  "2": "2",
+                  "3": "3",
+                  "4": "4",
+                  "5": "5",
+                  "6": "6",
+                }}
+                onChange={(v) => handleResponsiveChange("swiperSlidesPerView", v)}
+                currentBreakpoint={canSeeResponsive ? activeBreakpoint : undefined}
+                responsiveValues={canSeeResponsive ? responsiveData : undefined}
+                fieldKey="swiperSlidesPerView"
+              />
+            )}
+            {showField("swiperSlideWidth") && (
+              <InspectorField
+                label="Largeur des slides (mode auto)"
+                value={getIteratorValue("swiperSlideWidth", "")}
+                type="text"
+                onChange={(v) => handleResponsiveChange("swiperSlideWidth", v)}
+                currentBreakpoint={canSeeResponsive ? activeBreakpoint : undefined}
+                responsiveValues={canSeeResponsive ? responsiveData : undefined}
+                fieldKey="swiperSlideWidth"
+              />
+            )}
+            {showField("swiperNavigation") && (
+              <InspectorField
+                label="Navigation (flèches)"
+                value={getIteratorBoolValue("swiperNavigation", false)}
+                type="checkbox"
+                onChange={(v) => handleResponsiveChange("swiperNavigation", v)}
+                currentBreakpoint={canSeeResponsive ? activeBreakpoint : undefined}
+                responsiveValues={canSeeResponsive ? responsiveData : undefined}
+                fieldKey="swiperNavigation"
+              />
+            )}
+            {showField("swiperPagination") && (
+              <InspectorField
+                label="Pagination (points)"
+                value={getIteratorBoolValue("swiperPagination", false)}
+                type="checkbox"
+                onChange={(v) => handleResponsiveChange("swiperPagination", v)}
+                currentBreakpoint={canSeeResponsive ? activeBreakpoint : undefined}
+                responsiveValues={canSeeResponsive ? responsiveData : undefined}
+                fieldKey="swiperPagination"
+              />
+            )}
+            {showField("swiperAutoplay") && (
+              <InspectorField
+                label="Autoplay"
+                value={getIteratorBoolValue("swiperAutoplay", false)}
+                type="checkbox"
+                onChange={(v) => handleResponsiveChange("swiperAutoplay", v)}
+                currentBreakpoint={canSeeResponsive ? activeBreakpoint : undefined}
+                responsiveValues={canSeeResponsive ? responsiveData : undefined}
+                fieldKey="swiperAutoplay"
+              />
+            )}
+            {showField("swiperLoop") && (
+              <InspectorField
+                label="Boucle infinie (loop)"
+                value={getIteratorBoolValue("swiperLoop", false)}
+                type="checkbox"
+                onChange={(v) => handleResponsiveChange("swiperLoop", v)}
+                currentBreakpoint={canSeeResponsive ? activeBreakpoint : undefined}
+                responsiveValues={canSeeResponsive ? responsiveData : undefined}
+                fieldKey="swiperLoop"
+              />
+            )}
+            {showField("swiperCenteredSlides") && (
+              <InspectorField
+                label="Centrer les slides (centeredSlides)"
+                value={getIteratorBoolValue("swiperCenteredSlides", false)}
+                type="checkbox"
+                onChange={(v) => handleResponsiveChange("swiperCenteredSlides", v)}
+                currentBreakpoint={canSeeResponsive ? activeBreakpoint : undefined}
+                responsiveValues={canSeeResponsive ? responsiveData : undefined}
+                fieldKey="swiperCenteredSlides"
+              />
+            )}
           </div>
         </CollapsibleSection>
       )}

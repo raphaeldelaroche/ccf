@@ -16,7 +16,7 @@ Un éditeur visuel simplifié et performant construit de zéro pour supporter pl
 * **Système de vues** : Sidebar permet de basculer entre deux vues — Éditeur visuel (Canvas + Inspector) et Éditeur JSON (textarea pleine largeur du JSON de la page)
 * **Types de blocs** : `Blob`, `BlobIterator` et blocs custom (ex: `ButtonTooltip`) — système extensible
 * **Blocs imbriqués récursifs** : Les Blob peuvent contenir d'autres Blob à l'infini via `innerBlocks` — activé via le champ `contentType: "innerBlocks"` dans la section Contenu
-* **Hover controls** : Boutons ↑ ↓ + 📋 (dupliquer) + 🗑 cliquables en position absolue sur chaque bloc
+* **Hover controls** : Boutons ↑ ↓ + 📋 (dupliquer) + 🗑 rendus via `createPortal` en `position: fixed` — un seul bloc survolé à la fois (anti-cascade via `HoveredBlockContext`), bordure bleue légère sur le bloc actif
 * **Inspector dynamique** : Bascule automatiquement entre BlobInspector et IteratorInspector selon le type de bloc sélectionné
 * **Zero re-render pattern** : Inputs avec `localValue` state pour éviter les cursor-jumps
 * **Lazy mounting** : Les sections accordion ne montent leurs enfants qu'à la première ouverture
@@ -37,7 +37,8 @@ Un éditeur visuel simplifié et performant construit de zéro pour supporter pl
 * `BlockInspector.tsx` : Switch entre BlobInspector et IteratorInspector
 * `BlobInspector.tsx` : 9 sections, 40+ champs Blob
 * `IteratorInspector.tsx` : itemFields multiselect + items management
-* `BlockHoverControls.tsx` : Contrôles flottants ↑ ↓ + 📋 (dupliquer) + 🗑 + picker d'ajout de bloc
+* `BlockHoverControls.tsx` : Contrôles flottants ↑ ↓ + 📋 (dupliquer) + 🗑 + picker d'ajout de bloc — rendus via portal (`position: fixed`)
+* `HoveredBlockContext.tsx` : Context partagé pour le hover anti-cascade (un seul bloc hovered à la fois)
 * `BlockPickerPopover.tsx` : Popover de sélection du type de bloc à créer (style slash command)
 
 ### Hooks (`/lib/new-editor`)
@@ -135,9 +136,11 @@ Un éditeur visuel simplifié et performant construit de zéro pour supporter pl
 
 ### `BlockHoverControls.tsx` — Contrôles flottants
 
-* Boutons ↑ ↓ + 🗑 en position absolue sur la gauche
-* Visibilité pilotée par état React `isHovered` (pas de `group-hover` CSS) pour rester cliquables
-* Contrôle du déplacement, de l'ajout et de la suppression de blocs
+* Boutons ↑ ↓ + 🗑 rendus via `createPortal` dans `document.body` en `position: fixed`
+* Positionnement calculé via `anchorRect` (`getBoundingClientRect` du wrapper bloc), mis à jour au scroll/resize
+* Visibilité pilotée par `HoveredBlockContext` — un seul bloc survolé à la fois (anti-cascade pour blocs imbriqués)
+* Le bloc survolé affiche une bordure bleue légère (`ring-1 ring-blue-300/50`)
+* `onMouseOver` + `stopPropagation` dans `BlockRenderer` empêche le parent de recevoir le hover quand un enfant est survolé
 
 ### `BlockInspector.tsx` — Inspector principal
 

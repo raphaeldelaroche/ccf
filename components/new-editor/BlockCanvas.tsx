@@ -2,6 +2,7 @@
 
 import { BlockNode, BlockType } from "@/lib/new-editor/block-types"
 import { BlockRenderer } from "./BlockRenderer"
+import { HoveredBlockProvider } from "./HoveredBlockContext"
 import type { RefreshMode } from "@/lib/new-editor/refresh-helpers"
 
 interface BlockCanvasProps {
@@ -70,49 +71,52 @@ export function BlockCanvas({
   }
 
   return (
-    <div
-      className={`min-h-full ${isResponsiveMode ? 'bg-gray-50 p-8' : ''}`}
-      onClick={(e) => {
-        // Clic sur le fond désélectionne
-        if (e.target === e.currentTarget) {
-          onSelectBlock("")
-        }
-      }}
-    >
+    <HoveredBlockProvider>
       <div
-        className={`${widthClass} @container ${isResponsiveMode ? 'mx-auto bg-white shadow-lg' : ''} transition-all duration-300`}
+        className={`min-h-full ${isResponsiveMode ? 'bg-gray-50 p-8' : ''}`}
+        onClick={(e) => {
+          // Clic sur le fond désélectionne
+          if (e.target === e.currentTarget) {
+            onSelectBlock("")
+          }
+        }}
       >
-        {blocks.map((block, index) => (
-          <BlockRenderer
-            key={block.id}
-            block={block}
-            isSelected={selectedBlockId === block.id}
-            selectedBlockId={selectedBlockId}
-            onSelect={() => onSelectBlock(block.id)}
-            onMoveUp={() => onMoveBlock(block.id, "up")}
-            onMoveDown={() => onMoveBlock(block.id, "down")}
-            onAddBelow={(blockType) => onAddBlockBelow(block.id, blockType)}
-            onDuplicate={() => onDuplicateBlock(block.id)}
-            onDelete={() => onDeleteBlock(block.id)}
-            onCopy={() => onCopyBlock(block.id)}
-            onPaste={() => onPasteBlock(block.id)}
-            onRefresh={(mode) => onRefreshBlock(block.id, mode)}
-            onInsertBelow={() => onInsertFromClipboard(block.id)}
-            onInsertBelowChild={(parentId, position) => onInsertFromClipboard(undefined, parentId, position)}
-            canMoveUp={index > 0}
-            canMoveDown={index < blocks.length - 1}
-            onSelectChild={onSelectBlock}
-            onMoveChild={onMoveBlock}
-            onAddBelowChild={onAddBlockBelowChild}
-            onDuplicateChild={onDuplicateBlock}
-            onDeleteChild={onDeleteBlock}
-            onCopyChild={onCopyBlock}
-            onPasteChild={onPasteBlock}
-            onRefreshChild={onRefreshBlock}
-            hasClipboard={hasClipboard}
-          />
-        ))}
+        <div
+          className={`${widthClass} ${isResponsiveMode ? 'mx-auto bg-white shadow-lg' : ''} transition-all duration-300`}
+          style={isResponsiveMode ? { containerType: 'inline-size' } : undefined}
+        >
+          {blocks.map((block, index) => (
+            <BlockRenderer
+              key={block.id}
+              block={block}
+              isSelected={selectedBlockId === block.id}
+              selectedBlockId={selectedBlockId}
+              onSelect={() => onSelectBlock(block.id)}
+              onMoveUp={() => onMoveBlock(block.id, "up")}
+              onMoveDown={() => onMoveBlock(block.id, "down")}
+              onAddBelow={(blockType) => onAddBlockBelow(block.id, blockType)}
+              onDuplicate={() => onDuplicateBlock(block.id)}
+              onDelete={() => onDeleteBlock(block.id)}
+              onCopy={() => onCopyBlock(block.id)}
+              onPaste={() => onPasteBlock(block.id)}
+              onRefresh={(mode) => onRefreshBlock(block.id, mode)}
+              onInsertBelow={() => onInsertFromClipboard(block.id)}
+              onInsertBelowChild={(parentId, position) => onInsertFromClipboard(undefined, parentId, position)}
+              canMoveUp={index > 0}
+              canMoveDown={index < blocks.length - 1}
+              onSelectChild={onSelectBlock}
+              onMoveChild={onMoveBlock}
+              onAddBelowChild={onAddBlockBelowChild}
+              onDuplicateChild={onDuplicateBlock}
+              onDeleteChild={onDeleteBlock}
+              onCopyChild={onCopyBlock}
+              onPasteChild={onPasteBlock}
+              onRefreshChild={onRefreshBlock}
+              hasClipboard={hasClipboard}
+            />
+          ))}
+        </div>
       </div>
-    </div>
+    </HoveredBlockProvider>
   )
 }

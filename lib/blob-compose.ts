@@ -52,6 +52,13 @@ export interface ResponsiveBreakpointProps {
   iteratorLayout?: string
   iteratorGapX?: SizeValue
   iteratorGapY?: SizeValue
+  swiperSlidesPerView?: string
+  swiperSlideWidth?: string
+  swiperNavigation?: boolean
+  swiperPagination?: boolean
+  swiperAutoplay?: boolean
+  swiperLoop?: boolean
+  swiperCenteredSlides?: boolean
 }
 
 /**

@@ -8,20 +8,16 @@ import { composeBlobClasses, type BlobComposableProps } from "@/lib/blob-compose
    BLOB
    ======================================= */
 
-type BlobProps = React.ComponentProps<"div"> &
-  BlobComposableProps & {
-    useContainerQueries?: boolean
-  }
+type BlobProps = React.ComponentProps<"div"> & BlobComposableProps
 
 function Blob({
   className,
   responsive,
   theme,
-  useContainerQueries = false,
   children,
   ...props
 }: BlobProps) {
-  const composedClasses = composeBlobClasses({ responsive, theme }, useContainerQueries)
+  const composedClasses = composeBlobClasses({ responsive, theme })
 
   return (
     <div

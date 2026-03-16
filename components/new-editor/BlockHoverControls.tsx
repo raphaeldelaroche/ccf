@@ -32,6 +32,7 @@ interface BlockHoverControlsProps {
   isVisible?: boolean
   hasClipboard?: boolean
   className?: string
+  anchorRect?: DOMRect
 }
 
 export function BlockHoverControls({
@@ -48,6 +49,7 @@ export function BlockHoverControls({
   isVisible = false,
   hasClipboard = false,
   className,
+  anchorRect,
 }: BlockHoverControlsProps) {
   const { user } = useUser()
   const [isJsonPopoverOpen, setIsJsonPopoverOpen] = useState(false)
@@ -70,11 +72,23 @@ export function BlockHoverControls({
   return (
     <div
       className={cn(
-        "absolute left-0 top-1/2 -translate-y-1/2 -translate-x-[calc(100%)] px-2",
-        "flex flex-col gap-1 transition-opacity z-10",
+        "flex flex-col gap-1 transition-opacity px-2",
         isVisible ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none",
         className
       )}
+      style={anchorRect ? {
+        position: 'fixed',
+        top: anchorRect.top + anchorRect.height / 2,
+        left: anchorRect.left,
+        transform: 'translate(-100%, -50%)',
+        zIndex: 9999,
+      } : {
+        position: 'absolute',
+        left: 0,
+        top: '50%',
+        transform: 'translate(-100%, -50%)',
+        zIndex: 10,
+      }}
     >
       <Button
         variant="outline"

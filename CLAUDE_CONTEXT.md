@@ -29,8 +29,8 @@ Un système de composants ultra-modulable pour construire des sections de conten
 | `blob-compatibility.ts` | Matrice des combinaisons layout/marker/actions valides + registre CSS |
 | `blob-compose.ts` | Types responsive + générateur de classes CSS (convertit objet → string CSS) |
 | `blob-form-mapper.ts` | Mapping FormData → Props Blob (découplage éditeur/composant) |
-| `blob-iterator-definition.ts` | Extension pour Iterator : système de champs partagés (`itemFields`) |
-| `blob-iterator-mapper.ts` | Mapping Iterator : fusion props partagées + props par item |
+| `blob-iterator-definition.ts` | Extension pour Iterator : système de champs partagés (`itemFields`) + champs Swiper conditionnels |
+| `blob-iterator-mapper.ts` | Mapping Iterator : fusion props partagées + props par item + `buildSwiperConfig()` (Swiper options + `SwiperResponsiveConfig` per-bp) |
 | `use-blob-compatibility.ts` | Hook React : calcule options disponibles selon contexte |
 
 ### Éditeur (`/lib/new-editor`)
@@ -47,9 +47,14 @@ Un système de composants ultra-modulable pour construire des sections de conten
 | Fichier | Rôle |
 |---------|------|
 | `blob/blob.tsx` | Composant principal (compound component pattern) |
-| `blob/blob-iterator.tsx` | Container responsif (grid/swiper, auto Server/Client) |
+| `blob/blob-iterator.tsx` | Container responsif (grid/swiper, auto Server/Client) — prop `useContainerQueries` pour l'éditeur, wrapper swiper avec `min-w-0 overflow-hidden` |
+| `blob/blob-swiper.tsx` | Wrapper Swiper.js : options responsive per-bp (Swiper native `breakpoints` + CSS scoped `<style>` via `data-swiper-scope` pour nav/pagination/slideWidth), `key` pour remontage |
 | `new-editor/NewEditor.tsx` | Orchestrateur : layout 3 colonnes + vues (visual/JSON) |
-| `new-editor/BlockRenderer.tsx` | Rendu récursif des blocs avec hover controls + animation |
+| `new-editor/BlockRenderer.tsx` | Rendu récursif des blocs avec hover controls (portal) + animation |
+| `new-editor/HoveredBlockContext.tsx` | Context partagé `hoveredBlockId` — anti-cascade hover pour blocs imbriqués |
+| `new-editor/PreviewContext.tsx` | Context React `isPreviewMode` — partagé entre toolbar et blobs |
+| `new-editor/ClientBlob.tsx` | Wrapper client de `Blob` — active `@md:` auto via context preview |
+| `new-editor/ClientBlobIterator.tsx` | Wrapper client de `BlobIterator` — même pattern que ClientBlob |
 | `new-editor/BlobInspector.tsx` | Inspector Blob (9 sections collapsibles, 40+ champs, responsive tabs) — peut être délégué depuis IteratorInspector sans tabs |
 | `new-editor/IteratorInspector.tsx` | Inspector Iterator (container responsive, itemFields combobox + items + tabs partagés) |
 | `new-editor/ItemFieldsCombobox.tsx` | Combobox multi-select pour choisir les champs par item (avec badges et groupes) |
@@ -324,7 +329,7 @@ interface BlockNode {
 
 - **New Editor** (`/new-editor`) : Éditeur visuel principal
 - **Système Blob** : Composants, compatibilité, tokens de taille
-- **BlobIterator** : Grilles, swiper, système de champs partagés + **responsive container**
+- **BlobIterator** : Grilles, swiper (options complètes + responsive slidesPerView), système de champs partagés + **responsive container**
 - **Permissions** : Système de rôles complet (engineer/editor/reviewer)
 - **Undo/Redo** : Historique 50 snapshots avec debounce intelligent
 - **Vues multiples** : Éditeur visuel + Éditeur JSON
@@ -340,8 +345,9 @@ interface BlockNode {
 
 - **Preview responsive** : Prévisualisation breakpoints dans l'éditeur
   - 7 boutons toolbar (Base/SM/MD/LG/XL/2XL/Auto)
-  - Container Queries CSS pour simulation
-  - ⚠️ Fonctionnalité expérimentale
+  - Container Queries CSS (`@md:`) pour simulation — couvre Blob ET BlobIterator
+  - `ClientBlob` / `ClientBlobIterator` lisent `isPreviewMode` via `PreviewContext` et activent les `@` variants automatiquement
+  - Le rendu final (Server Components) n'est pas affecté
 
 ### 🗑️ À retirer / Obsolète
 
@@ -437,12 +443,37 @@ interface ResponsiveProps {
 - **Badges "(from Base)"** : Montrent l'héritage mobile-first
 
 **Stockage des données** :
-- **Champs responsive** (layout, size, marker, align, gapX, gapY, paddingX, paddingY, figureWidth, figureBleed, actions, direction) : stockés dans `data.responsive.{breakpoint}.{field}`
+- **Champs responsive** (layout, size, marker, align, gapX, gapY, paddingX, paddingY, figureWidth, figureBleed, actions, direction, swiperSlidesPerView) : stockés dans `data.responsive.{breakpoint}.{field}`
 - **Champs non-responsive** (title, subtitle, eyebrow, markerType, markerContent, figureType, image, video, theme, appearance, etc.) : stockés directement dans `data.{field}`
 
 **Conversion interne** : Le composant Blob convertit automatiquement l'objet en strings pour la génération CSS (`convertResponsiveToString()`).
 
-**BlobIterator responsive** : Les paramètres du conteneur (layout, gapX, gapY) supportent aussi le système responsive.
+**BlobIterator responsive** : Les paramètres du conteneur (layout, gapX, gapY) ET toutes les options Swiper supportent le système responsive par breakpoint.
+
+### Swiper (carousel)
+
+**Options disponibles** (conditionnelles : affichées uniquement quand le layout résolu au breakpoint actif est `swiper`) :
+
+| Champ | Type | Responsive | Mécanisme |
+|-------|------|------------|-----------|
+| `swiperSlidesPerView` | `number \| "auto"` | ✅ par breakpoint | Swiper native `breakpoints` (pixel-keyed) |
+| `swiperCenteredSlides` | `boolean` | ✅ par breakpoint | Swiper native `breakpoints` |
+| `swiperSlideWidth` | `string` (CSS) | ✅ par breakpoint | CSS scoped `<style>` (`@media` / `@container`) |
+| `swiperNavigation` | `boolean` | ✅ par breakpoint | Activé si ANY bp true, CSS `display` per bp |
+| `swiperPagination` | `boolean` | ✅ par breakpoint | Activé si ANY bp true, CSS `display` per bp |
+| `swiperAutoplay` | `boolean` | ❌ base resolved | Structurel (valeur mobile-first la plus basse) |
+| `swiperLoop` | `boolean` | ❌ base resolved | Structurel (valeur mobile-first la plus basse) |
+
+**Toutes les options sont stockées dans `responsive.{bp}`** (plus de stockage plat dans `data.swiperXxx`).
+
+**Architecture responsive Swiper** :
+- `buildSwiperConfig()` dans le mapper produit `swiperOptions` (config Swiper.js) + `swiperResponsiveConfig` (maps per-bp pour CSS)
+- `BlobSwiper` génère un `<style>` scoped via `data-swiper-scope` avec `@media` (production) ou `@container` (éditeur preview) pour navigation/pagination/slideWidth
+- Le `key` sur `<Swiper>` force le remontage quand les options structurelles changent
+
+**Architecture CSS** : Le conteneur swiper nécessite `min-width: 0` à plusieurs niveaux (wrapper div + `[data-slot="blob-content"]`) pour contrer le `min-width: auto` par défaut des grid/flex items, sinon les slides provoquent un overflow du conteneur parent.
+
+**Champs conditionnels** : L'évaluation `showIf` du layout swiper résout le `iteratorLayout` au **breakpoint actif** avec héritage mobile-first (via `getBreakpointValue`), pas seulement depuis `base`.
 
 ---
 
@@ -626,4 +657,4 @@ const overrides = useMemo(
 
 ---
 
-**Version** : 2026-03-15 (optimisé pour Claude Code)
+**Version** : 2026-03-16 (optimisé pour Claude Code)

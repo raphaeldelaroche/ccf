@@ -37,11 +37,12 @@ export interface BlobIteratorFormData {
   // Iterator container config
   iteratorLayout?: string
   iteratorGapX?: string; iteratorGapY?: string
-  enableSwiper?: boolean
+  swiperSlideWidth?: string
   swiperNavigation?: boolean
   swiperPagination?: boolean
   swiperAutoplay?: boolean
   swiperLoop?: boolean
+  swiperCenteredSlides?: boolean
 
   // Champs gérés par item (le reste est partagé)
   itemFields?: string[]
@@ -65,12 +66,28 @@ export interface BlobIteratorFormData {
   [key: string]: FormDataValue | BlockNode[] | ResponsiveProps | undefined
 }
 
+/**
+ * Per-breakpoint swiper config for CSS-based responsive behavior.
+ * Only breakpoints with EXPLICIT overrides are included (mobile-first CSS inherits).
+ */
+export interface SwiperResponsiveConfig {
+  /** Per-breakpoint slide width (CSS value). bp → CSS value */
+  slideWidth?: Partial<Record<string, string>>
+  /** Per-breakpoint navigation visibility. bp → enabled */
+  navigation?: Partial<Record<string, boolean>>
+  /** Per-breakpoint pagination visibility. bp → enabled */
+  pagination?: Partial<Record<string, boolean>>
+}
+
 export interface MappedIteratorData {
   // Props pour BlobIterator (always strings in final output)
   iteratorLayout: string
   iteratorGapX: string
   iteratorGapY: string
   swiperOptions?: Partial<SwiperOptions>
+  swiperSlideWidth?: string
+  /** Per-breakpoint responsive config for CSS-driven behavior */
+  swiperResponsiveConfig?: SwiperResponsiveConfig
 
   // Props héritées (partagées par tous les blobs)
   sharedBlobProps: Partial<BlobComposableProps> & {
@@ -158,36 +175,206 @@ function buildSharedBlobProps(formData: BlobIteratorFormData): {
   }
 }
 
+// Mapping breakpoint tokens → pixels pour les Swiper breakpoints natifs
+const BREAKPOINT_PIXELS: Record<string, number> = {
+  sm: 640,
+  md: 768,
+  lg: 1024,
+  xl: 1280,
+  "2xl": 1536,
+}
+
+function parseSlidesPerView(value: string | undefined): number | "auto" | undefined {
+  if (!value) return undefined
+  if (value === "auto") return "auto"
+  const n = parseInt(value, 10)
+  return isNaN(n) ? undefined : n
+}
+
+const BREAKPOINT_ORDER = ["base", "sm", "md", "lg", "xl", "2xl"] as const
+
 /**
- * Construit les options Swiper à partir des champs du formulaire
+ * Collect per-breakpoint explicit overrides for a boolean swiper field.
+ * Returns a map of only the breakpoints that have an explicit value.
  */
-function buildSwiperOptions(formData: BlobIteratorFormData): Partial<SwiperOptions> | undefined {
-  if (!formData.enableSwiper) return undefined
+function collectBoolOverrides(
+  responsive: ResponsiveProps | undefined,
+  formData: BlobIteratorFormData,
+  key: keyof ResponsiveBreakpointProps & string
+): Partial<Record<string, boolean>> {
+  const result: Partial<Record<string, boolean>> = {}
 
+  if (responsive) {
+    for (const bp of BREAKPOINT_ORDER) {
+      const bpData = responsive[bp as keyof ResponsiveProps]
+      const val = bpData?.[key]
+      if (val !== undefined) {
+        result[bp] = val === true || val === "true"
+      }
+    }
+  }
+
+  // Legacy fallback: if no responsive values at all, use flat storage as base
+  if (Object.keys(result).length === 0) {
+    const flat = formData[key]
+    if (flat !== undefined) {
+      result.base = flat === true || flat === "true"
+    }
+  }
+
+  return result
+}
+
+/**
+ * Resolve the final mobile-first value of a boolean field (last defined wins).
+ */
+function resolveBoolMobileFirst(overrides: Partial<Record<string, boolean>>): boolean {
+  let resolved = false
+  for (const bp of BREAKPOINT_ORDER) {
+    if (bp in overrides) resolved = overrides[bp]!
+  }
+  return resolved
+}
+
+/**
+ * Check if ANY breakpoint has the boolean set to true.
+ */
+function anyBreakpointTrue(overrides: Partial<Record<string, boolean>>): boolean {
+  return Object.values(overrides).some(v => v === true)
+}
+
+/**
+ * Collect per-breakpoint explicit overrides for a string swiper field.
+ */
+function collectStringOverrides(
+  responsive: ResponsiveProps | undefined,
+  legacyValue: string | undefined,
+  key: keyof ResponsiveBreakpointProps & string
+): Partial<Record<string, string>> {
+  const result: Partial<Record<string, string>> = {}
+
+  if (responsive) {
+    for (const bp of BREAKPOINT_ORDER) {
+      const bpData = responsive[bp as keyof ResponsiveProps]
+      const val = bpData?.[key]
+      if (val !== undefined && val !== null && String(val).trim() !== "") {
+        result[bp] = String(val)
+      }
+    }
+  }
+
+  // Legacy fallback
+  if (Object.keys(result).length === 0 && legacyValue) {
+    result.base = legacyValue
+  }
+
+  return result
+}
+
+/**
+ * Resolve the final mobile-first value of a string field.
+ */
+function resolveStringMobileFirst(overrides: Partial<Record<string, string>>): string | undefined {
+  let resolved: string | undefined
+  for (const bp of BREAKPOINT_ORDER) {
+    if (bp in overrides) resolved = overrides[bp]
+  }
+  return resolved
+}
+
+/**
+ * Construit les options Swiper et la config responsive.
+ *
+ * - slidesPerView, centeredSlides → Swiper native breakpoints
+ * - navigation, pagination → enabled if ANY bp is true, CSS controls per-bp visibility
+ * - loop, autoplay → base resolved value (structural, can't be CSS-toggled)
+ * - slideWidth → CSS custom property per breakpoint
+ */
+function buildSwiperConfig(formData: BlobIteratorFormData): {
+  swiperOptions: Partial<SwiperOptions> | undefined
+  swiperResponsiveConfig: SwiperResponsiveConfig | undefined
+  resolvedSlideWidth: string | undefined
+} {
   const options: Partial<SwiperOptions> = {}
+  const responsive = formData.responsive as ResponsiveProps | undefined
+  const responsiveConfig: SwiperResponsiveConfig = {}
 
-  if (formData.swiperNavigation) {
+  // ── slidesPerView → Swiper native breakpoints ──
+  const baseSPV = parseSlidesPerView(responsive?.base?.swiperSlidesPerView)
+  if (baseSPV !== undefined) {
+    options.slidesPerView = baseSPV
+  }
+
+  const swiperBreakpoints: Record<number, SwiperOptions> = {}
+  for (const [bp, px] of Object.entries(BREAKPOINT_PIXELS)) {
+    const bpData = responsive?.[bp as keyof ResponsiveProps]
+    const spv = parseSlidesPerView(bpData?.swiperSlidesPerView)
+    if (spv !== undefined) {
+      swiperBreakpoints[px] = { slidesPerView: spv }
+    }
+  }
+
+  // ── centeredSlides → Swiper native breakpoints (supported) ──
+  const centeredOverrides = collectBoolOverrides(responsive, formData, "swiperCenteredSlides")
+  if (centeredOverrides.base) {
+    options.centeredSlides = true
+  }
+  for (const [bp, px] of Object.entries(BREAKPOINT_PIXELS)) {
+    if (bp in centeredOverrides) {
+      if (!swiperBreakpoints[px]) swiperBreakpoints[px] = {}
+      swiperBreakpoints[px].centeredSlides = centeredOverrides[bp]
+    }
+  }
+
+  if (Object.keys(swiperBreakpoints).length > 0) {
+    options.breakpoints = swiperBreakpoints
+  }
+
+  // ── navigation → enable if ANY bp true, CSS controls per-bp visibility ──
+  const navOverrides = collectBoolOverrides(responsive, formData, "swiperNavigation")
+  if (anyBreakpointTrue(navOverrides)) {
     options.navigation = true
-  }
-
-  if (formData.swiperPagination) {
-    options.pagination = {
-      clickable: true,
+    // Only include responsive config if there are per-breakpoint differences
+    if (Object.keys(navOverrides).length > 1 || !navOverrides.base) {
+      responsiveConfig.navigation = navOverrides
     }
   }
 
-  if (formData.swiperAutoplay) {
-    options.autoplay = {
-      delay: 3000,
-      disableOnInteraction: false,
+  // ── pagination → same pattern ──
+  const pagOverrides = collectBoolOverrides(responsive, formData, "swiperPagination")
+  if (anyBreakpointTrue(pagOverrides)) {
+    options.pagination = { clickable: true }
+    if (Object.keys(pagOverrides).length > 1 || !pagOverrides.base) {
+      responsiveConfig.pagination = pagOverrides
     }
   }
 
-  if (formData.swiperLoop) {
+  // ── autoplay, loop → base resolved value (structural) ──
+  const autoplayOverrides = collectBoolOverrides(responsive, formData, "swiperAutoplay")
+  if (resolveBoolMobileFirst(autoplayOverrides)) {
+    options.autoplay = { delay: 3000, disableOnInteraction: false }
+  }
+
+  const loopOverrides = collectBoolOverrides(responsive, formData, "swiperLoop")
+  if (resolveBoolMobileFirst(loopOverrides)) {
     options.loop = true
   }
 
-  return Object.keys(options).length > 0 ? options : undefined
+  // ── slideWidth → CSS per breakpoint ──
+  const slideWidthOverrides = collectStringOverrides(responsive, formData.swiperSlideWidth, "swiperSlideWidth")
+  if (Object.keys(slideWidthOverrides).length > 1 || (Object.keys(slideWidthOverrides).length === 1 && !slideWidthOverrides.base)) {
+    responsiveConfig.slideWidth = slideWidthOverrides
+  }
+  const resolvedSlideWidth = resolveStringMobileFirst(slideWidthOverrides)
+
+  const hasOptions = Object.keys(options).length > 0
+  const hasResponsive = Object.keys(responsiveConfig).length > 0
+
+  return {
+    swiperOptions: hasOptions ? options : undefined,
+    swiperResponsiveConfig: hasResponsive ? responsiveConfig : undefined,
+    resolvedSlideWidth: resolvedSlideWidth || undefined,
+  }
 }
 
 /**
@@ -312,7 +499,7 @@ function mapIteratorItem(
  */
 export function mapIteratorFormData(formData: BlobIteratorFormData): MappedIteratorData {
   const { blobProps: sharedBlobProps, appearance: sharedAppearance } = buildSharedBlobProps(formData)
-  const swiperOptions = buildSwiperOptions(formData)
+  const { swiperOptions, swiperResponsiveConfig, resolvedSlideWidth } = buildSwiperConfig(formData)
 
   // Mapper chaque item (items peut être une string JSON depuis Redis)
   // Les items sont toujours des BlockNode complets
@@ -333,7 +520,10 @@ export function mapIteratorFormData(formData: BlobIteratorFormData): MappedItera
     }
 
     // Fallback to simple string (backward compatibility)
-    return formData[key] as string || fallback
+    const directValue = formData[key] as string
+    // Legacy: old blocks stored "iteratorLayout" as "containerLayout"
+    const legacyValue = key === "iteratorLayout" ? formData.containerLayout as string : undefined
+    return directValue || legacyValue || fallback
   }
 
   return {
@@ -341,6 +531,8 @@ export function mapIteratorFormData(formData: BlobIteratorFormData): MappedItera
     iteratorGapX: getContainerPropString("iteratorGapX", "md"),
     iteratorGapY: getContainerPropString("iteratorGapY", "md"),
     swiperOptions,
+    swiperSlideWidth: resolvedSlideWidth,
+    swiperResponsiveConfig,
     sharedBlobProps,
     sharedAppearance,
     items,

@@ -20,13 +20,15 @@ export function BlockBlobIterator({
   data: MappedIteratorData;
   renderInnerBlock?: (block: BlockNode) => React.ReactNode;
 }) {
-  const { iteratorLayout, iteratorGapX, iteratorGapY, swiperOptions, sharedBlobProps, sharedAppearance, items } = data
+  const { iteratorLayout, iteratorGapX, iteratorGapY, swiperOptions, swiperSlideWidth, swiperResponsiveConfig, sharedBlobProps, sharedAppearance, items } = data
 
   return (
     <BlobIterator
       containerLayout={iteratorLayout as IteratorLayout}
       gapX={iteratorGapX as SizeValue} gapY={iteratorGapY as SizeValue}
       swiperOptions={swiperOptions}
+      swiperSlideWidth={swiperSlideWidth}
+      swiperResponsiveConfig={swiperResponsiveConfig}
     >
       {items.map((itemData, index) => {
         // Fusionner les props partagées avec les props de l'item

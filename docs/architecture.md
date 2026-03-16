@@ -151,7 +151,7 @@ Le système Blob est organisé en plusieurs couches :
 1. **Résolution des champs** : `resolveBlockSections(blobFieldSections, IteratorBlockDefinition)` fusionne Blob + Iterator
 2. **Mapping** : `mapIteratorFormData` transforme en `MappedIteratorData`
    * `buildSharedBlobProps()` : extraction des props partagées (tout ce qui n'est pas dans `itemFields`)
-   * `buildSwiperOptions()` : construction des options Swiper si activé
+   * `buildSwiperConfig()` : construction des options Swiper + `SwiperResponsiveConfig` (per-bp CSS pour nav/pagination/slideWidth)
    * `mapIteratorItem()` : fusion props partagées + props individuelles pour chaque item
 3. **Rendu** : `BlockBlobIterator` mappe `iteratorLayout` → `containerLayout`, `iteratorGutter` → `gutter` et rend via `BlobBlock` × N
 4. **Container** : `BlobIterator` applique le layout (grid ou swiper)
