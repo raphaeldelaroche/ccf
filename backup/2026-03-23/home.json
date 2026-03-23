@@ -1,0 +1,1125 @@
+{
+  "version": "1.0",
+  "slug": "home",
+  "title": "Home",
+  "blocks": [
+    {
+      "id": "block-1773056590867-qmmsrl30q",
+      "blockType": "blob",
+      "data": {
+        "title": "You act, we show it.",
+        "subtitle": "The comprehensive climate impact metric businesses have been missing.",
+        "buttons": "[{\"label\":\"Assess your contribution\",\"linkType\":\"internal\",\"internalHref\":\"/benchmark\",\"externalHref\":\"\",\"customAction\":\"action1\",\"variant\":\"default\",\"theme\":\"lime\",\"opensInNewTab\":\"false\"},{\"label\":\"Discover the methodology\",\"linkType\":\"internal\",\"internalHref\":\"/methodology\",\"externalHref\":\"\",\"customAction\":\"action1\",\"variant\":\"default\",\"theme\":\"brand\",\"opensInNewTab\":\"false\"}]",
+        "showContent": false,
+        "figureType": "none",
+        "image": "/placeholder.svg",
+        "headerPaddingX": "",
+        "markerType": "none",
+        "markerIcon": "heart",
+        "contentType": "text",
+        "contentText": "",
+        "appearance": [
+          "plusTop",
+          "borderBottom",
+          "lineSide",
+          "grid"
+        ],
+        "emphasisText": "",
+        "responsive": {
+          "base": {
+            "size": "2xl",
+            "align": "center",
+            "paddingX": "container-md",
+            "paddingY": "6xl"
+          },
+          "lg": {
+            "size": "8xl",
+            "paddingY": "10xl",
+            "paddingX": "7xl"
+          }
+        },
+        "eyebrow": "",
+        "markerContent": "",
+        "background": [
+          "plusCorners",
+          "lineSide",
+          "grid"
+        ]
+      },
+      "innerBlocks": []
+    },
+    {
+      "id": "block-1773070814514-546ic0v7y",
+      "blockType": "blob",
+      "data": {
+        "title": "",
+        "showContent": true,
+        "contentType": "innerBlocks",
+        "figureType": "none",
+        "image": "",
+        "eyebrow": "",
+        "appearance": [
+          "plusTop",
+          "borderBottom",
+          "lineSide",
+          "bgGray"
+        ],
+        "responsive": {
+          "base": {
+            "layout": "stack",
+            "direction": "default",
+            "align": "center",
+            "size": "md",
+            "gapY": "none",
+            "paddingX": "container-lg",
+            "paddingY": "xl"
+          }
+        },
+        "background": [
+          "plusCorners",
+          "lineSide",
+          "gradientBlue",
+          "solidGray"
+        ]
+      },
+      "innerBlocks": [
+        {
+          "id": "block-1773071337693-52guwvlfk",
+          "blockType": "blobIterator",
+          "data": {
+            "containerLayout": "grid-3",
+            "itemFields": [],
+            "items": [
+              {
+                "id": "block-1773071337693-52guwvlfk-item-1773239686559-qeyagqd",
+                "blockType": "blob",
+                "data": {},
+                "innerBlocks": []
+              },
+              {
+                "id": "block-1773071337693-52guwvlfk-item-1773239686559-tux0m4i",
+                "blockType": "blob",
+                "data": {},
+                "innerBlocks": []
+              },
+              {
+                "id": "block-1773071337693-52guwvlfk-item-1773239686559-919qw7o",
+                "blockType": "blob",
+                "data": {},
+                "innerBlocks": []
+              },
+              {
+                "id": "block-1773071337693-52guwvlfk-item-1773239686559-8nazkqk",
+                "blockType": "blob",
+                "data": {},
+                "innerBlocks": []
+              },
+              {
+                "id": "block-1773071337693-52guwvlfk-item-1773239686559-q14e65s",
+                "blockType": "blob",
+                "data": {},
+                "innerBlocks": []
+              }
+            ],
+            "title": "",
+            "figureType": "image",
+            "image": "/placeholder-135x400.svg",
+            "iteratorLayout": "grid-5",
+            "responsive": {
+              "base": {
+                "gapX": "none",
+                "gapY": "none",
+                "paddingY": "none",
+                "paddingX": "none",
+                "iteratorLayout": "swiper",
+                "swiperLoop": true,
+                "swiperSlideWidth": "16rem",
+                "swiperNavigation": false,
+                "swiperPagination": false,
+                "swiperAutoplay": true,
+                "swiperCenteredSlides": false
+              },
+              "lg": {
+                "iteratorLayout": "grid-5"
+              }
+            },
+            "swiperNavigation": true,
+            "swiperPagination": true,
+            "swiperAutoplay": true,
+            "swiperCenteredSlides": false,
+            "swiperSlideWidth": "16rem",
+            "swiperLoop": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "block-1773084479085-zgrntuw4o",
+      "blockType": "blob",
+      "data": {
+        "markerType": "none",
+        "figureType": "none",
+        "showContent": true,
+        "contentType": "innerBlocks",
+        "responsive": {
+          "base": {
+            "size": "lg",
+            "layout": "stack",
+            "align": "center",
+            "direction": "default",
+            "marker": "top",
+            "actions": "after",
+            "paddingX": "container-md",
+            "paddingY": "xl",
+            "headerPaddingX": "container-xl"
+          },
+          "md": {
+            "size": "xl",
+            "paddingY": "4xl",
+            "paddingX": "container-lg",
+            "headerPaddingX": "container-md"
+          },
+          "xl": {
+            "align": "left",
+            "layout": "bar",
+            "actions": "before",
+            "headerPaddingX": "none",
+            "size": "5xl",
+            "paddingX": "container-lg",
+            "paddingY": "7xl"
+          }
+        },
+        "title": "A meta-framework and an actionnable scoreboard",
+        "subtitle": "The Climate Contribution Framework does not replace existing frameworks — It brings them together to obtain a Scorecard that reflects your company's entire climate action.",
+        "markerContent": "+",
+        "buttons": "[{\"label\":\"Assess your contribution\",\"linkType\":\"internal\",\"internalHref\":\"/benchmark\",\"externalHref\":\"\",\"customAction\":\"action1\",\"opensInNewTab\":\"false\",\"theme\":\"lime\"},{\"label\":\"Learn more\",\"linkType\":\"internal\",\"internalHref\":\"/about\",\"externalHref\":\"\",\"customAction\":\"action1\",\"opensInNewTab\":\"false\",\"variant\":\"outline\"}]",
+        "appearance": [
+          "stackedActions",
+          "borderBottom"
+        ],
+        "background": [
+          "plusCorners",
+          "lineSide"
+        ]
+      },
+      "innerBlocks": [
+        {
+          "id": "block-1773513673783-iplf2audo",
+          "blockType": "blobIterator",
+          "data": {
+            "iteratorLayout": "grid-3",
+            "iteratorGapX": "md",
+            "iteratorGapY": "md",
+            "itemFields": [
+              "title",
+              "image"
+            ],
+            "items": [
+              {
+                "id": "block-1773513673783-iplf2audo-item-1773513687757-wq9k26b",
+                "blockType": "blob",
+                "data": {
+                  "image": "/scorecard/frameworks-disorder-3.png",
+                  "title": "There are more than 123 frameworks..."
+                },
+                "innerBlocks": []
+              },
+              {
+                "id": "block-1773513673783-iplf2audo-item-1773513688884-zey5jny",
+                "blockType": "blob",
+                "data": {
+                  "image": "/scorecard/frameworks-order-4.png",
+                  "title": "...We study them and organize everything..."
+                },
+                "innerBlocks": []
+              },
+              {
+                "id": "block-1773513673783-iplf2audo-item-1773513689584-qg05b3q",
+                "blockType": "blob",
+                "data": {
+                  "image": "/scorecard/scorecard-preview.png",
+                  "title": "to provide you with a simple & clear score!"
+                },
+                "innerBlocks": []
+              }
+            ],
+            "figureType": "image",
+            "image": "placeholder-vertical.svg",
+            "responsive": {
+              "base": {
+                "paddingX": "none",
+                "iteratorGapY": "xs",
+                "paddingY": "md",
+                "iteratorLayout": "grid-1",
+                "direction": "reverse",
+                "size": "md",
+                "align": "left"
+              },
+              "sm": {
+                "iteratorLayout": "grid-3"
+              },
+              "md": {
+                "paddingX": "lg",
+                "paddingY": "2xl",
+                "headerPaddingX": "lg"
+              }
+            },
+            "appearance": [
+              "rounded",
+              "scorecardSectionItem"
+            ],
+            "background": [
+              "solidGray"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "block-1773216979321-f12zlr3rf",
+      "blockType": "blob",
+      "data": {
+        "title": "Three clear results: Potential, actual, and performance",
+        "figureType": "none",
+        "image": "/placeholder.svg",
+        "subtitle": "This structure answers both \"What are you doing?\" and \"What could you do?\", creating accountability while recognizing the diversity of pathways. The result: actionable insights — clear signals on areas where companies should invest and where capital can generate maximum impact.",
+        "eyebrow": "Your Scorecard",
+        "emphasisText": "",
+        "markerType": "none",
+        "markerContent": "01.",
+        "appearance": [
+          "stackedActions",
+          "borderBottom"
+        ],
+        "showContent": true,
+        "contentText": "",
+        "markerIcon": "checkCircle",
+        "eyebrowTheme": "brand",
+        "markerSize": "auto",
+        "markerRounded": "rounded-square",
+        "markerTheme": "brand",
+        "markerStyle": "default",
+        "buttons": "[{\"label\":\"Assess your contribution\",\"linkType\":\"internal\",\"internalHref\":\"/benchmark\",\"externalHref\":\"\",\"customAction\":\"action1\",\"variant\":\"default\",\"theme\":\"lime\",\"opensInNewTab\":\"false\"},{\"label\":\"Our methodology\",\"linkType\":\"internal\",\"internalHref\":\"/methodology\",\"externalHref\":\"\",\"customAction\":\"action1\",\"variant\":\"outline\",\"theme\":\"brand\",\"opensInNewTab\":\"false\"}]",
+        "titleAs": "h2",
+        "eyebrowAs": "div",
+        "contentType": "innerBlocks",
+        "responsive": {
+          "base": {
+            "size": "lg",
+            "align": "center",
+            "actions": "after",
+            "paddingY": "xl",
+            "headerPaddingX": "container-xl",
+            "paddingX": "container-md",
+            "layout": "stack",
+            "direction": "default"
+          },
+          "sm": {
+            "paddingX": "5xl"
+          },
+          "lg": {
+            "paddingX": "container-md",
+            "size": "xl",
+            "paddingY": "xl",
+            "headerPaddingX": "container-md",
+            "layout": "stack",
+            "actions": "after"
+          },
+          "md": {
+            "size": "xl",
+            "paddingX": "container-lg",
+            "paddingY": "4xl",
+            "headerPaddingX": "container-md"
+          },
+          "xl": {
+            "actions": "before",
+            "size": "5xl",
+            "layout": "bar",
+            "align": "left",
+            "paddingX": "container-lg",
+            "paddingY": "7xl",
+            "headerPaddingX": "none"
+          }
+        },
+        "background": [
+          "plusCorners",
+          "lineSide",
+          "solidGray",
+          "plusPattern"
+        ]
+      },
+      "innerBlocks": [
+        {
+          "id": "block-1773217249816-mrh4qd5r5",
+          "blockType": "blob",
+          "data": {
+            "figureType": "image",
+            "image": "/score-detail.jpg",
+            "showContent": true,
+            "contentType": "innerBlocks",
+            "appearance": [
+              "outlined"
+            ],
+            "title": "",
+            "responsive": {
+              "base": {
+                "layout": "stack",
+                "figureBleed": "full",
+                "paddingX": "xl"
+              },
+              "lg": {
+                "layout": "row",
+                "gapX": "6xl",
+                "paddingY": "none",
+                "paddingX": "3xl"
+              }
+            }
+          },
+          "innerBlocks": [
+            {
+              "id": "block-1773217436249-oeqehl4va",
+              "blockType": "blobIterator",
+              "data": {
+                "iteratorLayout": "grid-1",
+                "iteratorGapX": "md",
+                "iteratorGapY": "xs",
+                "itemFields": [
+                  "title",
+                  "subtitle",
+                  "markerContent",
+                  "markerTheme",
+                  "appearance"
+                ],
+                "items": [
+                  {
+                    "id": "block-1773217436249-oeqehl4va-item-1773239686559-1ifruji",
+                    "blockType": "blob",
+                    "data": {
+                      "title": "Contribution Potential",
+                      "subtitle": "Maximum achievable climate contribution based on sector.",
+                      "markerContent": "01"
+                    },
+                    "innerBlocks": []
+                  },
+                  {
+                    "id": "block-1773217436249-oeqehl4va-item-1773239686559-li4zvhg",
+                    "blockType": "blob",
+                    "data": {
+                      "title": "Score",
+                      "subtitle": "Currently achieved climate contribution.",
+                      "markerContent": "02"
+                    },
+                    "innerBlocks": []
+                  },
+                  {
+                    "id": "block-1773217436249-oeqehl4va-item-1773239686559-1jmt8nz",
+                    "blockType": "blob",
+                    "data": {
+                      "title": "Contribution Performance",
+                      "subtitle": "Ratio between achieved potential and achievable potential in %.",
+                      "markerContent": "03"
+                    },
+                    "innerBlocks": []
+                  }
+                ],
+                "markerType": "text",
+                "markerSize": "xl",
+                "markerStyle": "outline",
+                "responsive": {
+                  "base": {
+                    "align": "left",
+                    "size": "sm",
+                    "layout": "stack",
+                    "marker": "left",
+                    "iteratorGapY": "none",
+                    "markerPosition": "top",
+                    "iteratorGapX": "none",
+                    "paddingY": "xs",
+                    "gapY": "sm",
+                    "gapX": "sm"
+                  }
+                },
+                "markerTheme": "red",
+                "appearance": [
+                  "borderBottom"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "block-1773066857659-zz5nlcscw",
+      "blockType": "blob",
+      "data": {
+        "title": "The 3 pillars of climate action",
+        "figureType": "none",
+        "image": "/placeholder.svg",
+        "subtitle": "Companies don't just emit carbon: they innovate, accelerate the deployment of low-carbon technologies, and mobilize capital. The Climate Contribution Framework analyzes climate action towards global net zero through 3 pillars.",
+        "eyebrow": "How it works",
+        "emphasisText": "",
+        "markerType": "none",
+        "markerContent": "01.",
+        "appearance": [
+          "stackedActions",
+          "borderBottom"
+        ],
+        "showContent": true,
+        "contentText": "",
+        "markerIcon": "checkCircle",
+        "eyebrowTheme": "brand",
+        "markerSize": "auto",
+        "markerRounded": "rounded-square",
+        "markerTheme": "brand",
+        "markerStyle": "default",
+        "buttons": "[{\"label\":\"Our methodology\",\"linkType\":\"internal\",\"internalHref\":\"/methodology\",\"externalHref\":\"\",\"customAction\":\"action1\",\"variant\":\"outline\",\"theme\":\"lime\",\"opensInNewTab\":\"false\"}]",
+        "titleAs": "h2",
+        "eyebrowAs": "div",
+        "contentType": "innerBlocks",
+        "responsive": {
+          "base": {
+            "layout": "stack",
+            "direction": "default",
+            "marker": "top",
+            "align": "center",
+            "figureWidth": "1/2",
+            "size": "lg",
+            "gapY": "3xl",
+            "paddingX": "container-md",
+            "paddingY": "xl",
+            "headerPaddingX": "container-xl",
+            "headerPaddingY": "auto",
+            "figureBleed": "full",
+            "actions": "after"
+          },
+          "md": {
+            "size": "xl",
+            "headerPaddingX": "container-md",
+            "paddingX": "container-lg",
+            "paddingY": "4xl"
+          },
+          "xl": {
+            "actions": "before",
+            "size": "5xl",
+            "layout": "bar",
+            "align": "left",
+            "paddingX": "container-xl",
+            "paddingY": "7xl",
+            "headerPaddingX": "container-md"
+          }
+        },
+        "actions": "after",
+        "background": [
+          "plusCorners",
+          "lineSide"
+        ]
+      },
+      "innerBlocks": [
+        {
+          "id": "block-1773066857659-b15jr4vwn",
+          "blockType": "blobIterator",
+          "data": {
+            "containerLayout": "grid-3",
+            "itemFields": [
+              "title",
+              "subtitle",
+              "markerContent",
+              "contentText",
+              "appearance",
+              "markerTheme"
+            ],
+            "items": [
+              {
+                "id": "block-1773066857659-b15jr4vwn-item-1773239686559-gsk12r6",
+                "blockType": "blob",
+                "data": {
+                  "title": "Reduce",
+                  "subtitle": "Decarbonize operations and the value chain",
+                  "markerContent": "A",
+                  "contentText": "Reduce emissions across Scopes 1, 2, and 3 through transition plans, low-carbon procurement, and climate governance, particularly in hard-to-abate sectors.",
+                  "markerTheme": "lime"
+                },
+                "innerBlocks": []
+              },
+              {
+                "id": "block-1773066857659-b15jr4vwn-item-1773239686559-55o69r8",
+                "blockType": "blob",
+                "data": {
+                  "title": "Deploy",
+                  "subtitle": "Scale up low-carbon solutions",
+                  "markerContent": "B",
+                  "contentText": "Accelerate the transition through concrete solutions: renewable energy, circular economy innovations, and technologies building the net-zero economy.",
+                  "markerTheme": "cyan"
+                },
+                "innerBlocks": []
+              },
+              {
+                "id": "block-1773066857659-b15jr4vwn-item-1773239686559-slpuhjg",
+                "blockType": "blob",
+                "data": {
+                  "title": "Finance",
+                  "subtitle": "Direct capital towards Net Zero projects",
+                  "markerContent": "C",
+                  "contentText": "Invest beyond the value chain through carbon credits, climate technologies, and financial vehicles dedicated to net zero.",
+                  "markerTheme": "fuchsia"
+                },
+                "innerBlocks": []
+              }
+            ],
+            "markerType": "text",
+            "appearance": "outlined",
+            "markerStyle": "default",
+            "showContent": true,
+            "contentType": "text",
+            "markerSize": "auto",
+            "responsive": {
+              "base": {
+                "align": "left",
+                "size": "md",
+                "paddingX": "md",
+                "paddingY": "md",
+                "iteratorLayout": "grid-1",
+                "markerPosition": "top"
+              },
+              "md": {
+                "iteratorLayout": "grid-3"
+              },
+              "xl": {
+                "paddingX": "4xl",
+                "paddingY": "4xl",
+                "size": "lg"
+              }
+            },
+            "iteratorAppearance": [
+              "borderedGrid"
+            ],
+            "iteratorBackground": [
+              "plusCorners",
+              "lineSide",
+              "lineTopBottom"
+            ],
+            "background": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "block-1773218173814-3yz3ipu2i",
+      "blockType": "blob",
+      "data": {
+        "eyebrow": "Independent Advisory Committee",
+        "title": "An international group of experts to ensure scientific independence.",
+        "subtitle": "The committee does not conduct company assessments and plays no commercial role in the scoring process.",
+        "showContent": true,
+        "contentType": "innerBlocks",
+        "appearance": [],
+        "responsive": {
+          "base": {
+            "layout": "stack",
+            "direction": "default",
+            "marker": "top",
+            "align": "center",
+            "figureWidth": "1/2",
+            "size": "2xl",
+            "gapY": "md",
+            "paddingX": "container-lg",
+            "paddingY": "xl",
+            "headerPaddingX": "container-md",
+            "headerPaddingY": "auto",
+            "figureBleed": "full",
+            "actions": "after",
+            "gapX": "md"
+          }
+        },
+        "background": [
+          "solidGray",
+          "plusCorners",
+          "lineSide"
+        ]
+      },
+      "innerBlocks": [
+        {
+          "id": "block-1773218173814-t02mg810q",
+          "blockType": "blobIterator",
+          "data": {
+            "iteratorLayout": "grid-auto",
+            "iteratorGapX": "md",
+            "iteratorGapY": "xs",
+            "appearance": [
+              "rounded",
+              "markerGridLines"
+            ],
+            "itemFields": [
+              "title",
+              "markerImage",
+              "contentText"
+            ],
+            "items": [
+              {
+                "id": "block-1773218173814-t02mg810q-item-1773239686559-194oqya",
+                "blockType": "blob",
+                "data": {
+                  "title": "World Business Council for Sustainable Development (WBCSD)",
+                  "markerImage": "/logos/wbcsd.png",
+                  "contentText": "Coalition of 200+ leading global companies committed to accelerating the transition to a sustainable world.",
+                  "showContent": true,
+                  "contentType": "text"
+                },
+                "innerBlocks": []
+              },
+              {
+                "id": "block-1773218173814-t02mg810q-item-1773239686559-3d2ic4p",
+                "blockType": "blob",
+                "data": {
+                  "title": "Science Based Targets initiative (SBTi)",
+                  "markerImage": "/logos/sbt.png",
+                  "contentText": "The global reference standard for validating emission reduction targets aligned with climate science.",
+                  "showContent": true,
+                  "contentType": "text"
+                },
+                "innerBlocks": []
+              },
+              {
+                "id": "block-1773218173814-t02mg810q-item-1773239686559-venc1tv",
+                "blockType": "blob",
+                "data": {
+                  "title": "CERES",
+                  "markerImage": "/logos/ceres.png",
+                  "contentText": "American non-profit organization mobilizing investors and companies on sustainability-related risks and opportunities.",
+                  "showContent": true,
+                  "contentType": "text"
+                },
+                "innerBlocks": []
+              },
+              {
+                "id": "block-1773218173814-t02mg810q-item-1773239686559-p7u9poq",
+                "blockType": "blob",
+                "data": {
+                  "title": "International Carbon Reduction and Offset Alliance (ICROA)",
+                  "markerImage": "/logos/icroa.png",
+                  "contentText": "Governance body for voluntary carbon markets, guarantor of quality and integrity standards.",
+                  "showContent": true,
+                  "contentType": "text"
+                },
+                "innerBlocks": []
+              },
+              {
+                "id": "block-1773218173814-t02mg810q-item-1773239686559-4y9mful",
+                "blockType": "blob",
+                "data": {
+                  "title": "Exponential Roadmap Initiative",
+                  "markerImage": "/logos/ExpRoadmapLogo 1.png",
+                  "contentText": "Initiative aiming to accelerate climate solutions capable of halving global emissions by 2030 through exponential innovations.",
+                  "showContent": true,
+                  "contentType": "text"
+                },
+                "innerBlocks": []
+              },
+              {
+                "id": "block-1773218173814-t02mg810q-item-1773239686559-tn811is",
+                "blockType": "blob",
+                "data": {
+                  "title": "World Benchmarking Alliance",
+                  "markerImage": "/logos/wbalogo.png",
+                  "contentText": "Alliance creating free public benchmarks to measure and stimulate corporate contribution to Sustainable Development Goals.",
+                  "showContent": true,
+                  "contentType": "text"
+                },
+                "innerBlocks": []
+              },
+              {
+                "id": "block-1773218173814-t02mg810q-item-1773239686559-wdm8zr6",
+                "blockType": "blob",
+                "data": {
+                  "title": "Stockholm Environment Institute",
+                  "markerImage": "/logos/sei.png",
+                  "contentText": "Independent environmental research institute, international reference on climate policy, sustainable energy, and resource governance.",
+                  "showContent": true,
+                  "contentType": "text"
+                },
+                "innerBlocks": []
+              },
+              {
+                "id": "block-1773218173814-t02mg810q-item-1773239686559-9t7sed3",
+                "blockType": "blob",
+                "data": {
+                  "title": "GHG Management Institute",
+                  "markerImage": "/logos/ghg.png",
+                  "contentText": "Institute specialized in training and research on measuring, managing, and reducing greenhouse gas emissions.",
+                  "showContent": true,
+                  "contentType": "text"
+                },
+                "innerBlocks": []
+              },
+              {
+                "id": "block-1773218173814-t02mg810q-item-1773239686559-2cwkuj2",
+                "blockType": "blob",
+                "data": {
+                  "title": "Environmental Defense Fund (EDF)",
+                  "markerImage": "/logos/edf.png",
+                  "contentText": "Leading American environmental organization, pioneer in developing pragmatic solutions to global climate and environmental challenges.",
+                  "showContent": true,
+                  "contentType": "text"
+                },
+                "innerBlocks": []
+              }
+            ],
+            "responsive": {
+              "base": {
+                "align": "left",
+                "size": "sm",
+                "paddingX": "md",
+                "paddingY": "md",
+                "iteratorLayout": "swiper",
+                "swiperSlideWidth": "18rem",
+                "marker": "left",
+                "iteratorGapX": "md",
+                "iteratorGapY": "md",
+                "gapY": "sm",
+                "gapX": "sm"
+              },
+              "lg": {
+                "iteratorLayout": "grid-3"
+              },
+              "2xl": {
+                "size": "xl",
+                "align": "left"
+              }
+            },
+            "markerType": "image",
+            "markerImage": "/placeholder.svg",
+            "markerStyle": "ghost",
+            "iteratorAppearance": [],
+            "iteratorBackground": [],
+            "background": [
+              "solidWhite"
+            ],
+            "markerSize": "lg"
+          }
+        }
+      ]
+    },
+    {
+      "id": "block-1773127372015-0risxeosk",
+      "blockType": "blob",
+      "data": {
+        "buttons": "[]",
+        "appearance": "darkBackground",
+        "title": "",
+        "responsive": {
+          "base": {
+            "layout": "stack",
+            "direction": "default",
+            "align": "center",
+            "size": "4xl",
+            "gapY": "auto",
+            "paddingY": "lg",
+            "headerPaddingX": "container-md",
+            "paddingX": "container-xl"
+          }
+        },
+        "background": [
+          "greenPhoto"
+        ],
+        "showContent": true,
+        "contentType": "innerBlocks"
+      },
+      "innerBlocks": [
+        {
+          "id": "block-1773991667508-w0hgieit1",
+          "blockType": "blob",
+          "data": {
+            "markerType": "none",
+            "figureType": "none",
+            "showContent": false,
+            "contentType": "text",
+            "responsive": {
+              "base": {
+                "size": "md",
+                "layout": "stack",
+                "align": "center",
+                "direction": "default",
+                "marker": "top",
+                "actions": "before",
+                "paddingX": "xl",
+                "paddingY": "xl"
+              },
+              "xl": {
+                "size": "2xl",
+                "layout": "bar",
+                "align": "left",
+                "direction": "default",
+                "marker": "top",
+                "actions": "before",
+                "paddingX": "container-lg",
+                "paddingY": "4xl"
+              },
+              "md": {
+                "size": "xl",
+                "paddingY": "xl"
+              }
+            },
+            "title": "Net zero is the destination. // Corporate contribution is the engine.",
+            "background": [
+              "solidWhite",
+              "grid"
+            ],
+            "appearance": [
+              "rounded"
+            ],
+            "buttons": "[{\"label\":\"Assess your contribution\",\"linkType\":\"internal\",\"internalHref\":\"\",\"externalHref\":\"\",\"customAction\":\"action1\",\"variant\":\"default\",\"theme\":\"brand\",\"opensInNewTab\":\"false\"}]"
+          },
+          "innerBlocks": []
+        }
+      ]
+    },
+    {
+      "id": "block-1773066668006-4ihmos3gr",
+      "blockType": "blob",
+      "data": {
+        "containerLayout": "grid-3",
+        "itemFields": [
+          "title",
+          "emphasisText",
+          "eyebrow",
+          "eyebrowTheme",
+          "subtitle",
+          "markerContent",
+          "image",
+          "video",
+          "buttons",
+          "contentText"
+        ],
+        "items": [
+          {
+            "title": "Feature 1",
+            "emphasisText": "",
+            "eyebrow": "",
+            "eyebrowTheme": "",
+            "subtitle": "",
+            "markerContent": "01.",
+            "image": "",
+            "video": "",
+            "buttons": "",
+            "contentText": ""
+          },
+          {
+            "title": "Feature 2",
+            "emphasisText": "",
+            "eyebrow": "",
+            "eyebrowTheme": "",
+            "subtitle": "",
+            "markerContent": "02.",
+            "image": "",
+            "video": "",
+            "buttons": "",
+            "contentText": ""
+          },
+          {
+            "title": "Feature 3",
+            "emphasisText": "",
+            "eyebrow": "",
+            "eyebrowTheme": "",
+            "subtitle": "",
+            "markerContent": "03.",
+            "image": "",
+            "video": "",
+            "buttons": "",
+            "contentText": ""
+          }
+        ],
+        "markerType": "text",
+        "responsive": {
+          "base": {
+            "gapX": "md",
+            "gapY": "md"
+          }
+        }
+      },
+      "innerBlocks": [
+        {
+          "id": "block-1773066722245-3ljroy9vj",
+          "blockType": "blobIterator",
+          "data": {
+            "containerLayout": "grid-3",
+            "itemFields": [
+              "title",
+              "emphasisText",
+              "eyebrow",
+              "eyebrowTheme",
+              "subtitle",
+              "markerContent",
+              "markerIcon",
+              "image",
+              "video",
+              "buttons",
+              "contentText"
+            ],
+            "responsive": {
+              "base": {
+                "gapX": "md",
+                "gapY": "md"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "block-1773055868383-vrxsovevx",
+      "blockType": "blobIterator",
+      "data": {
+        "containerLayout": "grid-3",
+        "itemFields": [
+          "emphasisText",
+          "eyebrow",
+          "eyebrowTheme",
+          "subtitle",
+          "markerContent",
+          "markerIcon",
+          "image",
+          "video",
+          "buttons",
+          "contentText"
+        ],
+        "items": [
+          {
+            "id": "block-1773055868383-vrxsovevx-item-1773239686560-vueuabi",
+            "blockType": "blob",
+            "data": {
+              "title": "coucou",
+              "emphasisText": "salut",
+              "eyebrow": "",
+              "eyebrowTheme": "",
+              "subtitle": "",
+              "markerContent": "",
+              "markerIcon": "",
+              "image": "",
+              "video": "",
+              "buttons": "",
+              "contentText": ""
+            },
+            "innerBlocks": []
+          }
+        ],
+        "responsive": {
+          "base": {
+            "gapX": "md",
+            "gapY": "md"
+          }
+        }
+      }
+    },
+    {
+      "id": "block-1773057321768-xpfg01wrr",
+      "blockType": "blobIterator",
+      "data": {
+        "containerLayout": "grid-3",
+        "itemFields": [
+          "emphasisText",
+          "eyebrow",
+          "eyebrowTheme",
+          "subtitle",
+          "markerContent",
+          "markerIcon",
+          "image",
+          "video",
+          "buttons",
+          "contentText",
+          "title"
+        ],
+        "items": [
+          {
+            "id": "block-1773057321768-xpfg01wrr-item-1773239686560-cniern1",
+            "blockType": "blob",
+            "data": {
+              "title": "",
+              "emphasisText": "",
+              "eyebrow": "",
+              "eyebrowTheme": "",
+              "subtitle": "",
+              "markerContent": "",
+              "markerIcon": "",
+              "image": "",
+              "video": "",
+              "buttons": "",
+              "contentText": ""
+            },
+            "innerBlocks": []
+          },
+          {
+            "id": "block-1773057321768-xpfg01wrr-item-1773239686560-6ljuyaq",
+            "blockType": "blob",
+            "data": {
+              "emphasisText": "",
+              "eyebrow": "",
+              "eyebrowTheme": "",
+              "subtitle": "",
+              "markerContent": "",
+              "markerIcon": "",
+              "image": "",
+              "video": "",
+              "buttons": "",
+              "contentText": "",
+              "title": ""
+            },
+            "innerBlocks": []
+          }
+        ],
+        "responsive": {
+          "base": {
+            "gapX": "md",
+            "gapY": "md"
+          }
+        }
+      }
+    },
+    {
+      "id": "block-1773058729753-23loa6wrb",
+      "blockType": "blobIterator",
+      "data": {
+        "title": "Bonjour",
+        "figureType": "image",
+        "image": "/placeholder.svg",
+        "subtitle": "Sous-titre",
+        "eyebrow": "Sur-titre",
+        "emphasisText": "",
+        "markerType": "icon",
+        "markerContent": "01.",
+        "appearance": "default",
+        "showContent": true,
+        "contentText": "",
+        "markerIcon": "checkCircle",
+        "eyebrowTheme": "brand",
+        "markerSize": "auto",
+        "markerRounded": "rounded-square",
+        "markerTheme": "brand",
+        "markerStyle": "default",
+        "buttons": "[{\"label\":\"Hello\",\"linkType\":\"external\",\"internalHref\":\"\",\"externalHref\":\"http://coucou.fr\",\"customAction\":\"action1\",\"variant\":\"default\",\"theme\":\"red\",\"opensInNewTab\":\"false\"},{\"label\":\"Hello\",\"linkType\":\"internal\",\"internalHref\":\"\",\"externalHref\":\"\",\"customAction\":\"action1\",\"variant\":\"outline\",\"theme\":\"red\",\"opensInNewTab\":\"false\"}]",
+        "titleAs": "h2",
+        "eyebrowAs": "div",
+        "contentType": "innerBlocks",
+        "responsive": {
+          "base": {
+            "layout": "row",
+            "direction": "reverse",
+            "marker": "top",
+            "align": "center",
+            "figureWidth": "1/2",
+            "size": "3xl",
+            "paddingX": "md",
+            "paddingY": "none",
+            "figureBleed": "full",
+            "actions": "before"
+          }
+        },
+        "actions": "before"
+      }
+    }
+  ],
+  "meta": {
+    "createdAt": "2026-03-12T07:45:10.675Z",
+    "updatedAt": "2026-03-21T14:41:25.493Z"
+  }
+}
