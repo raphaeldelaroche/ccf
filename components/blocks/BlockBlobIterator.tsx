@@ -20,7 +20,7 @@ export function BlockBlobIterator({
   data: MappedIteratorData;
   renderInnerBlock?: (block: BlockNode) => React.ReactNode;
 }) {
-  const { iteratorLayout, iteratorGapX, iteratorGapY, swiperOptions, swiperSlideWidth, swiperResponsiveConfig, sharedBlobProps, sharedAppearance, items } = data
+  const { iteratorLayout, iteratorGapX, iteratorGapY, swiperOptions, swiperSlideWidth, swiperResponsiveConfig, iteratorAppearance, iteratorBackground, sharedBlobProps, sharedAppearance, sharedBackground, items } = data
 
   return (
     <BlobIterator
@@ -29,6 +29,8 @@ export function BlockBlobIterator({
       swiperOptions={swiperOptions}
       swiperSlideWidth={swiperSlideWidth}
       swiperResponsiveConfig={swiperResponsiveConfig}
+      appearance={iteratorAppearance}
+      background={iteratorBackground}
     >
       {items.map((itemData, index) => {
         // Fusionner les props partagées avec les props de l'item
@@ -39,6 +41,7 @@ export function BlockBlobIterator({
             ...itemData.blobProps,
           },
           appearance: sharedAppearance || itemData.appearance,
+          background: sharedBackground || itemData.background,
         }
 
         // Passer les innerBlocks et la fonction de rendu si disponibles

@@ -45,61 +45,38 @@ export const APPEARANCES: Record<string, AppearanceDefinition> = {
     markerClassName: "stroke-2 w-auto h-auto",
     headerClassName: "[&_[data-slot='title']]:font-medium",
   },
+  borderedGrid: {
+    label: "Grille bordée",
+    blobClassName: "[&_>[data-slot='blob-grid']]:p-px [&_>[data-slot='blob-grid']]:gap-px bg-border",
+  },
   card: {
     label: "Carte",
     blobClassName: "bg-white border border-gray-200 rounded-lg shadow-sm",
   },
-  cardElevated: {
-    label: "Carte élevée",
-    blobClassName: "bg-white rounded-2xl overflow-hidden shadow-2xl shadow-gray-900/10",
-  },
-  darkBackground: {
-    label: "Fond sombre",
-    blobClassName: "bg-gray-200",
+  rounded: {
+    label: "Arrondi",
+    blobClassName: "rounded-lg overflow-hidden",
   },
   borderBottom: {
     label: "Bordure inférieure",
     blobClassName: "border-b",
   },
-  glassmorphism: {
-    label: "Glassmorphism",
-    blobClassName: "bg-white/40 backdrop-blur-lg border border-white/20 rounded-2xl shadow-xl shadow-purple-800/5",
-    figureClassName: "[&_>img]:rounded-2xl [&_>img]:shadow-xl [&_>img]:shadow-purple-800/5",
-    markerClassName: "rounded-[30%] shadow-xl shadow-purple-800/10",
-    actionsClassName : "[&_>[data-slot='button']]:rounded-full [&_>[data-slot='button']]:shadow-xl [&_>[data-slot='button']]:shadow-purple-800/10"
-  },
-  figma: {
-    label: "Figma",
-    blobClassName: "[&_[data-slot='subtitle']]:text-black [&_[data-slot='subtitle']]:font-medium rounded-lg overflow-hidden border-2 border-black",
-    figureClassName: "[&_>img]:border-b-2 [&_>img]:border-black",
-    actionsClassName : "[&_>[data-slot='button'][data-variant='outline']]:rounded-lg [&_>[data-slot='button'][data-variant='outline']]:border-2 [&_>[data-slot='button'][data-variant='outline']]:border-black",
-    contentClassName: "[&_*]:!text-black [&_*]:!font-bold",
-  },
-  neoBrutalism: {
-    label: "Néo-Brutalisme",
-    blobClassName: "bg-white border-2 border-black rounded-lg overflow-hidden shadow-none shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]",
-    figureClassName: "[&_>img]:border-b-2 [&_>img]:border-black",
-    markerClassName: "rounded-lg font-bold",
-    headerClassName: "[&_[data-slot='subtitle']]:text-black [&_[data-slot='subtitle']]:font-semibold",
-    contentClassName: "[&_*]:!text-black [&_*]:!font-bold",
-    actionsClassName : "[&_>[data-slot='button'][data-variant='outline']]:rounded-lg [&_>[data-slot='button'][data-variant='outline']]:border-2 [&_>[data-slot='button'][data-variant='outline']]:border-black [&_>[data-slot='button'][data-variant='outline']]:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]"
-  },
   outlined: {
     label: "Contour",
     blobClassName: "bg-white border rounded-lg overflow-hidden",
   },
-
-  minimal: {
-    label: "Minimal",
-    blobClassName: "bg-white",
+  markerGridLines: {
+    label: "Marqueur : Lignes de repère",
+    markerClassName: "marker-grid-lines",
   },
-
-  // ─── Nouvelles apparences inspirées du design moderne ───
-
-  neonSection: {
-    label: "Section Néon",
-    blobClassName: "bg-lime-300",
-    headerClassName: "text-gray-900",
+  scorecardSectionItem: {
+    label: "Scorecard : Section item",
+    blobClassName: "!pb-0",
+    figureClassName: "aspect-[5/6] [&_img]:object-contain [&_img]:object-bottom flex items-end",
+  },
+  stackedActions: {
+    label: "Actions empilées",
+    actionsClassName: "flex-col items-start gap-2 [&_[data-slot='button']]:w-full",
   },
 };
 
@@ -123,4 +100,53 @@ export function resolveAppearance(
 ): AppearanceDefinition {
   if (key && APPEARANCES[key]) return APPEARANCES[key];
   return fallback ?? APPEARANCES.default;
+}
+
+/**
+ * Normalise une valeur d'apparence (string legacy ou string[]) en tableau.
+ */
+export function normalizeAppearance(value?: string | string[]): string[] {
+  if (!value) return [];
+  if (Array.isArray(value)) return value;
+  return value ? [value] : [];
+}
+
+/**
+ * Fusionne plusieurs AppearanceDefinition en une seule.
+ * Les classes CSS de chaque slot sont concaténées dans l'ordre.
+ * Retourne `fallback` (ou APPEARANCES.default) si aucune clé valide.
+ */
+export function resolveAppearances(
+  keys?: string | string[],
+  fallback?: AppearanceDefinition
+): AppearanceDefinition {
+  const normalized = normalizeAppearance(keys);
+  const validDefs = normalized
+    .map((k) => APPEARANCES[k])
+    .filter(Boolean);
+
+  if (validDefs.length === 0) return fallback ?? APPEARANCES.default;
+  if (validDefs.length === 1) return validDefs[0];
+
+  const slots = [
+    "blobClassName",
+    "figureClassName",
+    "markerClassName",
+    "headerClassName",
+    "contentClassName",
+    "actionsClassName",
+  ] as const;
+
+  const merged: AppearanceDefinition = {
+    label: validDefs.map((d) => d.label).join(" + "),
+  };
+
+  for (const slot of slots) {
+    const classes = validDefs.map((d) => d[slot]).filter(Boolean).join(" ");
+    if (classes) {
+      merged[slot] = classes;
+    }
+  }
+
+  return merged;
 }

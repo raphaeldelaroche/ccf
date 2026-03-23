@@ -87,6 +87,7 @@
 /* ── Grid areas base : consomme les variables CSS injectées par les classes composées ── */
 @layer base {
   [data-slot="blob"] {
+    position: relative;
     display: grid;
     gap: var(--spacing-gap-y, var(--spacing-section)) var(--spacing-gap-x, var(--spacing-section));
     padding-inline: var(--spacing-padding-x, 0);
@@ -107,11 +108,12 @@
     text-align: var(--blob-align, left);
     justify-items: var(--blob-align-justify, start);
 
-    & [data-slot="marker"]       { grid-area: marker; align-self: start; }
+    & [data-slot="marker"]       { grid-area: marker; align-self: start; font-size: var(--size-marker-font-size); }
     & [data-slot="blob-header"]  { grid-area: header; justify-self: stretch; align-self: start; align-items: var(--blob-align-flex, flex-start); padding-inline: var(--spacing-header-padding-x, 0); padding-block: var(--spacing-header-padding-y, 0); }
     & [data-slot="blob-actions"] { grid-area: actions; align-self: start; justify-content: var(--blob-align-flex, flex-start); }
     & [data-slot="blob-content"] { grid-area: content; align-self: start; min-width: 0; }
     & [data-slot="blob-figure"]  { grid-area: figure; align-self: start; }
+    & [data-slot="blob-background"] { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
   }
 }
 

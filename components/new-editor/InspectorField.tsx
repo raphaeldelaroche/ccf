@@ -1,6 +1,7 @@
 "use client"
 
 import React from "react"
+import { Check, ChevronsUpDown, X } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
@@ -13,6 +14,21 @@ import {
 } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { useState, useEffect } from "react"
 import { cn } from "@/lib/utils"
 import type { OptionState } from "@/lib/use-blob-compatibility"
@@ -22,8 +38,8 @@ import { getBreakpointValue, type Breakpoint, type ResponsiveProps } from "@/lib
 
 interface InspectorFieldProps {
   label: string
-  value: string | boolean
-  type: "text" | "textarea" | "select" | "checkbox" | "icon"
+  value: string | boolean | string[]
+  type: "text" | "textarea" | "select" | "checkbox" | "icon" | "multiselect"
   /** Static options map (key → label). Ignored when compatOptions is provided. */
   options?: Record<string, string>
   /** Icon options — used when type === "icon". */
@@ -33,7 +49,7 @@ interface InspectorFieldProps {
   /** Disable the entire field (e.g. not supported by current layout). */
   disabled?: boolean
   disabledReason?: string
-  onChange: (value: string | boolean) => void
+  onChange: (value: string | boolean | string[]) => void
   /** Current breakpoint being edited (for responsive mode) */
   currentBreakpoint?: Breakpoint
   /** Responsive values object (for determining inherited values) */
@@ -155,6 +171,100 @@ export function InspectorField({
             ))}
           </SelectContent>
         </Select>
+      </div>
+    )
+  }
+
+  if (type === "multiselect" && options) {
+    const selectedValues = Array.isArray(localValue) ? localValue as string[] : []
+
+    const toggleOption = (optionValue: string) => {
+      const next = selectedValues.includes(optionValue)
+        ? selectedValues.filter((v) => v !== optionValue)
+        : [...selectedValues, optionValue]
+      setLocalValue(next)
+      onChange(next)
+    }
+
+    const removeOption = (optionValue: string) => {
+      const next = selectedValues.filter((v) => v !== optionValue)
+      setLocalValue(next)
+      onChange(next)
+    }
+
+    const selectedOptions = Object.entries(options).filter(([key]) => selectedValues.includes(key))
+
+    return (
+      <div className="space-y-2">
+        <Label className="text-[11px] uppercase font-semibold tracking-wide mb-1">
+          {label}
+          <InheritanceBadge />
+        </Label>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              role="combobox"
+              className="w-full justify-between h-auto min-h-8 py-1.5 text-sm"
+            >
+              <span className="text-muted-foreground truncate">
+                {selectedValues.length > 0
+                  ? `${selectedValues.length} style${selectedValues.length > 1 ? "s" : ""}`
+                  : "Aucun"}
+              </span>
+              <ChevronsUpDown className="ml-2 h-3.5 w-3.5 shrink-0 opacity-50" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-full p-0" align="start">
+            <Command>
+              <CommandInput placeholder="Rechercher..." />
+              <CommandList>
+                <CommandEmpty>Aucun style trouvé.</CommandEmpty>
+                <CommandGroup>
+                  {Object.entries(options).map(([key, optLabel]) => {
+                    const isSelected = selectedValues.includes(key)
+                    return (
+                      <CommandItem
+                        key={key}
+                        value={key}
+                        onSelect={() => toggleOption(key)}
+                      >
+                        <Check
+                          className={cn(
+                            "mr-2 h-4 w-4",
+                            isSelected ? "opacity-100" : "opacity-0"
+                          )}
+                        />
+                        {optLabel}
+                      </CommandItem>
+                    )
+                  })}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
+
+        {selectedOptions.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {selectedOptions.map(([key, optLabel]) => (
+              <Badge
+                key={key}
+                variant="secondary"
+                className="text-xs px-2 py-0.5"
+              >
+                {optLabel}
+                <button
+                  type="button"
+                  onClick={() => removeOption(key)}
+                  className="ml-1 hover:text-destructive"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </Badge>
+            ))}
+          </div>
+        )}
       </div>
     )
   }

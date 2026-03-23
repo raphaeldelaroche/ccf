@@ -5,14 +5,15 @@
  *
  * INCERTITUDES ET QUESTIONS DE MAPPING :
  *
- * 1. **Background, Separator** :
+ * 1. **Separator** :
  *    - Ces propriétés n'ont pas d'équivalent direct dans les props de Blob
- *    - Ce sont probablement des props de niveau page/section
  *    - Marquées comme "unmapped" pour inspection
  */
 
 import type { BlobComposableProps, ResponsiveProps, ResponsiveBreakpointProps } from "@/lib/blob-compose"
 import { iconOptions, type IconData } from "@/lib/blob-fields"
+import { normalizeAppearance } from "@/config/blob-appearances"
+import { normalizeBackground } from "@/config/blob-backgrounds"
 
 // Re-export IconData pour faciliter les imports
 export type { IconData }
@@ -37,6 +38,7 @@ export interface BlobFormData {
   markerStyle?: string
   markerSize?: string
   markerTheme?: string
+  markerImage?: string
   markerRounded?: string
 
   // Figure/Media
@@ -77,12 +79,9 @@ export interface BlobFormData {
   actions?: string
 
   // Style
-  appearance?: string
+  appearance?: string | string[]
+  background?: string | string[]
   theme?: string
-  backgroundType?: string
-  backgroundColor?: string
-  backgroundImage?: string
-  backgroundStyle?: string
 
   // Separator (non mappé au composant Blob)
   showSeparator?: boolean
@@ -114,9 +113,9 @@ function toTitleAs(val: string | undefined, fallback: TitleAs): TitleAs {
   return VALID_TITLE_AS.includes(val as TitleAs) ? (val as TitleAs) : fallback;
 }
 
-export type MarkerVariant = "default" | "secondary" | "ghost";
+export type MarkerVariant = "default" | "secondary" | "ghost" | "outline";
 
-const VALID_MARKER_VARIANTS: MarkerVariant[] = ["default", "secondary", "ghost"];
+const VALID_MARKER_VARIANTS: MarkerVariant[] = ["default", "secondary", "ghost", "outline"];
 
 function toMarkerVariant(val: string | undefined): MarkerVariant {
   return VALID_MARKER_VARIANTS.includes(val as MarkerVariant) ? (val as MarkerVariant) : "default";
@@ -128,8 +127,11 @@ export interface MappedBlobData {
     className?: string
   }
 
-  // Apparence (wrapper styling)
-  appearance?: string
+  // Apparence (wrapper styling) — tableau de clés d'apparences
+  appearance?: string[]
+
+  // Arrière-plans — tableau de clés de backgrounds
+  background?: string[]
 
   // Données pour reconstruction des sous-composants
   header?: {
@@ -151,9 +153,10 @@ export interface MappedBlobData {
   }
 
   marker?: {
-    type: "text" | "icon"
+    type: "text" | "icon" | "image"
     content?: string
     icon?: IconData
+    image?: string
     style: MarkerVariant
     size?: string
     theme?: string
@@ -192,10 +195,6 @@ export interface MappedBlobData {
 
   // Props non mappées (pour debugging)
   unmapped: {
-    backgroundType?: string
-    backgroundColor?: string
-    backgroundImage?: string
-    backgroundStyle?: string
     showSeparator?: boolean
     separatorType?: string
     separatorPosition?: string
@@ -336,11 +335,12 @@ export function mapFormDataToBlob(formData: BlobFormData): MappedBlobData {
 
   // ── Marker data ──
   const markerData = formData.markerType && formData.markerType !== "none" ? {
-    type: formData.markerType as "text" | "icon",
+    type: formData.markerType as "text" | "icon" | "image",
     content: formData.markerContent,
     icon: formData.markerIcon && typeof formData.markerIcon === 'string'
       ? iconOptions[formData.markerIcon]
       : undefined,
+    image: formData.markerImage,
     style: toMarkerVariant(formData.markerStyle),
     size: formData.markerSize && formData.markerSize !== 'auto' ? formData.markerSize : undefined,
     theme: formData.markerTheme,
@@ -411,10 +411,6 @@ export function mapFormDataToBlob(formData: BlobFormData): MappedBlobData {
 
   // ── Unmapped props ──
   const unmapped = {
-    backgroundType: formData.backgroundType,
-    backgroundColor: formData.backgroundColor,
-    backgroundImage: formData.backgroundImage,
-    backgroundStyle: formData.backgroundStyle,
     showSeparator: formData.showSeparator,
     separatorType: formData.separatorType,
     separatorPosition: formData.separatorPosition,
@@ -423,7 +419,8 @@ export function mapFormDataToBlob(formData: BlobFormData): MappedBlobData {
 
   return {
     blobProps,
-    appearance: formData.appearance,
+    appearance: normalizeAppearance(formData.appearance),
+    background: normalizeBackground(formData.background),
     header,
     marker: markerData,
     figure,

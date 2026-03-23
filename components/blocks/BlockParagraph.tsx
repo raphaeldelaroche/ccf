@@ -1,14 +1,14 @@
 import { cn } from "@/lib/utils"
-import { resolveAppearance } from "@/config/blob-appearances"
+import { resolveAppearances } from "@/config/blob-appearances"
 
 interface BlockParagraphProps {
   text: string
-  appearance?: string
+  appearance?: string | string[]
 }
 
 export function BlockParagraph({ text, appearance }: BlockParagraphProps) {
   if (!text) return null
-  const appearanceConfig = resolveAppearance(appearance)
+  const appearanceConfig = resolveAppearances(appearance)
   return (
     <p className={cn("text-base text-foreground", appearanceConfig.blobClassName)}>{text}</p>
   )

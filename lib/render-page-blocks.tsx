@@ -57,7 +57,7 @@ export function renderBlock(block: BlockNode): React.ReactNode {
           <BlockParagraph
             key={block.id}
             text={(data.text as string) || ""}
-            appearance={(data.appearance as string) || undefined}
+            appearance={(data.appearance as string | string[]) || undefined}
           />
         )
       }

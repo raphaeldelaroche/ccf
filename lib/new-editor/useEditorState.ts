@@ -8,6 +8,7 @@ import { createNewBlock } from "@/lib/new-editor/block-registry"
 import { api } from "@/lib/auth/api-client"
 import { migrateResponsiveFields, migrateXsToBaseAll } from "@/lib/new-editor/migrate-responsive-fields"
 import { refreshBlockRecursive, type RefreshMode } from "@/lib/new-editor/refresh-helpers"
+import { extractFieldsByCategory, mergeFieldsIntoData, getFieldSectionsForBlockType, type CopyMode } from "@/lib/copy-paste-utils"
 
 const MAX_HISTORY = 50
 
@@ -72,6 +73,7 @@ export function useEditorState(initialPage = "home") {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data: Record<string, any>
     innerBlocks?: BlockNode[]
+    mode: CopyMode
   } | null>(null)
 
   // ─── Pages ──────────────────────────────────────────────────────────────
@@ -440,8 +442,8 @@ export function useEditorState(initialPage = "home") {
     }, 800)
   }, [])
 
-  const handleCopyBlock = useCallback(
-    (blockId: string) => {
+  const findBlockInList = useCallback(
+    (blockId: string): BlockNode | null => {
       const findInList = (list: BlockNode[]): BlockNode | null => {
         for (const b of list) {
           if (b.id === blockId) return b
@@ -452,15 +454,54 @@ export function useEditorState(initialPage = "home") {
         }
         return null
       }
-      const block = findInList(blocks)
+      return findInList(blocks)
+    },
+    [blocks]
+  )
+
+  const handleCopyBlock = useCallback(
+    (blockId: string) => {
+      const block = findBlockInList(blockId)
       if (block)
         setClipboardData({
           blockType: block.blockType,
           data: { ...block.data },
           innerBlocks: block.innerBlocks,
+          mode: "full",
         })
     },
-    [blocks]
+    [findBlockInList]
+  )
+
+  const handleCopyBlockStyle = useCallback(
+    (blockId: string) => {
+      const block = findBlockInList(blockId)
+      if (!block) return
+      const sections = getFieldSectionsForBlockType(block.blockType)
+      if (!sections) return
+      setClipboardData({
+        blockType: block.blockType,
+        data: extractFieldsByCategory(block.data, "style", sections),
+        mode: "style",
+      })
+    },
+    [findBlockInList]
+  )
+
+  const handleCopyBlockContent = useCallback(
+    (blockId: string) => {
+      const block = findBlockInList(blockId)
+      if (!block) return
+      const sections = getFieldSectionsForBlockType(block.blockType)
+      if (!sections) return
+      setClipboardData({
+        blockType: block.blockType,
+        data: extractFieldsByCategory(block.data, "content", sections),
+        innerBlocks: block.innerBlocks,
+        mode: "content",
+      })
+    },
+    [findBlockInList]
   )
 
   const handlePasteBlock = useCallback(
@@ -469,7 +510,20 @@ export function useEditorState(initialPage = "home") {
       commit((prev) => {
         const updateIn = (blocks: BlockNode[]): BlockNode[] =>
           blocks.map((b) => {
-            if (b.id === blockId) return { ...b, data: { ...clipboardData.data } }
+            if (b.id === blockId) {
+              if (clipboardData.mode === "full") {
+                return { ...b, data: { ...clipboardData.data } }
+              }
+              // Style or content: merge only the copied fields
+              const mergedData = mergeFieldsIntoData(b.data, clipboardData.data)
+              return {
+                ...b,
+                data: mergedData as Record<string, FormDataValue>,
+                ...(clipboardData.mode === "content" && clipboardData.innerBlocks
+                  ? { innerBlocks: clipboardData.innerBlocks.map(deepCloneBlock) }
+                  : {}),
+              }
+            }
             if (b.innerBlocks) return { ...b, innerBlocks: updateIn(b.innerBlocks) }
             return b
           })
@@ -659,10 +713,14 @@ export function useEditorState(initialPage = "home") {
     handleMoveBlock,
     handleUpdateBlock,
     handleCopyBlock,
+    handleCopyBlockStyle,
+    handleCopyBlockContent,
     handlePasteBlock,
     handleInsertFromClipboard,
     handleRefreshBlock,
     hasClipboard: clipboardData !== null,
+    clipboardMode: (clipboardData?.mode ?? null) as CopyMode | null,
+    clipboardBlockType: (clipboardData?.blockType ?? null) as BlockType | null,
     // Undo / Redo
     handleUndo,
     handleRedo,

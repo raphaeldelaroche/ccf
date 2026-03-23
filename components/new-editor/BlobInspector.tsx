@@ -19,7 +19,7 @@ import {
 import type { ResponsiveBreakpointProps } from "@/lib/blob-compose"
 
 // Maps blob-fields types to InspectorField types
-const FIELD_TYPE_MAP: Partial<Record<string, "text" | "textarea" | "select" | "checkbox" | "icon">> = {
+const FIELD_TYPE_MAP: Partial<Record<string, "text" | "textarea" | "select" | "checkbox" | "icon" | "multiselect">> = {
   text: "text",
   textarea: "textarea",
   dropdown: "select",
@@ -27,6 +27,7 @@ const FIELD_TYPE_MAP: Partial<Record<string, "text" | "textarea" | "select" | "c
   icon: "icon",
   image: "text",  // URL input
   video: "text",  // URL input
+  multiselect: "multiselect",
 }
 
 interface BlobInspectorProps {
@@ -65,11 +66,11 @@ export function BlobInspector({
     [data]
   )
 
-  const handleChange = (key: string, value: string | boolean) => {
+  const handleChange = (key: string, value: string | boolean | string[]) => {
     onUpdate({ [key]: value })
   }
 
-  const handleResponsiveChange = (key: string, value: string | boolean) => {
+  const handleResponsiveChange = (key: string, value: string | boolean | string[]) => {
     const newResponsive = { ...responsiveData }
 
     if (!newResponsive[activeBreakpoint]) {
@@ -118,7 +119,7 @@ export function BlobInspector({
     onUpdate({ responsive: newResponsive })
   }
 
-  function renderField(fieldKey: string, fieldDef: Field, onChange: (v: string | boolean) => void) {
+  function renderField(fieldKey: string, fieldDef: Field, onChange: (v: string | boolean | string[]) => void) {
     // Check if field is responsive
     const isResponsive = "responsive" in fieldDef && fieldDef.responsive === true
 
@@ -184,19 +185,25 @@ export function BlobInspector({
     const inspectorType = FIELD_TYPE_MAP[fieldDef.type] ?? "text"
 
     let options: Record<string, string> | undefined
-    if (!compatOptions && fieldDef.type === "dropdown") {
-      options = fieldDef.emptyLabel
+    if (!compatOptions && (fieldDef.type === "dropdown" || fieldDef.type === "multiselect")) {
+      options = fieldDef.type === "dropdown" && fieldDef.emptyLabel
         ? { "": fieldDef.emptyLabel, ...fieldDef.options }
         : fieldDef.options
     }
 
-    const value = rawValue !== undefined ? rawValue : fieldDef.type === "checkbox" ? false : ""
+    const value = rawValue !== undefined
+      ? rawValue
+      : fieldDef.type === "checkbox"
+        ? false
+        : fieldDef.type === "multiselect"
+          ? []
+          : ""
 
     return (
       <InspectorField
         key={fieldKey}
         label={fieldDef.label}
-        value={value as string | boolean}
+        value={value as string | boolean | string[]}
         type={inspectorType}
         options={options}
         compatOptions={compatOptions}
@@ -206,7 +213,7 @@ export function BlobInspector({
         onChange={onChange}
         currentBreakpoint={isResponsive && canSeeResponsive ? activeBreakpoint : undefined}
         responsiveValues={isResponsive && canSeeResponsive ? responsiveData : undefined}
-        fieldKey={isResponsive && canSeeResponsive ? fieldKey : undefined}
+        fieldKey={isResponsive && canSeeResponsive ? (fieldDef.compatKey || fieldKey) : undefined}
       />
     )
   }
@@ -272,7 +279,8 @@ export function BlobInspector({
               {visibleFields.map(([fieldKey, fieldDef]) => {
                 const isResponsive = "responsive" in fieldDef && fieldDef.responsive === true
                 const onChange = isResponsive ? handleResponsiveChange : handleChange
-                return renderField(fieldKey, fieldDef, (v) => onChange(fieldKey, v))
+                const responsiveKey = isResponsive && 'compatKey' in fieldDef && fieldDef.compatKey ? fieldDef.compatKey : fieldKey
+                return renderField(fieldKey, fieldDef, (v) => onChange(responsiveKey, v))
               })}
             </div>
           </CollapsibleSection>

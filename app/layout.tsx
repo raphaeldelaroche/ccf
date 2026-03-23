@@ -1,22 +1,21 @@
 import type { Metadata } from "next";
-import { Outfit, Mulish, Plus_Jakarta_Sans } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { UserProvider } from "@/lib/auth/UserContext";
 import { RoleSelectionDialog } from "@/components/auth/RoleSelectionDialog";
 
-const outfit = Outfit({
-  variable: "--font-outfit",
-  subsets: ["latin"],
+const maisonNeue = localFont({
+  src: [
+    { path: "../public/fonts/Maison_Neue_Light.ttf", weight: "300" },
+    { path: "../public/fonts/Maison_Neue_Book.ttf", weight: "400" },
+    { path: "../public/fonts/Maison_Neue_Bold.ttf", weight: "700" },
+  ],
+  variable: "--font-maison",
 });
 
-const mulish = Mulish({
-  variable: "--font-mulish",
-  subsets: ["latin"],
-});
-
-const jakarta = Plus_Jakarta_Sans({
-  variable: "--font-jakarta",
-  subsets: ["latin"],
+const maisonNeueMono = localFont({
+  src: [{ path: "../public/fonts/Maison_Neue_Mono.ttf", weight: "400" }],
+  variable: "--font-maison-mono",
 });
 
 export const metadata: Metadata = {
@@ -32,7 +31,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${outfit.variable} ${mulish.variable} ${jakarta.variable} antialiased`}
+        className={`${maisonNeue.variable} ${maisonNeueMono.variable} antialiased`}
       >
         <UserProvider>
           <RoleSelectionDialog />

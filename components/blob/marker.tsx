@@ -4,7 +4,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const markerVariants = cva(
-  "flex text-nowrap shrink-0 items-center justify-center [&_svg]:pointer-events-none w-media h-media [&_svg]:size-media-icon mb-media-bottom",
+  "relative flex text-nowrap shrink-0 items-center justify-center overflow-hidden [&_svg]:pointer-events-none w-media h-media [&_svg]:size-media-icon mb-media-bottom",
   {
     variants: {
       rounded: {
@@ -15,6 +15,7 @@ const markerVariants = cva(
         default: "bg-primary text-primary-foreground",
         secondary: "bg-secondary text-secondary-foreground",
         ghost: "bg-transparent text-foreground",
+        outline: "bg-white border border-border text-foreground",
       },
     },
     defaultVariants: {

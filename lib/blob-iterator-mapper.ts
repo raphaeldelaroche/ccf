@@ -12,6 +12,8 @@ import { mapFormDataToBlob, type BlobFormData, type MappedBlobData } from "@/lib
 import type { SwiperOptions } from "swiper/types"
 import type { BlockNode } from "@/lib/new-editor/block-types"
 import type { FormDataValue } from "@/types/editor"
+import { normalizeAppearance } from "@/config/blob-appearances"
+import { normalizeBackground } from "@/config/blob-backgrounds"
 
 /**
  * Helper function to assign form values to responsive breakpoint props in a type-safe way.
@@ -44,6 +46,10 @@ export interface BlobIteratorFormData {
   swiperLoop?: boolean
   swiperCenteredSlides?: boolean
 
+  // Iterator container style
+  iteratorAppearance?: string | string[]
+  iteratorBackground?: string | string[]
+
   // Champs gérés par item (le reste est partagé)
   itemFields?: string[]
 
@@ -54,7 +60,8 @@ export interface BlobIteratorFormData {
   direction?: string
   align?: string
   markerPosition?: string
-  appearance?: string
+  appearance?: string | string[]
+  background?: string | string[]
 
   // Responsive breakpoint values (from BreakpointDialog)
   responsive?: ResponsiveProps
@@ -89,11 +96,16 @@ export interface MappedIteratorData {
   /** Per-breakpoint responsive config for CSS-driven behavior */
   swiperResponsiveConfig?: SwiperResponsiveConfig
 
+  // Iterator container style
+  iteratorAppearance?: string[]
+  iteratorBackground?: string[]
+
   // Props héritées (partagées par tous les blobs)
   sharedBlobProps: Partial<BlobComposableProps> & {
     className?: string
   }
-  sharedAppearance?: string
+  sharedAppearance?: string[]
+  sharedBackground?: string[]
 
   // Items mappés (données pour chaque blob) avec innerBlocks et itemId
   items: Array<MappedBlobData & { innerBlocks?: BlockNode[]; itemId: string }>
@@ -113,7 +125,8 @@ function parseJsonField<T>(value: unknown, fallback: T): T {
 
 function buildSharedBlobProps(formData: BlobIteratorFormData): {
   blobProps: Partial<BlobComposableProps>
-  appearance?: string
+  appearance?: string[]
+  background?: string[]
 } {
   const itemFields = parseJsonField<string[]>(formData.itemFields, [])
 
@@ -171,7 +184,8 @@ function buildSharedBlobProps(formData: BlobIteratorFormData): {
 
   return {
     blobProps: sharedProps,
-    appearance: isShared("appearance") ? formData.appearance : undefined,
+    appearance: isShared("appearance") ? normalizeAppearance(formData.appearance) : undefined,
+    background: isShared("background") ? normalizeBackground(formData.background) : undefined,
   }
 }
 
@@ -427,6 +441,7 @@ function mapIteratorItem(
     markerType: getFieldValue("markerType") as string | undefined,
     markerContent: getFieldValue("markerContent") as string | undefined,
     markerIcon: getFieldValue("markerIcon") as string | undefined,
+    markerImage: getFieldValue("markerImage") as string | undefined,
     markerPosition: getFieldValue("markerPosition") as string | undefined,
     markerStyle: getFieldValue("markerStyle") as string | undefined,
     markerSize: getFieldValue("markerSize") as string | undefined,
@@ -464,11 +479,8 @@ function mapIteratorItem(
 
     // Style fields
     theme: getFieldValue("theme") as string | undefined,
-    appearance: getFieldValue("appearance") as string | undefined,
-    backgroundType: getFieldValue("backgroundType") as string | undefined,
-    backgroundColor: getFieldValue("backgroundColor") as string | undefined,
-    backgroundImage: getFieldValue("backgroundImage") as string | undefined,
-    backgroundStyle: getFieldValue("backgroundStyle") as string | undefined,
+    appearance: getFieldValue("appearance") as string | string[] | undefined,
+    background: getFieldValue("background") as string | string[] | undefined,
 
     // Separator fields
     showSeparator: getFieldValue("showSeparator") as boolean | undefined,
@@ -498,7 +510,7 @@ function mapIteratorItem(
  * Mappe les données du formulaire iterator vers les props du composant BlobIterator
  */
 export function mapIteratorFormData(formData: BlobIteratorFormData): MappedIteratorData {
-  const { blobProps: sharedBlobProps, appearance: sharedAppearance } = buildSharedBlobProps(formData)
+  const { blobProps: sharedBlobProps, appearance: sharedAppearance, background: sharedBackground } = buildSharedBlobProps(formData)
   const { swiperOptions, swiperResponsiveConfig, resolvedSlideWidth } = buildSwiperConfig(formData)
 
   // Mapper chaque item (items peut être une string JSON depuis Redis)
@@ -533,8 +545,11 @@ export function mapIteratorFormData(formData: BlobIteratorFormData): MappedItera
     swiperOptions,
     swiperSlideWidth: resolvedSlideWidth,
     swiperResponsiveConfig,
+    iteratorAppearance: normalizeAppearance(formData.iteratorAppearance),
+    iteratorBackground: normalizeBackground(formData.iteratorBackground),
     sharedBlobProps,
     sharedAppearance,
+    sharedBackground,
     items,
   }
 }

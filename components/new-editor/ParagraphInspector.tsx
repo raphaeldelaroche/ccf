@@ -39,9 +39,9 @@ export function ParagraphInspector({ data, onUpdate }: ParagraphInspectorProps) 
           <div className="pt-3 space-y-3">
             <InspectorField
               label="Apparence"
-              value={(data.appearance as string) || ""}
-              type="select"
-              options={{ "": "Aucune", ...getAppearanceOptions() }}
+              value={(data.appearance as string[]) || []}
+              type="multiselect"
+              options={getAppearanceOptions()}
               onChange={(v) => handleChange("appearance", v)}
             />
           </div>

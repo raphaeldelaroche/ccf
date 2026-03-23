@@ -27,6 +27,7 @@
   --size-media-width: calc( (var(--size-heading-font-size) * 1.2 + var(--size-heading-margin-bottom) + var(--size-lead-font-size) * 1.5) * 1.05 );
   --size-media-height: var(--size-media-width);
   --size-media-icon-size: calc( var(--size-media-width) * 0.5 );
+  --size-marker-font-size: calc( var(--size-media-width) * 0.45 );
 
   /* Actions */
   --size-actions-gap: 0.5rem; /* 8px */
@@ -69,6 +70,7 @@
   --size-media-width: calc( (var(--size-heading-font-size) * 1.2 + var(--size-heading-margin-bottom) + var(--size-lead-font-size) * 1.5) * 1.05 );
   --size-media-height: var(--size-media-width);
   --size-media-icon-size: calc( var(--size-media-width) * 0.5 );
+  --size-marker-font-size: calc( var(--size-media-width) * 0.45 );
 
   /* Actions */
   --size-actions-gap: 0.5rem;
@@ -111,6 +113,7 @@
   --size-media-width: calc( (var(--size-heading-font-size) * 1.2 + var(--size-heading-margin-bottom) + var(--size-lead-font-size) * 1.5) * 1.05 );
   --size-media-height: var(--size-media-width);
   --size-media-icon-size: calc( var(--size-media-width) * 0.5 );
+  --size-marker-font-size: calc( var(--size-media-width) * 0.45 );
 
   /* Actions */
   --size-actions-gap: 0.5rem;
@@ -153,6 +156,7 @@
   --size-media-width: calc( (var(--size-heading-font-size) * 1.2 + var(--size-heading-margin-bottom) + var(--size-lead-font-size) * 1.5) * 1.05 );
   --size-media-height: var(--size-media-width);
   --size-media-icon-size: calc( var(--size-media-width) * 0.5 );
+  --size-marker-font-size: calc( var(--size-media-width) * 0.45 );
 
   /* Actions */
   --size-actions-gap: 0.5rem;
@@ -195,6 +199,7 @@
   --size-media-width: calc( (var(--size-heading-font-size) * 1.2 + var(--size-heading-margin-bottom) + var(--size-lead-font-size) * 1.5) * 1.05 );
   --size-media-height: var(--size-media-width);
   --size-media-icon-size: calc( var(--size-media-width) * 0.5 );
+  --size-marker-font-size: calc( var(--size-media-width) * 0.45 );
 
   /* Actions */
   --size-actions-gap: 0.5rem;
@@ -237,6 +242,7 @@
   --size-media-width: calc( (var(--size-heading-font-size) * 1.2 + var(--size-heading-margin-bottom) + var(--size-lead-font-size) * 1.5) * 1.05 );
   --size-media-height: var(--size-media-width);
   --size-media-icon-size: calc( var(--size-media-width) * 0.5 );
+  --size-marker-font-size: calc( var(--size-media-width) * 0.45 );
 
   /* Actions */
   --size-actions-gap: 0.75rem;
@@ -265,7 +271,7 @@
   --size-eyebrow-margin-bottom: var(--size-heading-margin-bottom);
 
   /* Heading */
-  --size-heading-font-size: 2rem;
+  --size-heading-font-size: 2.25rem; /* 36px */
   --size-heading-line-height: 1.25;
   --size-heading-margin-bottom: 0.25rem;
 
@@ -279,6 +285,7 @@
   --size-media-width: calc( (var(--size-heading-font-size) * 1.2 + var(--size-heading-margin-bottom) + var(--size-lead-font-size) * 1.5) * 1.05 );
   --size-media-height: var(--size-media-width);
   --size-media-icon-size: calc( var(--size-media-width) * 0.5 );
+  --size-marker-font-size: calc( var(--size-media-width) * 0.45 );
 
   /* Actions */
   --size-actions-gap: 0.75rem;
@@ -307,7 +314,7 @@
   --size-eyebrow-margin-bottom: var(--size-heading-margin-bottom);
 
   /* Heading */
-  --size-heading-font-size: 2.25rem;
+  --size-heading-font-size: 2.75rem; /* 44px */
   --size-heading-line-height: 1.2;
   --size-heading-margin-bottom: 0.25rem;
 
@@ -321,6 +328,7 @@
   --size-media-width: calc( (var(--size-heading-font-size) * 1.2 + var(--size-heading-margin-bottom) + var(--size-lead-font-size) * 1.5) * 1.05 );
   --size-media-height: var(--size-media-width);
   --size-media-icon-size: calc( var(--size-media-width) * 0.5 );
+  --size-marker-font-size: calc( var(--size-media-width) * 0.45 );
 
   /* Actions */
   --size-actions-gap: 0.625rem;
@@ -349,7 +357,7 @@
   --size-eyebrow-margin-bottom: var(--size-heading-margin-bottom);
 
   /* Heading */
-  --size-heading-font-size: 2.5rem;
+  --size-heading-font-size: 3.25rem; /* 52px */
   --size-heading-line-height: 1.15;
   --size-heading-margin-bottom: 0.25rem;
 
@@ -363,6 +371,7 @@
   --size-media-width: calc( (var(--size-heading-font-size) * 1.2 + var(--size-heading-margin-bottom) + var(--size-lead-font-size) * 1.5) * 1.05 );
   --size-media-height: var(--size-media-width);
   --size-media-icon-size: calc( var(--size-media-width) * 0.5 );
+  --size-marker-font-size: calc( var(--size-media-width) * 0.45 );
 
   /* Actions */
   --size-actions-gap: 0.625rem;
@@ -391,7 +400,7 @@
   --size-eyebrow-margin-bottom: var(--size-heading-margin-bottom);
 
   /* Heading */
-  --size-heading-font-size: 2.75rem;
+  --size-heading-font-size: 3.75rem; /* 60px */
   --size-heading-line-height: 1.15;
   --size-heading-margin-bottom: 0.25rem;
 
@@ -405,6 +414,7 @@
   --size-media-width: calc( (var(--size-heading-font-size) * 1.2 + var(--size-heading-margin-bottom) + var(--size-lead-font-size) * 1.5) * 1.05 );
   --size-media-height: var(--size-media-width);
   --size-media-icon-size: calc( var(--size-media-width) * 0.5 );
+  --size-marker-font-size: calc( var(--size-media-width) * 0.45 );
 
   /* Actions */
   --size-actions-gap: 0.625rem;
@@ -433,7 +443,7 @@
   --size-eyebrow-margin-bottom: var(--size-heading-margin-bottom);
 
   /* Heading */
-  --size-heading-font-size: 3rem;
+  --size-heading-font-size: 4.5rem; /* 72px */
   --size-heading-line-height: 1.15;
   --size-heading-margin-bottom: 0.25rem;
 
@@ -447,6 +457,7 @@
   --size-media-width: calc( (var(--size-heading-font-size) * 1.2 + var(--size-heading-margin-bottom) + var(--size-lead-font-size) * 1.5) * 1.05 );
   --size-media-height: var(--size-media-width);
   --size-media-icon-size: calc( var(--size-media-width) * 0.5 );
+  --size-marker-font-size: calc( var(--size-media-width) * 0.45 );
 
   /* Actions */
   --size-actions-gap: 0.625rem;
@@ -480,7 +491,7 @@
   --size-eyebrow-margin-bottom: var(--size-heading-margin-bottom);
 
   /* Heading */
-  --size-heading-font-size: 3.25rem;
+  --size-heading-font-size: 5.25rem; /* 84px */
   --size-heading-line-height: 1.05;
   --size-heading-margin-bottom: 1rem;
 
@@ -494,6 +505,7 @@
   --size-media-width: calc( (var(--size-heading-font-size) * 1.2 + var(--size-heading-margin-bottom) + var(--size-lead-font-size) * 1.5) * 1.05 );
   --size-media-height: var(--size-media-width);
   --size-media-icon-size: calc( var(--size-media-width) * 0.5 );
+  --size-marker-font-size: calc( var(--size-media-width) * 0.45 );
 
   /* Actions */
   --size-actions-gap: 0.625rem;
@@ -522,7 +534,7 @@
   --size-eyebrow-margin-bottom: var(--size-heading-margin-bottom);
 
   /* Heading */
-  --size-heading-font-size: 3.5rem;
+  --size-heading-font-size: 6rem; /* 96px */
   --size-heading-line-height: 1.05;
   --size-heading-margin-bottom: 1rem;
 
@@ -536,6 +548,7 @@
   --size-media-width: calc( (var(--size-heading-font-size) * 1.2 + var(--size-heading-margin-bottom) + var(--size-lead-font-size) * 1.5) * 1.05 );
   --size-media-height: var(--size-media-width);
   --size-media-icon-size: calc( var(--size-media-width) * 0.5 );
+  --size-marker-font-size: calc( var(--size-media-width) * 0.45 );
 
   /* Actions */
   --size-actions-gap: 0.625rem;
@@ -564,7 +577,7 @@
   --size-eyebrow-margin-bottom: var(--size-heading-margin-bottom);
 
   /* Heading */
-  --size-heading-font-size: 3.75rem;
+  --size-heading-font-size: 6.75rem; /* 108px */
   --size-heading-line-height: 1.05;
   --size-heading-margin-bottom: 1rem;
 
@@ -578,6 +591,7 @@
   --size-media-width: calc( (var(--size-heading-font-size) * 1.2 + var(--size-heading-margin-bottom) + var(--size-lead-font-size) * 1.5) * 1.05 );
   --size-media-height: var(--size-media-width);
   --size-media-icon-size: calc( var(--size-media-width) * 0.5 );
+  --size-marker-font-size: calc( var(--size-media-width) * 0.45 );
 
   /* Actions */
   --size-actions-gap: 0.625rem;
@@ -606,7 +620,7 @@
   --size-eyebrow-margin-bottom: var(--size-heading-margin-bottom);
 
   /* Heading */
-  --size-heading-font-size: 4rem;
+  --size-heading-font-size: 7.5rem; /* 120px */
   --size-heading-line-height: 1.05;
   --size-heading-margin-bottom: 1rem;
 
@@ -620,6 +634,7 @@
   --size-media-width: calc( (var(--size-heading-font-size) * 1.2 + var(--size-heading-margin-bottom) + var(--size-lead-font-size) * 1.5) * 1.05 );
   --size-media-height: var(--size-media-width);
   --size-media-icon-size: calc( var(--size-media-width) * 0.5 );
+  --size-marker-font-size: calc( var(--size-media-width) * 0.45 );
 
   /* Actions */
   --size-actions-gap: 0.625rem;
@@ -778,7 +793,7 @@
 
 [data-slot="marker"][data-variant="ghost"] {
   --size-media-icon-size: calc( var(--size-heading-font-size) * 1.375 );
-  font-size: calc( var(--size-heading-font-size) * 2.2 );
+  --size-marker-font-size: calc( var(--size-heading-font-size) * 2.2 );
   line-height: 1;
   color: var(--primary);
 }

@@ -19,6 +19,8 @@ import blobFieldSections, {
   withSharedFieldCondition,
   generateItemFieldsOptions,
 } from "./blob-fields"
+import { getAppearanceOptions } from "@/config/blob-appearances"
+import { getBackgroundOptions } from "@/config/blob-backgrounds"
 import type { Field } from "./blob-fields"
 
 // ─── Iterator-specific constants ─────────────────────────────────────────────
@@ -66,18 +68,21 @@ export const IteratorBlockDefinition: BlockDefinition = {
             swiper: "Swiper (carrousel)",
           },
           responsive: true,
+          copyCategory: "style",
         },
         iteratorGapX: {
           type: "dropdown",
           label: "Espacement X",
           options: gapSizes,
           responsive: true,
+          copyCategory: "style",
         },
         iteratorGapY: {
           type: "dropdown",
           label: "Espacement entre les items",
           options: gapSizes,
           responsive: true,
+          copyCategory: "style",
         },
         swiperSlidesPerView: {
           type: "dropdown",
@@ -92,36 +97,55 @@ export const IteratorBlockDefinition: BlockDefinition = {
             "6": "6",
           },
           showIf: { field: "iteratorLayout", value: "swiper" },
+          copyCategory: "style",
         },
         swiperNavigation: {
           type: "checkbox",
           label: "Navigation (flèches)",
           showIf: { field: "iteratorLayout", value: "swiper" },
+          copyCategory: "style",
         },
         swiperPagination: {
           type: "checkbox",
           label: "Pagination (points)",
           showIf: { field: "iteratorLayout", value: "swiper" },
+          copyCategory: "style",
         },
         swiperAutoplay: {
           type: "checkbox",
           label: "Autoplay",
           showIf: { field: "iteratorLayout", value: "swiper" },
+          copyCategory: "style",
         },
         swiperLoop: {
           type: "checkbox",
           label: "Boucle infinie (loop)",
           showIf: { field: "iteratorLayout", value: "swiper" },
+          copyCategory: "style",
         },
         swiperCenteredSlides: {
           type: "checkbox",
           label: "Centrer les slides (centeredSlides)",
           showIf: { field: "iteratorLayout", value: "swiper" },
+          copyCategory: "style",
         },
         swiperSlideWidth: {
           type: "text",
           label: "Largeur des slides (auto uniquement)",
           showIf: { field: "iteratorLayout", value: "swiper" },
+          copyCategory: "style",
+        },
+        iteratorAppearance: {
+          type: "multiselect",
+          label: "Apparence du conteneur",
+          options: getAppearanceOptions(),
+          copyCategory: "style",
+        },
+        iteratorBackground: {
+          type: "multiselect",
+          label: "Arrière-plan du conteneur",
+          options: getBackgroundOptions(),
+          copyCategory: "style",
         },
       },
     },
@@ -134,6 +158,7 @@ export const IteratorBlockDefinition: BlockDefinition = {
           type: "multiselect",
           label: "Propriétés gérées par chaque item",
           options: generateItemFieldsOptions(),
+          copyCategory: "content",
         },
       },
     },
@@ -148,6 +173,7 @@ export const IteratorBlockDefinition: BlockDefinition = {
         items: {
           type: "repeater",
           label: "Items",
+          copyCategory: "content",
           fields: createBlobItemFields(), // Tous les champs Blob disponibles !
         },
       },

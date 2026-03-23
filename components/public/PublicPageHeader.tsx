@@ -1,108 +1,171 @@
 "use client"
 
-import { useState } from "react"
 import Link from "next/link"
-import { Menu, X, Pencil } from "lucide-react"
+import Image from "next/image"
+import { Menu, Pencil, ChevronDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+  SheetClose,
+} from "@/components/ui/sheet"
 import { useUser } from "@/lib/auth/UserContext"
 import { canAccessEditor } from "@/lib/auth/permissions"
 
 interface PublicPageHeaderProps {
   currentSlug?: string
-  pages?: Array<{ slug: string; title: string; href?: string }>
 }
 
-export function PublicPageHeader({ currentSlug, pages = [] }: PublicPageHeaderProps) {
-  const [isOpen, setIsOpen] = useState(false)
-  const { user } = useUser();
+type NavLink = { label: string; href: string }
+type NavGroup = { label: string; children: NavLink[] }
+type NavItem = NavLink | NavGroup
+
+function hasChildren(item: NavItem): item is NavGroup {
+  return "children" in item
+}
+
+const NAV_ITEMS: NavItem[] = [
+  {
+    label: "ABOUT",
+    children: [
+      { label: "ABOUT CCF", href: "/about" },
+      { label: "METHODOLOGY", href: "/methodology" },
+    ],
+  },
+  { label: "CONTACT", href: "/contact" },
+]
+
+export function PublicPageHeader({ currentSlug }: PublicPageHeaderProps) {
+  const { user } = useUser()
 
   return (
     <>
-      {/* Header fixe */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b">
-        <div className="flex items-center justify-between px-4 py-3">
+      <header className="fixed top-0 left-0 right-0 px-6 z-50 bg-background/80 backdrop-blur-sm border-b">
+        <div className="mx-auto flex max-w-8xl items-center justify-between py-3 py-6">
+          {/* Logo */}
+          <Link href="/" className="shrink-0">
+            <Image
+              src="/logo-ccf.svg"
+              alt="Climate Contribution Framework"
+              width={120}
+              height={40}
+              priority
+              className="h-8 w-auto sm:h-10 xl:h-14"
+            />
+          </Link>
 
-          <div className="bg-gray-100 px-3 py-2 text-sm font-medium text-muted-foreground">
-            Logo CCF
-          </div>
-
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setIsOpen(!isOpen)}
-            aria-label="Menu de navigation"
-            className="h-9 w-9"
-          >
-            {isOpen ? (
-              <X className="h-5 w-5" />
-            ) : (
-              <Menu className="h-5 w-5" />
+          {/* Desktop nav */}
+          <nav className="hidden md:flex items-center gap-1">
+            {NAV_ITEMS.map((item) =>
+              hasChildren(item) ? (
+                <DropdownMenu key={item.label}>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      className="text-xs font-normal tracking-wider uppercase gap-1"
+                    >
+                      {item.label}
+                      <ChevronDown className="h-3.5 w-3.5" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start">
+                    {item.children.map((child) => (
+                      <DropdownMenuItem key={child.href} asChild>
+                        <Link
+                          href={child.href}
+                          className="text-xs font-normal tracking-wider uppercase"
+                        >
+                          {child.label}
+                        </Link>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <Button key={item.label} variant="ghost" asChild>
+                  <Link
+                    href={item.href}
+                    className="text-xs font-normal tracking-wider uppercase"
+                  >
+                    {item.label}
+                  </Link>
+                </Button>
+              )
             )}
-          </Button>
+          </nav>
+
+          {/* Mobile menu */}
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="md:hidden h-9 w-9"
+                aria-label="Menu de navigation"
+              >
+                <Menu className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-72 sm:w-80">
+              <SheetHeader>
+                <SheetTitle>
+                  <Image
+                    src="/logo-ccf.svg"
+                    alt="CCF"
+                    width={100}
+                    height={32}
+                    className="h-7 w-auto"
+                  />
+                </SheetTitle>
+              </SheetHeader>
+              <nav className="mt-8 flex flex-col gap-1">
+                {NAV_ITEMS.map((item) =>
+                  hasChildren(item) ? (
+                    <div key={item.label} className="space-y-1">
+                      <span className="block px-3 py-2 text-xs font-normal tracking-wider text-muted-foreground uppercase">
+                        {item.label}
+                      </span>
+                      {item.children.map((child) => (
+                        <SheetClose key={child.href} asChild>
+                          <Link
+                            href={child.href}
+                            className="block px-3 py-2 pl-6 text-sm font-normal tracking-wider uppercase rounded-md hover:bg-muted transition-colors"
+                          >
+                            {child.label}
+                          </Link>
+                        </SheetClose>
+                      ))}
+                    </div>
+                  ) : (
+                    <SheetClose key={item.label} asChild>
+                      <Link
+                        href={item.href}
+                        className="block px-3 py-2 text-sm font-normal tracking-wider uppercase rounded-md hover:bg-muted transition-colors"
+                      >
+                        {item.label}
+                      </Link>
+                    </SheetClose>
+                  )
+                )}
+              </nav>
+            </SheetContent>
+          </Sheet>
         </div>
       </header>
 
-      {/* Overlay */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
+      {/* Spacer */}
+      <div className="h-26" />
 
-      {/* Menu latéral */}
-      <aside
-        className={cn(
-          "fixed top-0 left-0 bottom-0 z-50 w-80 bg-background border-r transform transition-transform duration-200 ease-in-out",
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        )}
-      >
-        <div className="flex flex-col h-full">
-          {/* Header du menu */}
-          <div className="flex items-center justify-between px-4 py-3 border-b">
-            <h2 className="text-sm font-semibold">Navigation</h2>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsOpen(false)}
-              className="h-8 w-8"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-
-          {/* Contenu du menu */}
-          <nav className="flex-1 overflow-y-auto p-4">
-            <div className="space-y-6">
-
-              {/* Liste des pages */}
-              {pages.length > 0 && (
-                <div className="space-y-1">
-                  {pages.map((page) => (
-                    <Link
-                      key={page.slug}
-                      href={page.href ?? `/${page.slug}`}
-                      onClick={() => setIsOpen(false)}
-                      className={cn(
-                        "block px-3 py-2 text-sm rounded-md hover:bg-muted transition-colors",
-                        currentSlug === page.slug && "bg-muted font-medium"
-                      )}
-                    >
-                      {page.title}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
-          </nav>
-        </div>
-      </aside>
-
-      {/* Spacer pour compenser le header fixe */}
-      <div className="h-[57px]" />
-
-      {/* Bouton flottant → éditeur */}
+      {/* Floating editor button */}
       {currentSlug && canAccessEditor(user.role) && (
         <Link
           href={`/new-editor?page=${currentSlug}`}

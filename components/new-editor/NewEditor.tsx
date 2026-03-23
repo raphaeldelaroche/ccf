@@ -60,10 +60,14 @@ export function NewEditor({ initialPage = "home" }: NewEditorProps) {
     handleMoveBlock,
     handleUpdateBlock,
     handleCopyBlock,
+    handleCopyBlockStyle,
+    handleCopyBlockContent,
     handlePasteBlock,
     handleInsertFromClipboard,
     handleRefreshBlock,
     hasClipboard,
+    clipboardMode,
+    clipboardBlockType,
     handleUndo,
     handleRedo,
     canUndo,
@@ -146,10 +150,14 @@ export function NewEditor({ initialPage = "home" }: NewEditorProps) {
                   onDuplicateBlock={handleDuplicateBlock}
                   onDeleteBlock={handleDeleteBlock}
                   onCopyBlock={handleCopyBlock}
+                  onCopyBlockStyle={handleCopyBlockStyle}
+                  onCopyBlockContent={handleCopyBlockContent}
                   onPasteBlock={handlePasteBlock}
                   onRefreshBlock={handleRefreshBlock}
                   onInsertFromClipboard={handleInsertFromClipboard}
                   hasClipboard={hasClipboard}
+                  clipboardMode={clipboardMode}
+                  clipboardBlockType={clipboardBlockType}
                   previewBreakpoint={previewBreakpoint}
                 />
               </div>

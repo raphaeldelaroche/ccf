@@ -9,7 +9,6 @@ import { notFound } from "next/navigation"
 import { loadPage } from "@/lib/page-storage"
 import { renderBlocks } from "@/lib/render-page-blocks"
 import { PublicPageHeader } from "@/components/public/PublicPageHeader"
-import { NAVIGATION_PAGES } from "@/config/navigation"
 import type { BlockNode } from "@/lib/new-editor/block-types"
 
 export const dynamic = "force-dynamic"
@@ -31,12 +30,9 @@ export default async function PublicPage({ params }: PageProps) {
     notFound()
   }
 
-  // Charger la liste des pages pour le menu
-  const pages = NAVIGATION_PAGES
-
   return (
     <>
-      <PublicPageHeader currentSlug={slug} pages={pages} />
+      <PublicPageHeader currentSlug={slug} />
       <main className="min-h-screen">
         {/* Rendu des blocs */}
         <div className="flex flex-col">

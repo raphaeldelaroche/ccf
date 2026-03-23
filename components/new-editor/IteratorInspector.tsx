@@ -9,6 +9,8 @@ import { RepeaterInspector } from "./RepeaterInspector"
 import { BreakpointTabs } from "./BreakpointTabs"
 import { ItemFieldsCombobox } from "./ItemFieldsCombobox"
 import { SIZES, generateItemFieldsOptions } from "@/lib/blob-fields"
+import { getAppearanceOptions } from "@/config/blob-appearances"
+import { getBackgroundOptions } from "@/config/blob-backgrounds"
 import { evaluateShowIf } from "@/lib/new-editor/showif-evaluator"
 import { IteratorBlockDefinition } from "@/lib/blob-iterator-definition"
 import type { FormDataValue } from "@/types/editor"
@@ -108,7 +110,7 @@ export function IteratorInspector({ blockId, data, onUpdate }: IteratorInspector
     onUpdate({ [key]: value })
   }
 
-  const handleResponsiveChange = (key: string, value: string | boolean) => {
+  const handleResponsiveChange = (key: string, value: string | boolean | string[]) => {
     const newResponsive = { ...responsiveData }
 
     if (!newResponsive[activeBreakpoint]) {
@@ -351,6 +353,28 @@ export function IteratorInspector({ blockId, data, onUpdate }: IteratorInspector
                 fieldKey="swiperCenteredSlides"
               />
             )}
+          </div>
+        </CollapsibleSection>
+      )}
+
+      {/* Style du conteneur - Only on Base tab, Engineers only */}
+      {activeBreakpoint === "base" && canEditLayoutFields && (
+        <CollapsibleSection title="Style du conteneur">
+          <div className="pt-3 space-y-3">
+            <InspectorField
+              label="Apparence"
+              value={parseJsonField<string[]>(data.iteratorAppearance, [])}
+              type="multiselect"
+              options={getAppearanceOptions()}
+              onChange={(v) => handleChange("iteratorAppearance", v)}
+            />
+            <InspectorField
+              label="Arrière-plan"
+              value={parseJsonField<string[]>(data.iteratorBackground, [])}
+              type="multiselect"
+              options={getBackgroundOptions()}
+              onChange={(v) => handleChange("iteratorBackground", v)}
+            />
           </div>
         </CollapsibleSection>
       )}

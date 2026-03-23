@@ -15,10 +15,14 @@ interface BlockCanvasProps {
   onDuplicateBlock: (blockId: string) => void
   onDeleteBlock: (blockId: string) => void
   onCopyBlock: (blockId: string) => void
+  onCopyBlockStyle: (blockId: string) => void
+  onCopyBlockContent: (blockId: string) => void
   onPasteBlock: (blockId: string) => void
   onRefreshBlock: (blockId: string, mode: RefreshMode) => void
   onInsertFromClipboard: (afterBlockId?: string, parentId?: string, position?: number) => void
   hasClipboard: boolean
+  clipboardMode: import("@/lib/copy-paste-utils").CopyMode | null
+  clipboardBlockType: BlockType | null
   previewBreakpoint?: 'base' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'auto'
 }
 
@@ -32,10 +36,14 @@ export function BlockCanvas({
   onDuplicateBlock,
   onDeleteBlock,
   onCopyBlock,
+  onCopyBlockStyle,
+  onCopyBlockContent,
   onPasteBlock,
   onRefreshBlock,
   onInsertFromClipboard,
   hasClipboard,
+  clipboardMode,
+  clipboardBlockType,
   previewBreakpoint = 'auto',
 }: BlockCanvasProps) {
   // Mapping des breakpoints vers les classes Tailwind
@@ -98,6 +106,8 @@ export function BlockCanvas({
               onDuplicate={() => onDuplicateBlock(block.id)}
               onDelete={() => onDeleteBlock(block.id)}
               onCopy={() => onCopyBlock(block.id)}
+              onCopyStyle={() => onCopyBlockStyle(block.id)}
+              onCopyContent={() => onCopyBlockContent(block.id)}
               onPaste={() => onPasteBlock(block.id)}
               onRefresh={(mode) => onRefreshBlock(block.id, mode)}
               onInsertBelow={() => onInsertFromClipboard(block.id)}
@@ -110,9 +120,13 @@ export function BlockCanvas({
               onDuplicateChild={onDuplicateBlock}
               onDeleteChild={onDeleteBlock}
               onCopyChild={onCopyBlock}
+              onCopyStyleChild={onCopyBlockStyle}
+              onCopyContentChild={onCopyBlockContent}
               onPasteChild={onPasteBlock}
               onRefreshChild={onRefreshBlock}
               hasClipboard={hasClipboard}
+              clipboardMode={clipboardMode}
+              clipboardBlockType={clipboardBlockType}
             />
           ))}
         </div>

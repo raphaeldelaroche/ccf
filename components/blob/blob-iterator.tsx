@@ -3,6 +3,9 @@ import { BlobGrid, type GridColumns, type SizeValue } from "./blob-grid"
 import { BlobSwiper } from "./blob-swiper"
 import type { SwiperOptions } from "swiper/types"
 import type { SwiperResponsiveConfig } from "@/lib/blob-iterator-mapper"
+import { resolveAppearances } from "@/config/blob-appearances"
+import { resolveBackgrounds } from "@/config/blob-backgrounds"
+import { BlobBackground } from "@/components/blob/blob-background"
 import { cn } from "@/lib/utils"
 
 /* ========================================================
@@ -33,6 +36,10 @@ export interface BlobIteratorProps {
   swiperSlideWidth?: string
   /** Per-breakpoint responsive config for CSS-driven behavior (nav/pagination/slideWidth) */
   swiperResponsiveConfig?: SwiperResponsiveConfig
+  /** Apparences appliquées au conteneur iterator */
+  appearance?: string[]
+  /** Backgrounds appliqués au conteneur iterator */
+  background?: string[]
   /** Classes CSS supplémentaires */
   className?: string
   /** Active les container queries (@md:) au lieu des media queries (md:) — éditeur uniquement */
@@ -192,6 +199,8 @@ export function BlobIterator({
   swiperOptions,
   swiperSlideWidth,
   swiperResponsiveConfig,
+  appearance,
+  background,
   className,
   useContainerQueries = false,
 }: BlobIteratorProps) {
@@ -209,10 +218,18 @@ export function BlobIterator({
   // Combine className with responsive gap classes
   const combinedClassName = [className, gapXClasses, gapYClasses].filter(Boolean).join(" ")
 
+  // Resolve container appearance & background
+  const appearanceConfig = resolveAppearances(appearance)
+  const backgrounds = resolveBackgrounds(background)
+  const hasWrapper = (appearance?.length ?? 0) > 0 || backgrounds.length > 0
+
+  // Render inner content (grid or swiper/grid mix)
+  let content: ReactNode
+
   // Aucun swiper → Server Component avec classes CSS responsive
   if (!needsClient) {
     const responsiveLayout = buildResponsiveGridClasses(breakpoints, containerMode)
-    return (
+    content = (
       <BlobGrid
         responsiveLayout={responsiveLayout}
         gapX={!gapXResponsive ? (gapX as SizeValue) : undefined}
@@ -222,51 +239,60 @@ export function BlobIterator({
         {children}
       </BlobGrid>
     )
+  } else {
+    // Si swiper est présent, on doit gérer le responsive avec CSS + composants conditionnels
+    // et rendre les deux types de conteneurs avec display conditionnels
+    content = (
+      <>
+        {breakpoints.map(({ bp, layout }) => {
+          const isSwiperLayout = layout === "swiper"
+          const columns = extractGridColumns(layout)
+
+          // Générer la classe CSS pour afficher ce conteneur au bon breakpoint
+          const displayClass = getDisplayClassForBreakpoint(bp, breakpoints, containerMode)
+
+          if (isSwiperLayout) {
+            return (
+              <div key={`swiper-${bp}`} className={cn(displayClass, "w-full min-w-0 overflow-hidden")}>
+                <BlobSwiper
+                  gapX={!gapXResponsive ? (gapX as SizeValue) : undefined}
+                  swiperOptions={swiperOptions}
+                  swiperSlideWidth={swiperSlideWidth}
+                  responsiveConfig={swiperResponsiveConfig}
+                  useContainerQueries={containerMode}
+                  className={combinedClassName}
+                >
+                  {children}
+                </BlobSwiper>
+              </div>
+            )
+          } else {
+            return (
+              <div key={`grid-${bp}`} className={displayClass}>
+                <BlobGrid
+                  columns={columns}
+                  gapX={!gapXResponsive ? (gapX as SizeValue) : undefined}
+                  gapY={!gapYResponsive ? (gapY as SizeValue) : undefined}
+                  className={combinedClassName}
+                >
+                  {children}
+                </BlobGrid>
+              </div>
+            )
+          }
+        })}
+      </>
+    )
   }
 
-  // Si swiper est présent, on doit gérer le responsive avec CSS + composants conditionnels
-  // et rendre les deux types de conteneurs avec display conditionnels
+  // Wrap with appearance/background if needed
+  if (!hasWrapper) return content
 
   return (
-    <>
-      {breakpoints.map(({ bp, layout }) => {
-        const isSwiperLayout = layout === "swiper"
-        const columns = extractGridColumns(layout)
-
-        // Générer la classe CSS pour afficher ce conteneur au bon breakpoint
-        const displayClass = getDisplayClassForBreakpoint(bp, breakpoints, containerMode)
-
-        if (isSwiperLayout) {
-          return (
-            <div key={`swiper-${bp}`} className={cn(displayClass, "w-full min-w-0 overflow-hidden")}>
-              <BlobSwiper
-                gapX={!gapXResponsive ? (gapX as SizeValue) : undefined}
-                swiperOptions={swiperOptions}
-                swiperSlideWidth={swiperSlideWidth}
-                responsiveConfig={swiperResponsiveConfig}
-                useContainerQueries={containerMode}
-                className={combinedClassName}
-              >
-                {children}
-              </BlobSwiper>
-            </div>
-          )
-        } else {
-          return (
-            <div key={`grid-${bp}`} className={displayClass}>
-              <BlobGrid
-                columns={columns}
-                gapX={!gapXResponsive ? (gapX as SizeValue) : undefined}
-                gapY={!gapYResponsive ? (gapY as SizeValue) : undefined}
-                className={combinedClassName}
-              >
-                {children}
-              </BlobGrid>
-            </div>
-          )
-        }
-      })}
-    </>
+    <div className={cn("relative", appearanceConfig.blobClassName)}>
+      <BlobBackground backgrounds={backgrounds} />
+      {content}
+    </div>
   )
 }
 

@@ -12,7 +12,7 @@ import { useUser } from "@/lib/auth/UserContext"
 import { canEditField } from "@/lib/auth/field-permissions"
 
 // Mirror of BlobInspector's FIELD_TYPE_MAP
-const FIELD_TYPE_MAP: Partial<Record<string, "text" | "textarea" | "select" | "checkbox" | "icon">> = {
+const FIELD_TYPE_MAP: Partial<Record<string, "text" | "textarea" | "select" | "checkbox" | "icon" | "multiselect">> = {
   text: "text",
   textarea: "textarea",
   dropdown: "select",
@@ -20,6 +20,7 @@ const FIELD_TYPE_MAP: Partial<Record<string, "text" | "textarea" | "select" | "c
   icon: "icon",
   image: "text",
   video: "text",
+  multiselect: "multiselect",
 }
 
 interface ItemBlobInspectorProps {
@@ -110,7 +111,7 @@ export function ItemBlobInspector({ item, sharedData, itemFields, onUpdate }: It
     const inspectorType = FIELD_TYPE_MAP[fieldDef.type] ?? "text"
 
     let options: Record<string, string> | undefined
-    if (!compatOptions && fieldDef.type === "dropdown") {
+    if (!compatOptions && (fieldDef.type === "dropdown" || fieldDef.type === "multiselect")) {
       options = fieldDef.emptyLabel
         ? { "": fieldDef.emptyLabel, ...fieldDef.options }
         : fieldDef.options

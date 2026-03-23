@@ -3,7 +3,7 @@ import { Blob } from "@/components/blob/blob"
 import { Title } from "@/components/blob/title"
 import { Subtitle } from "@/components/blob/subtitle"
 import { Marker } from "@/components/blob/marker"
-import { resolveAppearance } from "@/config/blob-appearances"
+import { resolveAppearances } from "@/config/blob-appearances"
 import { renderIconObject } from "@/lib/render-icon"
 import { iconOptions } from "@/lib/blob-fields"
 
@@ -17,7 +17,7 @@ interface BlockListProps {
   icon?: string
 }
 
-const appearanceConfig = resolveAppearance("list")
+const appearanceConfig = resolveAppearances("list")
 
 export function BlockList({ items, icon = "arrowRight" }: BlockListProps) {
   if (!items.length) return null

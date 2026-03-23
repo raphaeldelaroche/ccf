@@ -25,12 +25,13 @@ Un système de composants ultra-modulable pour construire des sections de conten
 
 | Fichier | Rôle |
 |---------|------|
-| `blob-fields.ts` | **Source unique de vérité** pour tous les champs (9 sections, 40+ champs) |
+| `blob-fields.ts` | **Source unique de vérité** pour tous les champs (9 sections, 40+ champs) — chaque champ annoté `copyCategory: 'style' \| 'content'` |
 | `blob-compatibility.ts` | Matrice des combinaisons layout/marker/actions valides + registre CSS |
 | `blob-compose.ts` | Types responsive + générateur de classes CSS (convertit objet → string CSS) |
 | `blob-form-mapper.ts` | Mapping FormData → Props Blob (découplage éditeur/composant) |
 | `blob-iterator-definition.ts` | Extension pour Iterator : système de champs partagés (`itemFields`) + champs Swiper conditionnels |
 | `blob-iterator-mapper.ts` | Mapping Iterator : fusion props partagées + props par item + `buildSwiperConfig()` (Swiper options + `SwiperResponsiveConfig` per-bp) |
+| `copy-paste-utils.ts` | Extraction/merge de champs par catégorie (style/content) pour copier-coller partiel — gère responsive + repeaters |
 | `use-blob-compatibility.ts` | Hook React : calcule options disponibles selon contexte |
 
 ### Éditeur (`/lib/new-editor`)
@@ -39,7 +40,7 @@ Un système de composants ultra-modulable pour construire des sections de conten
 |---------|------|
 | `block-types.ts` | Types : `BlockType`, `BlockNode`, `EditorState` |
 | `block-registry.ts` | Registre des blocs (Blob, Iterator, custom) + config complète |
-| `useEditorState.ts` | **État central** : CRUD récursif, pages, auto-save, undo/redo (50 snapshots) |
+| `useEditorState.ts` | **État central** : CRUD récursif, pages, auto-save, undo/redo (50 snapshots), clipboard style/content |
 | `useKeyboardShortcuts.ts` | Raccourcis : `⌘S`, `Backspace`, `⌘Z`, `⌘⇧Z` |
 
 ### Composants (`/components`)
@@ -48,6 +49,8 @@ Un système de composants ultra-modulable pour construire des sections de conten
 |---------|------|
 | `blob/blob.tsx` | Composant principal (compound component pattern) |
 | `blob/blob-iterator.tsx` | Container responsif (grid/swiper, auto Server/Client) — prop `useContainerQueries` pour l'éditeur, wrapper swiper avec `min-w-0 overflow-hidden` |
+| `blob/blob-background.tsx` | Composant `BlobBackground` : rend les arrière-plans comme divs absolues empilées par z-index |
+| `blob/marker.tsx` | Composant `Marker` : wrapper CVA avec variantes (default/ghost/secondary/outline), supporte 3 types de contenu (texte, icône, image via `next/image` fill) |
 | `blob/blob-swiper.tsx` | Wrapper Swiper.js : options responsive per-bp (Swiper native `breakpoints` + CSS scoped `<style>` via `data-swiper-scope` pour nav/pagination/slideWidth), `key` pour remontage |
 | `new-editor/NewEditor.tsx` | Orchestrateur : layout 3 colonnes + vues (visual/JSON) |
 | `new-editor/BlockRenderer.tsx` | Rendu récursif des blocs avec hover controls (portal) + animation |
@@ -71,6 +74,13 @@ Un système de composants ultra-modulable pour construire des sections de conten
 | `permissions.ts` | Helpers : `canCreatePage`, `canEditPage`, `canSaveChanges` |
 | `field-permissions.ts` | Permissions champ par champ : `canEditField(role, fieldType)` |
 | `UserContext.tsx` | Context React + localStorage persistence |
+
+### Configuration (`/config`)
+
+| Fichier | Rôle |
+|---------|------|
+| `blob-appearances.ts` | Registre des apparences : `AppearanceDefinition` (classes CSS par slot), multiselect, `resolveAppearances()` fusionne les sélections |
+| `blob-backgrounds.tsx` | Registre des arrière-plans : `BackgroundDefinition` (className + contenu React optionnel), multiselect, `resolveBackgrounds()` retourne un tableau de divs absolues |
 
 ### Styles (`/styles`)
 
@@ -340,6 +350,7 @@ interface BlockNode {
   - Compilation automatique objet → `"stack md:row lg:bar"`
   - BlobIterator container responsive (layout, gapX, gapY)
   - Migration automatique des anciennes données (extraction champs non-responsive, conversion xs → base)
+- **Copier-coller partiel** : Copier le style / Copier le contenu via clic droit, avec merge non-destructif, support responsive et repeaters
 
 ### 🚧 En développement (Engineers/Reviewers uniquement)
 
@@ -389,7 +400,7 @@ interface BlockNode {
 | `Backspace` / `Delete` | Supprimer le bloc sélectionné |
 | `⌘Z` / `Ctrl+Z` | Annuler (undo) |
 | `⌘⇧Z` / `Ctrl+⇧Z` | Rétablir (redo) |
-| Clic droit sur bloc | Menu contextuel (Copier/Coller) |
+| Clic droit sur bloc | Menu contextuel (Copier / Copier le style / Copier le contenu / Copier JSON / Coller) |
 
 ---
 
@@ -419,6 +430,46 @@ CSS utilise `:not(:has(> [data-slot="marker"]))` pour retirer automatiquement le
 
 `BlockDefinition` permet de créer des variantes de Blob avec champs supplémentaires, valeurs forcées, renderer custom.
 
+### Backgrounds (arrière-plans configurables)
+
+**Système de décoration** basé sur un registre config, similaire aux apparences mais rendu comme des **divs absolues** (pas des classes CSS sur les slots).
+
+**Architecture** :
+- `config/blob-backgrounds.tsx` : registre `BACKGROUNDS` avec `BackgroundDefinition` (className, zIndex, contenu React optionnel)
+- `components/blob/blob-background.tsx` : composant `BlobBackground` qui rend chaque background comme une div `position: absolute; inset: 0; pointer-events-none`
+- Champ `background` (multiselect, non-responsive) dans la section "Style" de l'inspector
+- Héritage dans l'Iterator via `sharedBackground` (même pattern que `sharedAppearance`)
+
+**Empilement z-index** (tous négatifs, derrière le contenu) :
+- `zIndex: 0` (défaut) → backgrounds simples (solides, dégradés, patterns)
+- `zIndex: 1` → éléments décoratifs (lignes)
+- `zIndex: 2` → éléments décoratifs au premier plan (plus aux coins)
+
+**Variable CSS** : `--blob-bg-inset` (définie dans `globals.css`) contrôle la largeur des bandes blanches latérales pour les backgrounds décoratifs (quadrillage, lignes, plus).
+
+**Différence clé avec les apparences** : `resolveBackgrounds()` retourne un **tableau** (chaque background = une div séparée), contrairement à `resolveAppearances()` qui fusionne les classes CSS en un seul objet.
+
+### Copier le style / Copier le contenu
+
+**Système de copier-coller partiel** basé sur la propriété `copyCategory` de chaque champ.
+
+**Architecture** :
+- `blob-fields.ts` : chaque champ annoté `copyCategory: 'style' | 'content'` (propriété sur `BaseField`)
+- `copy-paste-utils.ts` : `extractFieldsByCategory()` extrait les champs d'un bloc par catégorie, `mergeFieldsIntoData()` les fusionne dans un bloc cible
+- `useEditorState.ts` : clipboard étendu avec `mode: 'full' | 'style' | 'content'`
+
+**Catégorisation des champs** :
+- **Content** : textes (title, subtitle, eyebrow…), médias (image, video), markerType/Content/Icon/Image, figureType, buttons (label/liens), innerBlocks, SEO (titleAs, eyebrowAs)
+- **Style** : layout, size, direction, align, spacing, appearance, theme, background, separator, markerPosition/Style/Size/Theme/Rounded, figureWidth/figureBleed, fontSize, eyebrowTheme, actions (position des boutons), buttons (variant/theme par item)
+
+**Repeater buttons** : séparation interne — les sous-champs label/liens sont `content`, variant/theme sont `style`. L'extraction itère chaque item du repeater et ne copie que les sous-champs de la catégorie demandée. Le merge se fait par index (item 0 → item 0, etc.).
+
+**Responsive** : les overrides par breakpoint (`data.responsive.{bp}.{field}`) sont extraits/mergés uniquement pour les clés de la catégorie concernée — deep merge par breakpoint, les autres clés du responsive restent intactes.
+
+**Cross-type** : le collage de style/contenu est bloqué si le blockType du clipboard ne matche pas le bloc cible (Blob→Blob et Iterator→Iterator uniquement).
+
+**Menu contextuel** (clic droit) : Copier / Copier le style / Copier le contenu / Copier JSON / — / Coller (label dynamique selon le mode : "Coller le style" ou "Coller le contenu").
+
 ### Responsive basé sur objets (TOUJOURS actif)
 
 **Principe** : Pas de toggle on/off - le système responsive est permanent pour Engineers/Reviewers.
@@ -444,7 +495,7 @@ interface ResponsiveProps {
 
 **Stockage des données** :
 - **Champs responsive** (layout, size, marker, align, gapX, gapY, paddingX, paddingY, figureWidth, figureBleed, actions, direction, swiperSlidesPerView) : stockés dans `data.responsive.{breakpoint}.{field}`
-- **Champs non-responsive** (title, subtitle, eyebrow, markerType, markerContent, figureType, image, video, theme, appearance, etc.) : stockés directement dans `data.{field}`
+- **Champs non-responsive** (title, subtitle, eyebrow, markerType, markerContent, markerImage, figureType, image, video, theme, appearance, background, etc.) : stockés directement dans `data.{field}`
 
 **Conversion interne** : Le composant Blob convertit automatiquement l'objet en strings pour la génération CSS (`convertResponsiveToString()`).
 
@@ -657,4 +708,4 @@ const overrides = useMemo(
 
 ---
 
-**Version** : 2026-03-16 (optimisé pour Claude Code)
+**Version** : 2026-03-23 (optimisé pour Claude Code)

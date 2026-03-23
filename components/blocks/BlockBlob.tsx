@@ -6,7 +6,9 @@ import { Eyebrow } from '@/components/blob/eyebrow';
 import { Title } from '@/components/blob/title';
 import { Subtitle } from '@/components/blob/subtitle';
 import { Marker } from '@/components/blob/marker';
-import { resolveAppearance } from '@/config/blob-appearances';
+import { resolveAppearances } from '@/config/blob-appearances';
+import { resolveBackgrounds } from '@/config/blob-backgrounds';
+import { BlobBackground } from '@/components/blob/blob-background';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { renderIconObject } from '@/lib/render-icon';
@@ -17,13 +19,17 @@ import Image from 'next/image';
 // ─── Fonctions utilitaires ──────────────────────────────────────────────────
 
 function resolveMarkerContent(
-  markerType: "text" | "icon" | undefined,
+  markerType: "text" | "icon" | "image" | undefined,
   markerIcon: IconData | undefined,
-  markerContent: string | undefined
+  markerContent: string | undefined,
+  markerImage: string | undefined
 ): React.ReactNode {
   if (!markerType) return null;
   if (markerType === 'icon' && markerIcon) return renderIconObject(markerIcon.iconObject);
   if (markerType === 'text' && markerContent) return markerContent;
+  if (markerType === 'image' && markerImage) return (
+    <Image src={markerImage} alt="" fill className="object-cover" />
+  );
   return null;
 }
 
@@ -34,15 +40,17 @@ export function BlobBlock({ data, renderInnerBlock, innerBlocks }: {
   renderInnerBlock?: (block: BlockNode) => React.ReactNode;
   innerBlocks?: BlockNode[];
 }) {
-  const { blobProps, appearance, header, marker, figure, actions, content } = data;
+  const { blobProps, appearance, background, header, marker, figure, actions, content } = data;
 
   // Récupérer la configuration d'apparence
-  const appearanceConfig = resolveAppearance(appearance);
+  const appearanceConfig = resolveAppearances(appearance);
+  const backgrounds = resolveBackgrounds(background);
 
-  const markerChildren = resolveMarkerContent(marker?.type, marker?.icon, marker?.content);
+  const markerChildren = resolveMarkerContent(marker?.type, marker?.icon, marker?.content, marker?.image);
 
   return (
     <Blob {...blobProps} className={cn(appearanceConfig.blobClassName, blobProps.className)}>
+      <BlobBackground backgrounds={backgrounds} />
       {markerChildren && (
         <Marker
           rounded={marker?.rounded}
@@ -107,7 +115,7 @@ export function BlobBlock({ data, renderInnerBlock, innerBlocks }: {
       {actions && actions.length > 0 && (
         <Blob.Actions className={cn(appearanceConfig.actionsClassName)}>
           {actions.map((btn, i) => (
-            <Button key={i} asChild variant={btn.variant} data-theme={btn.theme}>
+            <Button key={i} asChild variant={btn.variant} data-theme={btn.theme} className={btn.theme ? `theme-${btn.theme}` : undefined}>
               <Link {...btn.linkProps}>{btn.label}</Link>
             </Button>
           ))}

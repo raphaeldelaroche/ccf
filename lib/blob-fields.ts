@@ -1,4 +1,5 @@
 import { getAppearanceOptions } from "@/config/blob-appearances";
+import { getBackgroundOptions } from "@/config/blob-backgrounds";
 
 // ─── Sizes ───────────────────────────────────────────────────────────────────
 
@@ -196,6 +197,8 @@ interface BaseField {
   compatKey?: "marker" | "align" | "figureWidth" | "actions";
   /** Label for the implicit empty ("") option prepended to compat/dropdown options */
   emptyLabel?: string;
+  /** Category for copy-style / copy-content feature */
+  copyCategory?: 'style' | 'content';
 }
 
 interface TextField extends BaseField {
@@ -263,11 +266,11 @@ const fieldSections: Record<string, FieldSection> = {
   header: {
     label: "Textes",
     fields: {
-      title:        { type: "text", label: "Titre", inheritable: true },
-      emphasisText: { type: "text", label: "Texte en emphase", inheritable: true },
-      eyebrow:      { type: "text",     label: "Sur-titre", inheritable: true },
-      eyebrowTheme: { type: "dropdown", label: "Thème du sur-titre",  options: colorOptions, inheritable: true },
-      subtitle:     { type: "text", label: "Sous-titre", inheritable: true },
+      title:        { type: "text", label: "Titre", inheritable: true, copyCategory: "content" },
+      emphasisText: { type: "text", label: "Texte en emphase", inheritable: true, copyCategory: "content" },
+      eyebrow:      { type: "text",     label: "Sur-titre", inheritable: true, copyCategory: "content" },
+      eyebrowTheme: { type: "dropdown", label: "Thème du sur-titre",  options: colorOptions, inheritable: true, copyCategory: "style" },
+      subtitle:     { type: "text", label: "Sous-titre", inheritable: true, copyCategory: "content" },
     },
   },
 
@@ -281,14 +284,17 @@ const fieldSections: Record<string, FieldSection> = {
           none: "Aucun",
           text: "Texte",
           icon: "Icône",
+          image: "Image",
         },
         inheritable: true,
+        copyCategory: "content",
       },
       markerContent: {
         type: "text",
         label: "Contenu du marqueur",
         showIf: { field: "markerType", value: "text" },
         inheritable: true,
+        copyCategory: "content",
       },
       markerIcon: {
         type: "icon",
@@ -296,6 +302,14 @@ const fieldSections: Record<string, FieldSection> = {
         options: iconOptions,
         showIf: { field: "markerType", value: "icon" },
         inheritable: true,
+        copyCategory: "content",
+      },
+      markerImage: {
+        type: "image",
+        label: "Image du marqueur",
+        showIf: { field: "markerType", value: "image" },
+        inheritable: true,
+        copyCategory: "content",
       },
       markerPosition: {
         type: "dropdown",
@@ -305,10 +319,11 @@ const fieldSections: Record<string, FieldSection> = {
           left: "Gauche",
           right: "Droite",
         },
-        showIf: { field: "markerType", value: ["text", "icon"] },
+        showIf: { field: "markerType", value: ["text", "icon", "image"] },
         compatKey: "marker",
         inheritable: true,
         responsive: true,
+        copyCategory: "style",
       },
       markerStyle: {
         type: "dropdown",
@@ -317,23 +332,27 @@ const fieldSections: Record<string, FieldSection> = {
           default: "Default",
           ghost: "Transparent",
           secondary: "Secondaire",
+          outline: "Outline",
         },
-        showIf: { field: "markerType", value: ["text", "icon"] },
+        showIf: { field: "markerType", value: ["text", "icon", "image"] },
         inheritable: true,
+        copyCategory: "style",
       },
       markerSize: {
         type: "dropdown",
         label: "Taille",
         options: sizeOptions,
-        showIf: { field: "markerType", value: ["text", "icon"] },
+        showIf: { field: "markerType", value: ["text", "icon", "image"] },
         inheritable: true,
+        copyCategory: "style",
       },
       markerTheme: {
         type: "dropdown",
         label: "Couleur",
         options: colorOptions,
-        showIf: { field: "markerType", value: ["text", "icon"] },
+        showIf: { field: "markerType", value: ["text", "icon", "image"] },
         inheritable: true,
+        copyCategory: "style",
       },
       markerRounded: {
         type: "dropdown",
@@ -342,8 +361,9 @@ const fieldSections: Record<string, FieldSection> = {
           "rounded-square": "Carré arrondi",
           "rounded-full": "Rond",
         },
-        showIf: { field: "markerType", value: ["text", "icon"] },
+        showIf: { field: "markerType", value: ["text", "icon", "image"] },
         inheritable: true,
+        copyCategory: "style",
       },
     },
   },
@@ -360,6 +380,7 @@ const fieldSections: Record<string, FieldSection> = {
           video: "Vidéo",
         },
         inheritable: true,
+        copyCategory: "content",
       },
       figureWidth: {
         type: "dropdown",
@@ -376,6 +397,7 @@ const fieldSections: Record<string, FieldSection> = {
         emptyLabel: "Par défaut",
         inheritable: true,
         responsive: true,
+        copyCategory: "style",
       },
       figureBleed: {
         type: "dropdown",
@@ -387,18 +409,21 @@ const fieldSections: Record<string, FieldSection> = {
         showIf: { field: "figureType", value: ["image", "video"] },
         inheritable: true,
         responsive: true,
+        copyCategory: "style",
       },
       image: {
         type: "image",
         label: "Image",
         showIf: { field: "figureType", value: "image" },
         inheritable: true,
+        copyCategory: "content",
       },
       video: {
         type: "video",
         label: "Vidéo",
         showIf: { field: "figureType", value: "video" },
         inheritable: true,
+        copyCategory: "content",
       },
     },
   },
@@ -417,6 +442,7 @@ const fieldSections: Record<string, FieldSection> = {
         emptyLabel: "Par défaut",
         inheritable: true,
         responsive: true,
+        copyCategory: "style",
       },
       buttons: {
         type: "repeater",
@@ -438,48 +464,53 @@ const fieldSections: Record<string, FieldSection> = {
           ],
         },
         fields: {
-          label: { type: "text", label: "Label" },
+          label: { type: "text", label: "Label", copyCategory: "content" },
           linkType: {
             type: "dropdown",
             label: "Type de lien",
-            options: { 
-              internal: "Lien interne", 
+            options: {
+              internal: "Lien interne",
               external: "Lien externe",
-              custom: "Action personnalisée" 
+              custom: "Action personnalisée"
             },
+            copyCategory: "content",
           },
-          internalHref: { 
-            type: "text", 
-            label: "Page interne", 
-            showIf: { field: "linkType", value: "internal" } 
+          internalHref: {
+            type: "text",
+            label: "Page interne",
+            showIf: { field: "linkType", value: "internal" },
+            copyCategory: "content",
           },
-          externalHref: { 
-            type: "text", 
-            label: "URL externe", 
-            showIf: { field: "linkType", value: "external" } 
+          externalHref: {
+            type: "text",
+            label: "URL externe",
+            showIf: { field: "linkType", value: "external" },
+            copyCategory: "content",
           },
-          customAction: { 
-            type: "dropdown", 
-            label: "Action", 
-            options: { 
-              action1: "Custom action 1", 
-              action2: "Custom action 2" 
+          customAction: {
+            type: "dropdown",
+            label: "Action",
+            options: {
+              action1: "Custom action 1",
+              action2: "Custom action 2"
             },
-            showIf: { field: "linkType", value: "custom" } 
+            showIf: { field: "linkType", value: "custom" },
+            copyCategory: "content",
           },
-          variant: { 
-            type: "dropdown", 
-            label: "Variante", 
+          variant: {
+            type: "dropdown",
+            label: "Variante",
             options: {
               default: "Par défaut",
-              outline: "Contour", 
-              secondary: "Secondaire", 
-              ghost: "Discret", 
-              link: "Lien" 
-            } 
+              outline: "Contour",
+              secondary: "Secondaire",
+              ghost: "Discret",
+              link: "Lien"
+            },
+            copyCategory: "style",
           },
-          theme:         { type: "dropdown", label: "Thème",    options: colorOptions },
-          opensInNewTab: { type: "checkbox", label: "Ouvrir dans un nouvel onglet" },
+          theme:         { type: "dropdown", label: "Thème",    options: colorOptions, copyCategory: "style" },
+          opensInNewTab: { type: "checkbox", label: "Ouvrir dans un nouvel onglet", copyCategory: "content" },
         },
       },
     },
@@ -492,6 +523,7 @@ const fieldSections: Record<string, FieldSection> = {
         type: "checkbox",
         label: "Insérer du contenu",
         inheritable: true,
+        copyCategory: "content",
       },
       contentType: {
         type: "dropdown",
@@ -502,6 +534,7 @@ const fieldSections: Record<string, FieldSection> = {
         },
         showIf: { field: "showContent", value: true },
         inheritable: true,
+        copyCategory: "content",
       },
       contentText: {
         type: "textarea",
@@ -512,6 +545,7 @@ const fieldSections: Record<string, FieldSection> = {
           { field: "contentType", value: "text" },
         ],
         inheritable: true,
+        copyCategory: "content",
       },
       fontSize: {
         type: "dropdown",
@@ -522,6 +556,7 @@ const fieldSections: Record<string, FieldSection> = {
           { field: "contentType", value: "text" },
         ],
         inheritable: true,
+        copyCategory: "style",
       },
       innerBlocks: {
         type: "innerBlocks",
@@ -530,6 +565,7 @@ const fieldSections: Record<string, FieldSection> = {
           { field: "showContent", value: true },
           { field: "contentType", value: "innerBlocks" },
         ],
+        copyCategory: "content",
       },
     },
   },
@@ -537,7 +573,7 @@ const fieldSections: Record<string, FieldSection> = {
   layout: {
     label: "Disposition",
     fields: {
-      size: { type: "dropdown", label: "Taille", options: allSizes, inheritable: true, responsive: true },
+      size: { type: "dropdown", label: "Taille", options: allSizes, inheritable: true, responsive: true, copyCategory: "style" },
       layout: {
         type: "dropdown",
         label: "Disposition",
@@ -548,6 +584,7 @@ const fieldSections: Record<string, FieldSection> = {
         },
         inheritable: true,
         responsive: true,
+        copyCategory: "style",
       },
       direction: {
         type: "dropdown",
@@ -558,6 +595,7 @@ const fieldSections: Record<string, FieldSection> = {
         },
         inheritable: true,
         responsive: true,
+        copyCategory: "style",
       },
       align: {
         type: "dropdown",
@@ -570,6 +608,7 @@ const fieldSections: Record<string, FieldSection> = {
         compatKey: "align",
         inheritable: true,
         responsive: true,
+        copyCategory: "style",
       },
     },
   },
@@ -577,12 +616,12 @@ const fieldSections: Record<string, FieldSection> = {
   spacing: {
     label: "Espacement",
     fields: {
-      paddingX: { type: "dropdown", label: "Espacement horizontal", options: paddingXOptions, inheritable: true, responsive: true },
-      paddingY: { type: "dropdown", label: "Espacement vertical",   options: gapOptions, inheritable: true, responsive: true },
-      headerPaddingX: { type: "dropdown", label: "Header X", options: paddingXOptions, inheritable: true, responsive: true },
-      headerPaddingY: { type: "dropdown", label: "Header Y", options: paddingXOptions, inheritable: true, responsive: true },
-      gapX: { type: "dropdown", label: "Espacement interne X", options: gapOptions, inheritable: true, responsive: true },
-      gapY: { type: "dropdown", label: "Espacement interne Y", options: gapOptions, inheritable: true, responsive: true },
+      paddingX: { type: "dropdown", label: "Espacement horizontal", options: paddingXOptions, inheritable: true, responsive: true, copyCategory: "style" },
+      paddingY: { type: "dropdown", label: "Espacement vertical",   options: gapOptions, inheritable: true, responsive: true, copyCategory: "style" },
+      headerPaddingX: { type: "dropdown", label: "Header X", options: paddingXOptions, inheritable: true, responsive: true, copyCategory: "style" },
+      headerPaddingY: { type: "dropdown", label: "Header Y", options: paddingXOptions, inheritable: true, responsive: true, copyCategory: "style" },
+      gapX: { type: "dropdown", label: "Espacement interne X", options: gapOptions, inheritable: true, responsive: true, copyCategory: "style" },
+      gapY: { type: "dropdown", label: "Espacement interne Y", options: gapOptions, inheritable: true, responsive: true, copyCategory: "style" },
     },
   },
 
@@ -590,50 +629,25 @@ const fieldSections: Record<string, FieldSection> = {
     label: "Style",
     fields: {
       appearance: {
-        type: "dropdown",
+        type: "multiselect",
         label: "Apparence",
         options: getAppearanceOptions(),
         inheritable: true,
+        copyCategory: "style",
       },
       theme: {
         type: "dropdown",
         label: "Thème",
         options: colorOptions,
         inheritable: true,
+        copyCategory: "style",
       },
-      backgroundType: {
-        type: "dropdown",
+      background: {
+        type: "multiselect",
         label: "Arrière-plan",
-        options: {
-          color:  "Couleur",
-          image:  "Image",
-          custom: "Personnalisé",
-          none:   "Aucun",
-        },
+        options: getBackgroundOptions(),
         inheritable: true,
-      },
-      backgroundColor: {
-        type: "dropdown",
-        label: "Couleur",
-        options: colorOptions,
-        showIf: { field: "backgroundType", value: "color" },
-        inheritable: true,
-      },
-      backgroundImage: {
-        type: "image",
-        label: "Image",
-        showIf: { field: "backgroundType", value: "image" },
-        inheritable: true,
-      },
-      backgroundStyle: {
-        type: "dropdown",
-        label: "Style",
-        options: {
-          style1: "Style 1",
-          style2: "Style 2",
-        },
-        showIf: { field: "backgroundType", value: "custom" },
-        inheritable: true,
+        copyCategory: "style",
       },
     },
   },
@@ -641,7 +655,7 @@ const fieldSections: Record<string, FieldSection> = {
   separator: {
     label: "Séparateur",
     fields: {
-      showSeparator: { type: "checkbox", label: "Activer le séparateur", inheritable: true },
+      showSeparator: { type: "checkbox", label: "Activer le séparateur", inheritable: true, copyCategory: "style" },
       separatorType: {
         type: "dropdown",
         label: "Type",
@@ -652,6 +666,7 @@ const fieldSections: Record<string, FieldSection> = {
         },
         showIf: { field: "showSeparator", value: true },
         inheritable: true,
+        copyCategory: "style",
       },
       separatorPosition: {
         type: "dropdown",
@@ -662,6 +677,7 @@ const fieldSections: Record<string, FieldSection> = {
         },
         showIf: { field: "showSeparator", value: true },
         inheritable: true,
+        copyCategory: "style",
       },
       separatorColor: {
         type: "dropdown",
@@ -669,6 +685,7 @@ const fieldSections: Record<string, FieldSection> = {
         options: colorOptions,
         showIf: { field: "showSeparator", value: true },
         inheritable: true,
+        copyCategory: "style",
       },
     },
   },
@@ -676,8 +693,8 @@ const fieldSections: Record<string, FieldSection> = {
   seo: {
     label: "SEO",
     fields: {
-      titleAs: { type: "dropdown", label: "Balise du titre", options: tagOptions, inheritable: true },
-      eyebrowAs: { type: "dropdown", label: "Balise du sur-titre", options: tagOptions, inheritable: true },
+      titleAs: { type: "dropdown", label: "Balise du titre", options: tagOptions, inheritable: true, copyCategory: "content" },
+      eyebrowAs: { type: "dropdown", label: "Balise du sur-titre", options: tagOptions, inheritable: true, copyCategory: "content" },
     },
   },
 };
@@ -707,6 +724,7 @@ export function createBlobItemFields(): Record<string, Field> {
     markerType: withItemFieldCondition(fieldSections.marker.fields.markerType, "markerType"),
     markerContent: withItemFieldCondition(fieldSections.marker.fields.markerContent, "markerContent"),
     markerIcon: withItemFieldCondition(fieldSections.marker.fields.markerIcon, "markerIcon"),
+    markerImage: withItemFieldCondition(fieldSections.marker.fields.markerImage, "markerImage"),
     markerPosition: withItemFieldCondition(fieldSections.marker.fields.markerPosition, "markerPosition"),
     markerStyle: withItemFieldCondition(fieldSections.marker.fields.markerStyle, "markerStyle"),
     markerSize: withItemFieldCondition(fieldSections.marker.fields.markerSize, "markerSize"),
@@ -744,10 +762,7 @@ export function createBlobItemFields(): Record<string, Field> {
     // Style fields
     theme: withItemFieldCondition(fieldSections.style.fields.theme, "theme"),
     appearance: withItemFieldCondition(fieldSections.style.fields.appearance, "appearance"),
-    backgroundType: withItemFieldCondition(fieldSections.style.fields.backgroundType, "backgroundType"),
-    backgroundColor: withItemFieldCondition(fieldSections.style.fields.backgroundColor, "backgroundColor"),
-    backgroundImage: withItemFieldCondition(fieldSections.style.fields.backgroundImage, "backgroundImage"),
-    backgroundStyle: withItemFieldCondition(fieldSections.style.fields.backgroundStyle, "backgroundStyle"),
+    background: withItemFieldCondition(fieldSections.style.fields.background, "background"),
 
     // Separator fields
     showSeparator: withItemFieldCondition(fieldSections.separator.fields.showSeparator, "showSeparator"),

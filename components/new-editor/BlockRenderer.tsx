@@ -16,9 +16,12 @@ import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
+  ContextMenuSeparator,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu"
-import { Copy, Clipboard, Code } from "lucide-react"
+import { Copy, Clipboard, Code, Paintbrush, Type } from "lucide-react"
+import type { CopyMode } from "@/lib/copy-paste-utils"
+import type { BlockType as CopyBlockType } from "@/lib/new-editor/block-types"
 import { mapFormDataToBlob } from "@/lib/blob-form-mapper"
 import { mapIteratorFormData } from "@/lib/blob-iterator-mapper"
 import { mapButtonTooltipFormData } from "@/lib/button-tooltip-mapper"
@@ -28,7 +31,9 @@ import { BlockDivider } from "@/components/blocks/BlockDivider"
 import { BlockList } from "@/components/blocks/BlockList"
 import { BlockHoverControls } from "./BlockHoverControls"
 import { renderIconObject } from "@/lib/render-icon"
-import { resolveAppearance } from "@/config/blob-appearances"
+import { resolveAppearances } from "@/config/blob-appearances"
+import { resolveBackgrounds } from "@/config/blob-backgrounds"
+import { BlobBackground } from "@/components/blob/blob-background"
 import type { BlobIteratorProps } from "@/components/blob/blob-iterator"
 import { cn } from "@/lib/utils"
 import { useHoveredBlock } from "./HoveredBlockContext"
@@ -46,11 +51,15 @@ interface BlockRendererProps {
   onDuplicate: () => void
   onDelete: () => void
   onCopy: () => void
+  onCopyStyle: () => void
+  onCopyContent: () => void
   onPaste: () => void
   onRefresh?: (mode: import("@/lib/new-editor/refresh-helpers").RefreshMode) => void
   onInsertBelow?: () => void
   onInsertBelowChild?: (parentId: string, position: number) => void
   hasClipboard: boolean
+  clipboardMode: CopyMode | null
+  clipboardBlockType: CopyBlockType | null
   canMoveUp: boolean
   canMoveDown: boolean
   // Pour le rendu récursif des innerBlocks
@@ -60,6 +69,8 @@ interface BlockRendererProps {
   onDuplicateChild?: (childId: string) => void
   onDeleteChild?: (childId: string) => void
   onCopyChild?: (childId: string) => void
+  onCopyStyleChild?: (childId: string) => void
+  onCopyContentChild?: (childId: string) => void
   onPasteChild?: (childId: string) => void
   onRefreshChild?: (childId: string, mode: import("@/lib/new-editor/refresh-helpers").RefreshMode) => void
 }
@@ -75,11 +86,15 @@ export function BlockRenderer({
   onDuplicate,
   onDelete,
   onCopy,
+  onCopyStyle,
+  onCopyContent,
   onPaste,
   onRefresh,
   onInsertBelow,
   onInsertBelowChild,
   hasClipboard,
+  clipboardMode,
+  clipboardBlockType,
   canMoveUp,
   canMoveDown,
   onSelectChild,
@@ -88,6 +103,8 @@ export function BlockRenderer({
   onDuplicateChild,
   onDeleteChild,
   onCopyChild,
+  onCopyStyleChild,
+  onCopyContentChild,
   onPasteChild,
   onRefreshChild,
 }: BlockRendererProps) {
@@ -105,10 +122,11 @@ export function BlockRenderer({
           }
         })(),
       }
-      const { blobProps, appearance, header, marker, figure, actions, content } =
+      const { blobProps, appearance, background, header, marker, figure, actions, content } =
         mapFormDataToBlob(formData)
 
-      const appearanceConfig = resolveAppearance(appearance)
+      const appearanceConfig = resolveAppearances(appearance)
+      const backgrounds = resolveBackgrounds(background)
 
       // Rendu récursif des innerBlocks si présents
       const innerBlocks = block.innerBlocks?.map((childBlock, index) => (
@@ -124,11 +142,15 @@ export function BlockRenderer({
           onDuplicate={() => onDuplicateChild?.(childBlock.id)}
           onDelete={() => onDeleteChild?.(childBlock.id)}
           onCopy={() => onCopyChild?.(childBlock.id)}
+          onCopyStyle={() => onCopyStyleChild?.(childBlock.id)}
+          onCopyContent={() => onCopyContentChild?.(childBlock.id)}
           onPaste={() => onPasteChild?.(childBlock.id)}
           onRefresh={(mode) => onRefreshChild?.(childBlock.id, mode)}
           onInsertBelow={() => onInsertBelowChild?.(block.id, index + 1)}
           onInsertBelowChild={onInsertBelowChild}
           hasClipboard={hasClipboard}
+          clipboardMode={clipboardMode}
+          clipboardBlockType={clipboardBlockType}
           canMoveUp={index > 0}
           canMoveDown={index < (block.innerBlocks?.length || 0) - 1}
           onSelectChild={onSelectChild}
@@ -137,6 +159,8 @@ export function BlockRenderer({
           onDuplicateChild={onDuplicateChild}
           onDeleteChild={onDeleteChild}
           onCopyChild={onCopyChild}
+          onCopyStyleChild={onCopyStyleChild}
+          onCopyContentChild={onCopyContentChild}
           onPasteChild={onPasteChild}
           onRefreshChild={onRefreshChild}
         />
@@ -144,6 +168,7 @@ export function BlockRenderer({
 
       return (
         <ClientBlob {...blobProps} className={cn(appearanceConfig.blobClassName, blobProps.className)}>
+          <BlobBackground backgrounds={backgrounds} />
           {header && (header.eyebrow || header.title || header.subtitle) && (
             <Blob.Header className={cn(appearanceConfig.headerClassName)}>
               {header.eyebrow && (
@@ -159,7 +184,7 @@ export function BlockRenderer({
               {header.subtitle && <Subtitle>{header.subtitle.text}</Subtitle>}
             </Blob.Header>
           )}
-          {marker && (marker.content || marker.icon) && (
+          {marker && (marker.content || marker.icon || marker.image) && (
             <Marker
               variant={marker.style}
               rounded={marker.rounded}
@@ -167,6 +192,9 @@ export function BlockRenderer({
             >
               {marker.type === "text" && marker.content && <span>{marker.content}</span>}
               {marker.type === "icon" && marker.icon && renderIconObject(marker.icon.iconObject)}
+              {marker.type === "image" && marker.image && (
+                <Image src={marker.image} alt="" fill className="object-cover" />
+              )}
             </Marker>
           )}
           {figure && figure.src && (
@@ -193,7 +221,7 @@ export function BlockRenderer({
           {actions && actions.length > 0 && (
             <Blob.Actions className={cn(appearanceConfig.actionsClassName)}>
               {actions.map((btn, i) => (
-                <Button key={i} asChild variant={btn.variant} data-theme={btn.theme}>
+                <Button key={i} asChild variant={btn.variant} data-theme={btn.theme} className={btn.theme ? `theme-${btn.theme}` : undefined}>
                   <Link {...btn.linkProps}>{btn.label}</Link>
                 </Button>
               ))}
@@ -235,12 +263,16 @@ export function BlockRenderer({
         swiperOptions,
         swiperSlideWidth,
         swiperResponsiveConfig,
+        iteratorAppearance,
+        iteratorBackground,
         sharedBlobProps,
         sharedAppearance,
+        sharedBackground,
         items
       } = mapIteratorFormData(block.data)
 
-      const sharedAppearanceConfig = resolveAppearance(sharedAppearance)
+      const sharedAppearanceConfig = resolveAppearances(sharedAppearance)
+      const sharedBackgrounds = resolveBackgrounds(sharedBackground)
 
       return (
         <ClientBlobIterator
@@ -250,9 +282,11 @@ export function BlockRenderer({
           swiperOptions={swiperOptions}
           swiperSlideWidth={swiperSlideWidth}
           swiperResponsiveConfig={swiperResponsiveConfig}
+          appearance={iteratorAppearance}
+          background={iteratorBackground}
         >
           {items.map((itemData, index) => {
-            const { blobProps, appearance, header, marker, figure, actions, content, innerBlocks: itemInnerBlocks, itemId } = itemData
+            const { blobProps, appearance, background, header, marker, figure, actions, content, innerBlocks: itemInnerBlocks, itemId } = itemData
 
             // Fusionner les props partagées avec les props de l'item
             const mergedBlobProps = {
@@ -260,7 +294,8 @@ export function BlockRenderer({
               ...blobProps,
             }
 
-            const itemAppearanceConfig = resolveAppearance(appearance, sharedAppearanceConfig)
+            const itemAppearanceConfig = resolveAppearances(appearance, sharedAppearanceConfig)
+            const itemBackgrounds = background && background.length > 0 ? resolveBackgrounds(background) : sharedBackgrounds
 
             // Rendu récursif des innerBlocks de l'item si présents
             // IMPORTANT: utiliser itemId (ID de l'item) comme parentId, pas block.id (ID de l'iterator)
@@ -277,11 +312,15 @@ export function BlockRenderer({
                 onDuplicate={() => onDuplicateChild?.(childBlock.id)}
                 onDelete={() => onDeleteChild?.(childBlock.id)}
                 onCopy={() => onCopyChild?.(childBlock.id)}
+                onCopyStyle={() => onCopyStyleChild?.(childBlock.id)}
+                onCopyContent={() => onCopyContentChild?.(childBlock.id)}
                 onPaste={() => onPasteChild?.(childBlock.id)}
                 onRefresh={(mode) => onRefreshChild?.(childBlock.id, mode)}
                 onInsertBelow={() => onInsertBelowChild?.(itemId, childIndex + 1)}
                 onInsertBelowChild={onInsertBelowChild}
                 hasClipboard={hasClipboard}
+                clipboardMode={clipboardMode}
+                clipboardBlockType={clipboardBlockType}
                 canMoveUp={childIndex > 0}
                 canMoveDown={childIndex < (itemInnerBlocks?.length || 0) - 1}
                 onSelectChild={onSelectChild}
@@ -290,6 +329,8 @@ export function BlockRenderer({
                 onDuplicateChild={onDuplicateChild}
                 onDeleteChild={onDeleteChild}
                 onCopyChild={onCopyChild}
+                onCopyStyleChild={onCopyStyleChild}
+                onCopyContentChild={onCopyContentChild}
                 onPasteChild={onPasteChild}
                 onRefreshChild={onRefreshChild}
               />
@@ -301,6 +342,7 @@ export function BlockRenderer({
                 {...mergedBlobProps}
                 className={cn(itemAppearanceConfig.blobClassName, mergedBlobProps.className)}
               >
+                <BlobBackground backgrounds={itemBackgrounds} />
                 {header && (header.eyebrow || header.title || header.subtitle) && (
                   <Blob.Header className={cn(itemAppearanceConfig.headerClassName)}>
                     {header.eyebrow && (
@@ -319,7 +361,7 @@ export function BlockRenderer({
                     {header.subtitle && <Subtitle>{header.subtitle.text}</Subtitle>}
                   </Blob.Header>
                 )}
-                {marker && (marker.content || marker.icon) && (
+                {marker && (marker.content || marker.icon || marker.image) && (
                   <Marker
                     variant={marker.style}
                     rounded={marker.rounded}
@@ -327,6 +369,9 @@ export function BlockRenderer({
                   >
                     {marker.type === "text" && marker.content && <span>{marker.content}</span>}
                     {marker.type === "icon" && marker.icon && renderIconObject(marker.icon.iconObject)}
+                    {marker.type === "image" && marker.image && (
+                      <Image src={marker.image} alt="" fill className="object-cover" />
+                    )}
                   </Marker>
                 )}
                 {figure && figure.src && (
@@ -376,7 +421,7 @@ export function BlockRenderer({
                 {actions && actions.length > 0 && (
                   <Blob.Actions className={cn(itemAppearanceConfig.actionsClassName)}>
                     {actions.map((btn, i) => (
-                      <Button key={i} asChild variant={btn.variant} data-theme={btn.theme}>
+                      <Button key={i} asChild variant={btn.variant} data-theme={btn.theme} className={btn.theme ? `theme-${btn.theme}` : undefined}>
                         <Link {...btn.linkProps}>{btn.label}</Link>
                       </Button>
                     ))}
@@ -398,7 +443,7 @@ export function BlockRenderer({
       return (
         <BlockParagraph
           text={(block.data.text as string) || ""}
-          appearance={(block.data.appearance as string) || undefined}
+          appearance={(block.data.appearance as string | string[]) || undefined}
         />
       )
     }
@@ -444,7 +489,6 @@ export function BlockRenderer({
   // Update controls position when hovered, track scroll/resize
   useEffect(() => {
     if (!isBlockHovered || !wrapperRef.current) {
-      setControlsRect(null)
       return
     }
 
@@ -461,6 +505,7 @@ export function BlockRenderer({
     window.addEventListener('resize', update, { passive: true })
 
     return () => {
+      setControlsRect(null)
       scrollContainer?.removeEventListener('scroll', update)
       window.removeEventListener('scroll', update)
       window.removeEventListener('resize', update)
@@ -545,13 +590,30 @@ export function BlockRenderer({
           <Copy className="h-4 w-4 mr-2" />
           Copier
         </ContextMenuItem>
+        <ContextMenuItem onClick={onCopyStyle}>
+          <Paintbrush className="h-4 w-4 mr-2" />
+          Copier le style
+        </ContextMenuItem>
+        <ContextMenuItem onClick={onCopyContent}>
+          <Type className="h-4 w-4 mr-2" />
+          Copier le contenu
+        </ContextMenuItem>
         <ContextMenuItem onClick={handleCopyJSON}>
           <Code className="h-4 w-4 mr-2" />
           Copier JSON
         </ContextMenuItem>
-        <ContextMenuItem onClick={onPaste} disabled={!hasClipboard}>
-          <Clipboard className="h-4 w-4 mr-2" />
-          Coller
+        <ContextMenuSeparator />
+        <ContextMenuItem
+          onClick={onPaste}
+          disabled={!hasClipboard || (clipboardMode !== "full" && clipboardBlockType !== block.blockType)}
+        >
+          {clipboardMode === "style" ? (
+            <><Paintbrush className="h-4 w-4 mr-2" />Coller le style</>
+          ) : clipboardMode === "content" ? (
+            <><Type className="h-4 w-4 mr-2" />Coller le contenu</>
+          ) : (
+            <><Clipboard className="h-4 w-4 mr-2" />Coller</>
+          )}
         </ContextMenuItem>
       </ContextMenuContent>
     </ContextMenu>

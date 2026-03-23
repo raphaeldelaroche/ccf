@@ -150,8 +150,8 @@ export function RepeaterInspector({
     next.splice(i + 1, 0, deepCloneWithNewIds(rows[i]) as RepeaterRow)
     commit(next)
   }
-  const updateRow = (i: number, key: string, v: string | boolean) =>
-    commit(rows.map((r, idx) => (idx === i ? { ...r, [key]: String(v) } : r)))
+  const updateRow = (i: number, key: string, v: string | boolean | string[]) =>
+    commit(rows.map((r, idx) => (idx === i ? { ...r, [key]: Array.isArray(v) ? JSON.stringify(v) : String(v) } : r)))
 
   const handleDragStart = (i: number) => { dragIndex.current = i }
   const handleDragOver = (e: React.DragEvent, i: number) => {
