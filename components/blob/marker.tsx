@@ -4,7 +4,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const markerVariants = cva(
-  "relative flex text-nowrap shrink-0 items-center justify-center overflow-hidden [&_svg]:pointer-events-none w-media h-media [&_svg]:size-media-icon mb-media-bottom",
+  "relative flex text-nowrap shrink-0 items-center justify-center overflow-hidden [&_svg]:pointer-events-none h-media [&_svg]:w-[var(--size-media-icon-size)] [&_svg]:h-[var(--size-media-icon-size)] mb-media-bottom",
   {
     variants: {
       rounded: {

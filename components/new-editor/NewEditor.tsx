@@ -82,7 +82,11 @@ export function NewEditor({ initialPage = "home" }: NewEditorProps) {
     onDeleteSelected: () => selectedBlockId && handleDeleteBlock(selectedBlockId),
     onUndo: handleUndo,
     onRedo: handleRedo,
+    onCopy: () => selectedBlockId && handleCopyBlock(selectedBlockId),
+    onCopyStyle: () => selectedBlockId && handleCopyBlockStyle(selectedBlockId),
+    onPaste: () => selectedBlockId && handlePasteBlock(selectedBlockId),
     hasSelection: !!selectedBlockId,
+    hasClipboard,
   })
 
   // Check if user has permission to access the editor (after all hooks)

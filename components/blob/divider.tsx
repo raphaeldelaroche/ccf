@@ -20,7 +20,7 @@ function Divider({
         data-slot="divider"
         decorative={decorative}
         orientation={orientation}
-        className={className}
+        className={`bg-primary/10 ${className}`}
         {...props}
       />
     )

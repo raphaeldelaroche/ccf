@@ -25,14 +25,17 @@ import type { BlockType as CopyBlockType } from "@/lib/new-editor/block-types"
 import { mapFormDataToBlob } from "@/lib/blob-form-mapper"
 import { mapIteratorFormData } from "@/lib/blob-iterator-mapper"
 import { mapButtonTooltipFormData } from "@/lib/button-tooltip-mapper"
+import { mapFaqFormData } from "@/lib/faq-mapper"
 import { BlockButtonTooltip } from "@/components/blocks/BlockButtonTooltip"
 import { BlockParagraph } from "@/components/blocks/BlockParagraph"
 import { BlockDivider } from "@/components/blocks/BlockDivider"
 import { BlockList } from "@/components/blocks/BlockList"
+import { BlockFaq } from "@/components/blocks/BlockFaq"
+import { BlockForm } from "@/components/blocks/BlockForm"
 import { BlockHoverControls } from "./BlockHoverControls"
 import { renderIconObject } from "@/lib/render-icon"
 import { resolveAppearances } from "@/config/blob-appearances"
-import { resolveBackgrounds } from "@/config/blob-backgrounds"
+import { resolveBackgrounds, resolveBackgroundClasses } from "@/config/blob-backgrounds"
 import { BlobBackground } from "@/components/blob/blob-background"
 import type { BlobIteratorProps } from "@/components/blob/blob-iterator"
 import { cn } from "@/lib/utils"
@@ -127,6 +130,7 @@ export function BlockRenderer({
 
       const appearanceConfig = resolveAppearances(appearance)
       const backgrounds = resolveBackgrounds(background)
+      const backgroundClasses = resolveBackgroundClasses(background)
 
       // Rendu récursif des innerBlocks si présents
       const innerBlocks = block.innerBlocks?.map((childBlock, index) => (
@@ -167,7 +171,7 @@ export function BlockRenderer({
       ))
 
       return (
-        <ClientBlob {...blobProps} className={cn(appearanceConfig.blobClassName, blobProps.className)}>
+        <ClientBlob {...blobProps} className={cn(appearanceConfig.blobClassName, backgroundClasses, backgrounds.length > 0 && "relative", blobProps.className)}>
           <BlobBackground backgrounds={backgrounds} />
           {header && (header.eyebrow || header.title || header.subtitle) && (
             <Blob.Header className={cn(appearanceConfig.headerClassName)}>
@@ -213,6 +217,29 @@ export function BlockRenderer({
               )}
             </Blob.Figure>
           )}
+          {/* Figure innerBlocks rendering */}
+          {block.data.figureType === "innerBlocks" && (
+            <Blob.Figure className={cn(appearanceConfig.figureClassName)}>
+              {innerBlocks && innerBlocks.length > 0 ? (
+                <>{innerBlocks}</>
+              ) : (
+                <BlockPickerPopover
+                  onSelect={(blockType) => onAddBelowChild?.(block.id, 0, blockType)}
+                  onPaste={hasClipboard && onInsertBelowChild ? () => onInsertBelowChild(block.id, 0) : undefined}
+                  hasClipboard={hasClipboard}
+                  side="bottom"
+                  align="center"
+                >
+                  <button
+                    onClick={(e) => e.stopPropagation()}
+                    className="w-full border-2 border-dashed border-muted-foreground/30 rounded-md py-4 text-sm text-muted-foreground hover:border-muted-foreground/60 hover:text-muted-foreground/80 transition-colors"
+                  >
+                    + Ajouter un bloc dans la figure
+                  </button>
+                </BlockPickerPopover>
+              )}
+            </Blob.Figure>
+          )}
           {content?.enabled && content.text && (
             <Blob.Content className={cn(appearanceConfig.contentClassName)}>
               <p>{content.text}</p>
@@ -220,11 +247,36 @@ export function BlockRenderer({
           )}
           {actions && actions.length > 0 && (
             <Blob.Actions className={cn(appearanceConfig.actionsClassName)}>
-              {actions.map((btn, i) => (
-                <Button key={i} asChild variant={btn.variant} data-theme={btn.theme} className={btn.theme ? `theme-${btn.theme}` : undefined}>
-                  <Link {...btn.linkProps}>{btn.label}</Link>
-                </Button>
-              ))}
+              {actions.map((btn, i) => {
+                const iconElement = btn.icon ? renderIconObject(btn.icon.iconObject) : null
+                const isIconOnly = (!btn.label?.trim()) && btn.icon && btn.iconType !== "none"
+                const iconLeft = !isIconOnly && btn.iconType === "left" && iconElement
+                const iconRight = !isIconOnly && btn.iconType === "right" && iconElement
+
+                return (
+                  <Button
+                    key={i}
+                    asChild
+                    variant={btn.variant}
+                    size={isIconOnly ? "icon-only" : undefined}
+                    data-theme={btn.theme}
+                    className={btn.theme ? `theme-${btn.theme}` : undefined}
+                    aria-label={isIconOnly ? btn.label || "Button" : undefined}
+                  >
+                    <Link {...btn.linkProps}>
+                      {isIconOnly ? (
+                        <span className="w-5 h-5 shrink-0 flex items-center justify-center">{iconElement}</span>
+                      ) : (
+                        <>
+                          {iconLeft && <span className="w-4 h-4 shrink-0">{iconElement}</span>}
+                          {btn.label}
+                          {iconRight && <span className="w-4 h-4 shrink-0">{iconElement}</span>}
+                        </>
+                      )}
+                    </Link>
+                  </Button>
+                )
+              })}
             </Blob.Actions>
           )}
           {/* Rendu des innerBlocks */}
@@ -232,7 +284,7 @@ export function BlockRenderer({
             block.data.contentType === "innerBlocks" && (
               <Blob.Content className={cn(appearanceConfig.contentClassName)}>
                 {innerBlocks && innerBlocks.length > 0 ? (
-                  <div className="space-y-4">{innerBlocks}</div>
+                  <>{innerBlocks}</>
                 ) : (
                   <BlockPickerPopover
                     onSelect={(blockType) => onAddBelowChild?.(block.id, 0, blockType)}
@@ -258,6 +310,8 @@ export function BlockRenderer({
     if (block.blockType === "blobIterator") {
       const {
         iteratorLayout,
+        iteratorPaddingX,
+        iteratorPaddingY,
         iteratorGapX,
         iteratorGapY,
         swiperOptions,
@@ -273,10 +327,13 @@ export function BlockRenderer({
 
       const sharedAppearanceConfig = resolveAppearances(sharedAppearance)
       const sharedBackgrounds = resolveBackgrounds(sharedBackground)
+      const sharedBackgroundClasses = resolveBackgroundClasses(sharedBackground)
 
       return (
         <ClientBlobIterator
           containerLayout={iteratorLayout as BlobIteratorProps["containerLayout"]}
+          paddingX={iteratorPaddingX}
+          paddingY={iteratorPaddingY}
           gapX={iteratorGapX as BlobIteratorProps["gapX"]}
           gapY={iteratorGapY as BlobIteratorProps["gapY"]}
           swiperOptions={swiperOptions}
@@ -296,6 +353,7 @@ export function BlockRenderer({
 
             const itemAppearanceConfig = resolveAppearances(appearance, sharedAppearanceConfig)
             const itemBackgrounds = background && background.length > 0 ? resolveBackgrounds(background) : sharedBackgrounds
+            const itemBackgroundClasses = background && background.length > 0 ? resolveBackgroundClasses(background) : sharedBackgroundClasses
 
             // Rendu récursif des innerBlocks de l'item si présents
             // IMPORTANT: utiliser itemId (ID de l'item) comme parentId, pas block.id (ID de l'iterator)
@@ -340,7 +398,7 @@ export function BlockRenderer({
               <ClientBlob
                 key={index}
                 {...mergedBlobProps}
-                className={cn(itemAppearanceConfig.blobClassName, mergedBlobProps.className)}
+                className={cn(itemAppearanceConfig.blobClassName, itemBackgroundClasses, itemBackgrounds.length > 0 && "relative", mergedBlobProps.className)}
               >
                 <BlobBackground backgrounds={itemBackgrounds} />
                 {header && (header.eyebrow || header.title || header.subtitle) && (
@@ -464,6 +522,15 @@ export function BlockRenderer({
         ? (block.data.items as Array<{title: string; subtitle?: string}>)
         : (() => { try { return JSON.parse((block.data.items as string) || "[]") } catch { return [] } })()
       return <BlockList items={items} icon={(block.data.icon as string) || "arrowRight"} />
+    }
+
+    if (block.blockType === "faq") {
+      const mappedData = mapFaqFormData(block.data)
+      return <BlockFaq data={mappedData} />
+    }
+
+    if (block.blockType === "form") {
+      return <BlockForm />
     }
 
     return <div className="p-4 bg-muted text-sm">Type de bloc inconnu: {block.blockType}</div>

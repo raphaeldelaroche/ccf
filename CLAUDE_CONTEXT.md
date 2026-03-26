@@ -33,6 +33,8 @@ Un système de composants ultra-modulable pour construire des sections de conten
 | `blob-iterator-mapper.ts` | Mapping Iterator : fusion props partagées + props par item + `buildSwiperConfig()` (Swiper options + `SwiperResponsiveConfig` per-bp) |
 | `copy-paste-utils.ts` | Extraction/merge de champs par catégorie (style/content) pour copier-coller partiel — gère responsive + repeaters |
 | `use-blob-compatibility.ts` | Hook React : calcule options disponibles selon contexte |
+| `iconify/utils.ts` | Utilitaires Iconify : parsage SVG → IconObject (camelCase), debounce, retry logic |
+| `iconify/hooks.ts` | Hooks React pour API Iconify : `useIconifySearch`, `useIconifySvg`, `useIconifyIcon` |
 
 ### Éditeur (`/lib/new-editor`)
 
@@ -63,7 +65,8 @@ Un système de composants ultra-modulable pour construire des sections de conten
 | `new-editor/ItemFieldsCombobox.tsx` | Combobox multi-select pour choisir les champs par item (avec badges et groupes) |
 | `new-editor/BreakpointTabs.tsx` | Tabs responsive (Base \| SM \| MD \| LG \| XL \| 2XL) avec blue dots |
 | `new-editor/RepeaterInspector.tsx` | Champ répéteur générique (drag & drop, popover) |
-| `new-editor/InspectorField.tsx` | Champ atomique avec `localValue` + badges héritage responsive |
+| `new-editor/InspectorField.tsx` | Champ atomique avec `localValue` + badges héritage responsive — intègre IconifyPicker pour type "icon" |
+| `new-editor/IconifyPicker.tsx` | Sélecteur d'icônes avancé : recherche API Iconify, 8 collections (MDI par défaut), customisation taille/stroke, preview temps réel |
 | `new-editor/CollapsibleSection.tsx` | Section accordion avec lazy mounting |
 
 ### Permissions (`/lib/auth`)
@@ -81,6 +84,7 @@ Un système de composants ultra-modulable pour construire des sections de conten
 |---------|------|
 | `blob-appearances.ts` | Registre des apparences : `AppearanceDefinition` (classes CSS par slot), multiselect, `resolveAppearances()` fusionne les sélections |
 | `blob-backgrounds.tsx` | Registre des arrière-plans : `BackgroundDefinition` (className + contenu React optionnel), multiselect, `resolveBackgrounds()` retourne un tableau de divs absolues |
+| `iconify-collections.ts` | Configuration collections Iconify : 8 collections disponibles (MDI, Lucide, Tabler, Heroicons, Phosphor, Remix, Carbon, Ionicons), config recherche (debounce 300ms, max 50 résultats) |
 
 ### Styles (`/styles`)
 
@@ -213,6 +217,35 @@ Si une demande implique :
 
 **Héritage** : Les valeurs se propagent mobile-first (lg hérite de md qui hérite de base)
 
+### Typage des configs Blob manuelles
+
+**Pattern recommandé** : Utiliser le type `BlobConfig` pour les configs construites hors de l'éditeur.
+
+```typescript
+import type { BlobConfig } from '@/lib/blob-compose'
+
+const config: BlobConfig = {
+  responsive: {
+    base: {
+      layout: "stack",        // ✅ Auto-complétion : "stack" | "bar" | "row"
+      size: "xl",             // ✅ Validation : "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | ...
+      align: "center",        // ✅ IntelliSense complet
+    }
+  },
+  theme: "brand"
+}
+
+<Blob {...config}>...</Blob>
+```
+
+**Pourquoi ?** : Sans annotation de type, TypeScript élargit `"stack"` en `string`, ce qui cause une erreur de type. `BlobConfig` force l'inférence des types littéraux corrects et active l'auto-complétion.
+
+**Documentation complète** : Voir [`docs/blob-usage.md`](docs/blob-usage.md) pour :
+- Explication du type widening TypeScript
+- Architecture réutilisable (Blob vs appearance/background site-spécifiques)
+- Exemples complets avec appearance/background
+- Guide auto-complétion et validation
+
 ### Champs repeater
 
 **Storage** : JSON string dans FormData
@@ -331,6 +364,28 @@ interface BlockNode {
 2. `auth/permissions.ts` → Créer helper `canDoMyNewThing(role)`
 3. Utiliser dans les composants : `if (!canDoMyNewThing(user?.role)) return null`
 
+### Migrer vers IconifyPicker (depuis icônes statiques)
+
+Si vous avez des données existantes avec l'ancien système d'icônes (string keys) :
+
+```bash
+# 1. Preview des changements (dry-run)
+npx tsx scripts/migrate-icon-fields.ts --dry-run
+
+# 2. Appliquer la migration
+npx tsx scripts/migrate-icon-fields.ts
+```
+
+**Le script :**
+- Convertit les références string (`"heart"`, `"star"`) en objets `IconData` complets
+- Supporte la récursion (innerBlocks) et les items d'Iterator
+- Crée un backup automatique dans Redis (`backup:icon-migration:{date}`)
+- Mode dry-run pour vérifier avant d'appliquer
+
+**Ajouter des collections** :
+1. `config/iconify-collections.ts` → Ajouter entrée dans `ICONIFY_COLLECTIONS`
+2. Tester via API : `https://api.iconify.design/search?query=test&prefix={collection-id}`
+
 ---
 
 ## État actuel (développement actif)
@@ -351,6 +406,19 @@ interface BlockNode {
   - BlobIterator container responsive (layout, gapX, gapY)
   - Migration automatique des anciennes données (extraction champs non-responsive, conversion xs → base)
 - **Copier-coller partiel** : Copier le style / Copier le contenu via clic droit, avec merge non-destructif, support responsive et repeaters
+- **IconifyPicker** : Sélecteur d'icônes dynamique avec API Iconify
+  - 8 collections disponibles (MDI par défaut, Lucide, Tabler, Heroicons, Phosphor, Remix, Carbon, Ionicons)
+  - Recherche temps réel (debounced 300ms, max 50 résultats)
+  - Customisation taille (16-128px) et épaisseur trait (0.5-4)
+  - Preview visuelle en grille + mode édition
+  - Format IconData complet (stocke SVG parsé, pas juste référence)
+  - Compatibilité backward : fallback vers icônes statiques legacy
+  - Script de migration disponible (`scripts/migrate-icon-fields.ts`)
+- **innerBlocks dans Figure** : Support des blocs imbriqués dans le slot figure
+  - Nouvelle option `figureType: "innerBlocks"` (en plus de image/video)
+  - Exclusivité mutuelle : `contentType: "innerBlocks"` désactivé si `figureType: "innerBlocks"`
+  - Stockage identique : `block.innerBlocks` au niveau racine (pas de breaking change)
+  - Rendu conditionnel : innerBlocks dans `<Blob.Figure>` ou `<Blob.Content>` selon le type actif
 
 ### 🚧 En développement (Engineers/Reviewers uniquement)
 
@@ -440,10 +508,12 @@ CSS utilise `:not(:has(> [data-slot="marker"]))` pour retirer automatiquement le
 - Champ `background` (multiselect, non-responsive) dans la section "Style" de l'inspector
 - Héritage dans l'Iterator via `sharedBackground` (même pattern que `sharedAppearance`)
 
-**Empilement z-index** (tous négatifs, derrière le contenu) :
-- `zIndex: 0` (défaut) → backgrounds simples (solides, dégradés, patterns)
-- `zIndex: 1` → éléments décoratifs (lignes)
-- `zIndex: 2` → éléments décoratifs au premier plan (plus aux coins)
+**Empilement z-index** (relatif au contenu à z-index: 10) :
+- `zIndex: 0` (défaut) → backgrounds simples derrière le contenu (solides, dégradés, patterns)
+- `zIndex: 2` → éléments décoratifs derrière le contenu (logos)
+- `zIndex: 10` → **contenu du blob** (marker, header, actions, content, figure)
+- `zIndex: 15` → éléments décoratifs devant le contenu (lignes)
+- `zIndex: 30` → éléments décoratifs au premier plan (plus aux coins)
 
 **Variable CSS** : `--blob-bg-inset` (définie dans `globals.css`) contrôle la largeur des bandes blanches latérales pour les backgrounds décoratifs (quadrillage, lignes, plus).
 
@@ -469,6 +539,51 @@ CSS utilise `:not(:has(> [data-slot="marker"]))` pour retirer automatiquement le
 **Cross-type** : le collage de style/contenu est bloqué si le blockType du clipboard ne matche pas le bloc cible (Blob→Blob et Iterator→Iterator uniquement).
 
 **Menu contextuel** (clic droit) : Copier / Copier le style / Copier le contenu / Copier JSON / — / Coller (label dynamique selon le mode : "Coller le style" ou "Coller le contenu").
+
+### Système IconifyPicker (remplacement des icônes statiques)
+
+**Objectif** : Remplacer le système d'icônes statiques (5 icônes hardcodées) par un sélecteur dynamique avec accès à des milliers d'icônes via l'API Iconify.
+
+**Architecture** :
+- `lib/iconify/utils.ts` : Parser SVG → IconObject (conversion kebab-case → camelCase pour React), debounce, retry logic
+- `lib/iconify/hooks.ts` : Hooks React pour API Iconify (`useIconifySearch`, `useIconifySvg`, `useIconifyIcon`)
+- `config/iconify-collections.ts` : Configuration des 8 collections disponibles
+- `components/new-editor/IconifyPicker.tsx` : Composant principal (recherche, preview, customisation)
+
+**Collections disponibles** : Material Design Icons (MDI - défaut), Lucide, Tabler Icons, Heroicons, Phosphor, Remix Icon, Carbon, Ionicons.
+
+**Fonctionnalités** :
+- **Recherche temps réel** : Debounced 300ms, max 50 résultats par requête
+- **Preview visuelle** : Grille 6 colonnes avec preview 20×20px de chaque icône
+- **Customisation** : Taille (16-128px, step 4px), épaisseur trait (0.5-4, step 0.5)
+- **Modes** : "search" (grille de résultats) / "selected" (preview large + édition)
+- **Nettoyage nom** : API retourne `collection:icon-name`, nettoyé en `icon-name` pour fetch SVG
+
+**Format de stockage** : Objet `IconData` complet (pas juste référence string) :
+```typescript
+interface IconData {
+  name: string              // "heart"
+  collection: string        // "mdi"
+  metadata: {
+    size: number           // 24
+    strokeWidth: number    // 2
+  }
+  iconObject: IconObject   // Structure SVG parsée
+}
+```
+
+**Parsage SVG** :
+- Conversion DOM → objet récursif via `DOMParser` (client-side uniquement)
+- Conversion automatique kebab-case → camelCase (`stroke-linecap` → `strokeLinecap`)
+- Conversion attributs numériques (width, height, strokeWidth) en `number`
+- Suppression attributs redondants (xmlns ajouté par renderer)
+
+**Compatibilité** :
+- **Anciennes données** : Fallback vers `iconOptions` statiques (string key → IconData)
+- **Type FormDataValue** : Étendu pour inclure `IconData | null`
+- **Migration** : Script disponible (`scripts/migrate-icon-fields.ts`) pour convertir anciennes données
+
+**Rendering** : `renderIconObject()` dans `lib/render-icon.ts` — force SVG à 100% width/height pour remplir conteneur.
 
 ### Responsive basé sur objets (TOUJOURS actif)
 

@@ -20,11 +20,13 @@ export function BlockBlobIterator({
   data: MappedIteratorData;
   renderInnerBlock?: (block: BlockNode) => React.ReactNode;
 }) {
-  const { iteratorLayout, iteratorGapX, iteratorGapY, swiperOptions, swiperSlideWidth, swiperResponsiveConfig, iteratorAppearance, iteratorBackground, sharedBlobProps, sharedAppearance, sharedBackground, items } = data
+  const { iteratorLayout, iteratorPaddingX, iteratorPaddingY, iteratorGapX, iteratorGapY, swiperOptions, swiperSlideWidth, swiperResponsiveConfig, iteratorAppearance, iteratorBackground, sharedBlobProps, sharedAppearance, sharedBackground, items } = data
 
   return (
     <BlobIterator
       containerLayout={iteratorLayout as IteratorLayout}
+      paddingX={iteratorPaddingX}
+      paddingY={iteratorPaddingY}
       gapX={iteratorGapX as SizeValue} gapY={iteratorGapY as SizeValue}
       swiperOptions={swiperOptions}
       swiperSlideWidth={swiperSlideWidth}

@@ -1,5 +1,64 @@
 # Scripts de migration
 
+## Migration icon fields (string keys → IconData objects)
+
+### Contexte
+
+Le système d'icônes a été remplacé par IconifyPicker qui utilise des objets `IconData` complets au lieu de références string :
+
+**Ancien format (string key)** :
+```json
+{
+  "markerType": "icon",
+  "markerIcon": "heart"
+}
+```
+
+**Nouveau format (IconData object)** :
+```json
+{
+  "markerType": "icon",
+  "markerIcon": {
+    "name": "heart",
+    "collection": "lucide",
+    "metadata": { "size": 24, "strokeWidth": 2 },
+    "iconObject": { "type": "svg", "props": {...} }
+  }
+}
+```
+
+### Usage
+
+```bash
+# Preview des changements (dry-run)
+npx tsx scripts/migrate-icon-fields.ts --dry-run
+
+# Appliquer la migration
+npx tsx scripts/migrate-icon-fields.ts
+```
+
+### Ce que fait le script
+
+1. **Scan** : Parcourt toutes les pages Redis
+2. **Backup** : Crée automatiquement un backup (`backup:icon-migration:{date}`)
+3. **Conversion** : Convertit les string keys en objets IconData complets
+4. **Récursion** : Gère les innerBlocks et items d'Iterator
+5. **Fallback** : Conserve les clés inconnues (non présentes dans `iconOptions`)
+
+### Restauration
+
+En cas de problème, restaurer depuis le backup Redis :
+
+```bash
+# Lister les backups
+redis-cli KEYS "backup:icon-migration:*"
+
+# Restaurer une page (exemple)
+redis-cli HGET backup:icon-migration:2026-03-24 page:{id}
+```
+
+---
+
 ## Migration responsive (string → objet)
 
 ### Contexte

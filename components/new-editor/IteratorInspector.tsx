@@ -110,7 +110,7 @@ export function IteratorInspector({ blockId, data, onUpdate }: IteratorInspector
     onUpdate({ [key]: value })
   }
 
-  const handleResponsiveChange = (key: string, value: string | boolean | string[]) => {
+  const handleResponsiveChange = (key: string, value: FormDataValue) => {
     const newResponsive = { ...responsiveData }
 
     if (!newResponsive[activeBreakpoint]) {
@@ -118,7 +118,7 @@ export function IteratorInspector({ blockId, data, onUpdate }: IteratorInspector
     }
 
     // If value is empty/undefined, remove it from the breakpoint
-    if (value === "" || value === undefined || value === null || value === "auto") {
+    if (value === "" || value === undefined || value === null) {
       const breakpointData = { ...newResponsive[activeBreakpoint] }
       delete breakpointData[key as keyof typeof breakpointData]
 
@@ -157,6 +157,41 @@ export function IteratorInspector({ blockId, data, onUpdate }: IteratorInspector
     const newResponsive = { ...responsiveData }
     newResponsive[breakpoint] = { ...copiedBreakpointValues }
     onUpdate({ responsive: newResponsive })
+  }
+
+  const handleResetField = (fieldKey: string) => {
+    const newResponsive = { ...responsiveData }
+
+    if (activeBreakpoint === "base") {
+      // For base: remove the field to clear it
+      if (!newResponsive.base) return // Nothing to reset
+
+      const breakpointData = { ...newResponsive.base }
+      delete breakpointData[fieldKey as keyof typeof breakpointData]
+
+      if (Object.keys(breakpointData).length === 0) {
+        delete newResponsive.base
+      } else {
+        newResponsive.base = breakpointData
+      }
+    } else {
+      // For other breakpoints: remove the override to restore inheritance
+      const breakpointData = { ...(newResponsive[activeBreakpoint] || {}) }
+      delete breakpointData[fieldKey as keyof typeof breakpointData]
+
+      if (Object.keys(breakpointData).length === 0) {
+        delete newResponsive[activeBreakpoint]
+      } else {
+        newResponsive[activeBreakpoint] = breakpointData
+      }
+    }
+
+    onUpdate({ responsive: newResponsive })
+  }
+
+  const handleResetNonResponsiveField = (fieldKey: string) => {
+    // For non-responsive Iterator fields (appearance, background), reset to empty array
+    handleChange(fieldKey, [])
   }
 
   const handleItemFieldsChange = (newItemFields: string[]) => {
@@ -246,9 +281,41 @@ export function IteratorInspector({ blockId, data, onUpdate }: IteratorInspector
               currentBreakpoint={canSeeResponsive ? activeBreakpoint : undefined}
               responsiveValues={canSeeResponsive ? responsiveData : undefined}
               fieldKey="iteratorLayout"
+              onReset={canSeeResponsive ? () => handleResetField("iteratorLayout") : undefined}
             />
             <InspectorField
               label="Espacement horizontal"
+              value={getIteratorValue("iteratorPaddingX", "auto")}
+              type="select"
+              options={{
+                auto: "Auto (défaut)",
+                none: "Aucun (0)",
+                ...arrayToOptions(SIZES),
+                "container-sm": "Container SM",
+                "container-md": "Container MD",
+                "container-lg": "Container LG",
+                "container-xl": "Container XL",
+                "container-2xl": "Container 2XL"
+              }}
+              onChange={(v) => canSeeResponsive ? handleResponsiveChange("iteratorPaddingX", v) : handleChange("iteratorPaddingX", v)}
+              currentBreakpoint={canSeeResponsive ? activeBreakpoint : undefined}
+              responsiveValues={canSeeResponsive ? responsiveData : undefined}
+              fieldKey="iteratorPaddingX"
+              onReset={canSeeResponsive ? () => handleResetField("iteratorPaddingX") : undefined}
+            />
+            <InspectorField
+              label="Espacement vertical"
+              value={getIteratorValue("iteratorPaddingY", "auto")}
+              type="select"
+              options={{ auto: "Auto (défaut)", none: "Aucun (0)", ...arrayToOptions(SIZES) }}
+              onChange={(v) => canSeeResponsive ? handleResponsiveChange("iteratorPaddingY", v) : handleChange("iteratorPaddingY", v)}
+              currentBreakpoint={canSeeResponsive ? activeBreakpoint : undefined}
+              responsiveValues={canSeeResponsive ? responsiveData : undefined}
+              fieldKey="iteratorPaddingY"
+              onReset={canSeeResponsive ? () => handleResetField("iteratorPaddingY") : undefined}
+            />
+            <InspectorField
+              label="Espacement interne X"
               value={getIteratorValue("iteratorGapX", "md")}
               type="select"
               options={{ auto: "Auto (défaut)", none: "Aucun (0)", ...arrayToOptions(SIZES) }}
@@ -256,9 +323,10 @@ export function IteratorInspector({ blockId, data, onUpdate }: IteratorInspector
               currentBreakpoint={canSeeResponsive ? activeBreakpoint : undefined}
               responsiveValues={canSeeResponsive ? responsiveData : undefined}
               fieldKey="iteratorGapX"
+              onReset={canSeeResponsive ? () => handleResetField("iteratorGapX") : undefined}
             />
             <InspectorField
-              label="Espacement vertical"
+              label="Espacement interne Y"
               value={getIteratorValue("iteratorGapY", "md")}
               type="select"
               options={{ auto: "Auto (défaut)", none: "Aucun (0)", ...arrayToOptions(SIZES) }}
@@ -266,6 +334,7 @@ export function IteratorInspector({ blockId, data, onUpdate }: IteratorInspector
               currentBreakpoint={canSeeResponsive ? activeBreakpoint : undefined}
               responsiveValues={canSeeResponsive ? responsiveData : undefined}
               fieldKey="iteratorGapY"
+              onReset={canSeeResponsive ? () => handleResetField("iteratorGapY") : undefined}
             />
             {showField("swiperSlidesPerView") && (
               <InspectorField
@@ -285,6 +354,7 @@ export function IteratorInspector({ blockId, data, onUpdate }: IteratorInspector
                 currentBreakpoint={canSeeResponsive ? activeBreakpoint : undefined}
                 responsiveValues={canSeeResponsive ? responsiveData : undefined}
                 fieldKey="swiperSlidesPerView"
+                onReset={canSeeResponsive ? () => handleResetField("swiperSlidesPerView") : undefined}
               />
             )}
             {showField("swiperSlideWidth") && (
@@ -296,6 +366,7 @@ export function IteratorInspector({ blockId, data, onUpdate }: IteratorInspector
                 currentBreakpoint={canSeeResponsive ? activeBreakpoint : undefined}
                 responsiveValues={canSeeResponsive ? responsiveData : undefined}
                 fieldKey="swiperSlideWidth"
+                onReset={canSeeResponsive ? () => handleResetField("swiperSlideWidth") : undefined}
               />
             )}
             {showField("swiperNavigation") && (
@@ -307,6 +378,7 @@ export function IteratorInspector({ blockId, data, onUpdate }: IteratorInspector
                 currentBreakpoint={canSeeResponsive ? activeBreakpoint : undefined}
                 responsiveValues={canSeeResponsive ? responsiveData : undefined}
                 fieldKey="swiperNavigation"
+                onReset={canSeeResponsive ? () => handleResetField("swiperNavigation") : undefined}
               />
             )}
             {showField("swiperPagination") && (
@@ -318,6 +390,7 @@ export function IteratorInspector({ blockId, data, onUpdate }: IteratorInspector
                 currentBreakpoint={canSeeResponsive ? activeBreakpoint : undefined}
                 responsiveValues={canSeeResponsive ? responsiveData : undefined}
                 fieldKey="swiperPagination"
+                onReset={canSeeResponsive ? () => handleResetField("swiperPagination") : undefined}
               />
             )}
             {showField("swiperAutoplay") && (
@@ -329,6 +402,7 @@ export function IteratorInspector({ blockId, data, onUpdate }: IteratorInspector
                 currentBreakpoint={canSeeResponsive ? activeBreakpoint : undefined}
                 responsiveValues={canSeeResponsive ? responsiveData : undefined}
                 fieldKey="swiperAutoplay"
+                onReset={canSeeResponsive ? () => handleResetField("swiperAutoplay") : undefined}
               />
             )}
             {showField("swiperLoop") && (
@@ -340,6 +414,7 @@ export function IteratorInspector({ blockId, data, onUpdate }: IteratorInspector
                 currentBreakpoint={canSeeResponsive ? activeBreakpoint : undefined}
                 responsiveValues={canSeeResponsive ? responsiveData : undefined}
                 fieldKey="swiperLoop"
+                onReset={canSeeResponsive ? () => handleResetField("swiperLoop") : undefined}
               />
             )}
             {showField("swiperCenteredSlides") && (
@@ -351,6 +426,7 @@ export function IteratorInspector({ blockId, data, onUpdate }: IteratorInspector
                 currentBreakpoint={canSeeResponsive ? activeBreakpoint : undefined}
                 responsiveValues={canSeeResponsive ? responsiveData : undefined}
                 fieldKey="swiperCenteredSlides"
+                onReset={canSeeResponsive ? () => handleResetField("swiperCenteredSlides") : undefined}
               />
             )}
           </div>
@@ -367,6 +443,7 @@ export function IteratorInspector({ blockId, data, onUpdate }: IteratorInspector
               type="multiselect"
               options={getAppearanceOptions()}
               onChange={(v) => handleChange("iteratorAppearance", v)}
+              onReset={() => handleResetNonResponsiveField("iteratorAppearance")}
             />
             <InspectorField
               label="Arrière-plan"
@@ -374,6 +451,7 @@ export function IteratorInspector({ blockId, data, onUpdate }: IteratorInspector
               type="multiselect"
               options={getBackgroundOptions()}
               onChange={(v) => handleChange("iteratorBackground", v)}
+              onReset={() => handleResetNonResponsiveField("iteratorBackground")}
             />
           </div>
         </CollapsibleSection>

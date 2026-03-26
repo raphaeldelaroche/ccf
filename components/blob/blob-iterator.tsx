@@ -1,10 +1,10 @@
 import { ReactNode } from "react"
-import { BlobGrid, type GridColumns, type SizeValue } from "./blob-grid"
+import { BlobGrid, type GridColumns, type SizeValue, type PaddingValue } from "./blob-grid"
 import { BlobSwiper } from "./blob-swiper"
 import type { SwiperOptions } from "swiper/types"
 import type { SwiperResponsiveConfig } from "@/lib/blob-iterator-mapper"
 import { resolveAppearances } from "@/config/blob-appearances"
-import { resolveBackgrounds } from "@/config/blob-backgrounds"
+import { resolveBackgrounds, resolveBackgroundClasses } from "@/config/blob-backgrounds"
 import { BlobBackground } from "@/components/blob/blob-background"
 import { cn } from "@/lib/utils"
 
@@ -27,6 +27,10 @@ export interface BlobIteratorProps {
   children: ReactNode
   /** Layout responsive du conteneur (ex: "swiper lg:grid-2") */
   containerLayout?: ResponsiveIteratorLayout
+  /** Espacement externe horizontal du conteneur (supports responsive syntax "md lg:xl") */
+  paddingX?: string
+  /** Espacement externe vertical du conteneur (supports responsive syntax "md lg:xl") */
+  paddingY?: string
   /** Espacement entre les éléments (tokens de taille, via blob-gutter-*, supports responsive syntax "md lg:xl") */
   gapX?: string
   gapY?: string
@@ -121,10 +125,19 @@ function resolveBreakpoints(
 /* ── Composant principal ── */
 
 /**
- * Parse "md lg:xl" → ["blob-gap-x-md", "lg:blob-gap-x-xl"]
- * En mode container : "md lg:xl" → ["blob-gap-x-md", "@lg:blob-gap-x-xl"]
+ * Parse responsive spacing values into CSS classes
+ * @param value - e.g., "md lg:xl"
+ * @param type - "gap" or "padding"
+ * @param axis - "x" or "y"
+ * @param containerMode - Use container queries (@) instead of media queries
+ * @returns CSS classes string, e.g., "blob-gap-x-md lg:blob-gap-x-xl"
  */
-function parseResponsiveGap(value: string | undefined, axis: "x" | "y", containerMode = false): string {
+function parseResponsiveSpacing(
+  value: string | undefined,
+  type: "gap" | "padding",
+  axis: "x" | "y",
+  containerMode = false
+): string {
   if (!value) return ""
 
   const parts = value.trim().split(/\s+/)
@@ -137,11 +150,11 @@ function parseResponsiveGap(value: string | undefined, axis: "x" | "y", containe
       const val = part.slice(colonIdx + 1)
       if (val !== "auto") {
         const bpPrefix = containerMode ? `@${bp}` : bp
-        classes.push(`${bpPrefix}:blob-gap-${axis}-${val}`)
+        classes.push(`${bpPrefix}:blob-${type}-${axis}-${val}`)
       }
     } else {
       if (part !== "auto") {
-        classes.push(`blob-gap-${axis}-${part}`)
+        classes.push(`blob-${type}-${axis}-${part}`)
       }
     }
   }
@@ -150,9 +163,25 @@ function parseResponsiveGap(value: string | undefined, axis: "x" | "y", containe
 }
 
 /**
- * Check if a gap value contains responsive syntax (has ":")
+ * Parse "md lg:xl" → ["blob-gap-x-md", "lg:blob-gap-x-xl"]
+ * En mode container : "md lg:xl" → ["blob-gap-x-md", "@lg:blob-gap-x-xl"]
  */
-function isResponsiveGap(value: string | undefined): boolean {
+function parseResponsiveGap(value: string | undefined, axis: "x" | "y", containerMode = false): string {
+  return parseResponsiveSpacing(value, "gap", axis, containerMode)
+}
+
+/**
+ * Parse padding values into CSS classes
+ * @example "md lg:xl" → "blob-padding-x-md lg:blob-padding-x-xl"
+ */
+function parseResponsivePadding(value: string | undefined, axis: "x" | "y", containerMode = false): string {
+  return parseResponsiveSpacing(value, "padding", axis, containerMode)
+}
+
+/**
+ * Check if a spacing value contains responsive syntax (has ":")
+ */
+function isResponsiveSpacing(value: string | undefined): boolean {
   return !!value && value.includes(":")
 }
 
@@ -194,6 +223,8 @@ function buildResponsiveGridClasses(
 export function BlobIterator({
   children,
   containerLayout = "grid-auto",
+  paddingX,
+  paddingY,
   gapX,
   gapY,
   swiperOptions,
@@ -209,19 +240,26 @@ export function BlobIterator({
   const breakpoints = resolveBreakpoints(containerLayout)
   const needsClient = requiresClientComponent(layoutMap)
 
+  // Parse responsive padding classes
+  const paddingXResponsive = isResponsiveSpacing(paddingX)
+  const paddingYResponsive = isResponsiveSpacing(paddingY)
+  const paddingXClasses = paddingXResponsive ? parseResponsivePadding(paddingX, "x", containerMode) : ""
+  const paddingYClasses = paddingYResponsive ? parseResponsivePadding(paddingY, "y", containerMode) : ""
+
   // Parse responsive gap classes
-  const gapXResponsive = isResponsiveGap(gapX)
-  const gapYResponsive = isResponsiveGap(gapY)
+  const gapXResponsive = isResponsiveSpacing(gapX)
+  const gapYResponsive = isResponsiveSpacing(gapY)
   const gapXClasses = gapXResponsive ? parseResponsiveGap(gapX, "x", containerMode) : ""
   const gapYClasses = gapYResponsive ? parseResponsiveGap(gapY, "y", containerMode) : ""
 
-  // Combine className with responsive gap classes
-  const combinedClassName = [className, gapXClasses, gapYClasses].filter(Boolean).join(" ")
+  // Combine className with responsive spacing classes
+  const combinedClassName = [className, paddingXClasses, paddingYClasses, gapXClasses, gapYClasses].filter(Boolean).join(" ")
 
   // Resolve container appearance & background
   const appearanceConfig = resolveAppearances(appearance)
   const backgrounds = resolveBackgrounds(background)
-  const hasWrapper = (appearance?.length ?? 0) > 0 || backgrounds.length > 0
+  const backgroundClasses = resolveBackgroundClasses(background)
+  const hasWrapper = (appearance?.length ?? 0) > 0 || backgrounds.length > 0 || backgroundClasses.length > 0
 
   // Render inner content (grid or swiper/grid mix)
   let content: ReactNode
@@ -232,6 +270,8 @@ export function BlobIterator({
     content = (
       <BlobGrid
         responsiveLayout={responsiveLayout}
+        paddingX={!paddingXResponsive ? (paddingX as PaddingValue) : undefined}
+        paddingY={!paddingYResponsive ? (paddingY as SizeValue) : undefined}
         gapX={!gapXResponsive ? (gapX as SizeValue) : undefined}
         gapY={!gapYResponsive ? (gapY as SizeValue) : undefined}
         className={combinedClassName}
@@ -271,6 +311,8 @@ export function BlobIterator({
               <div key={`grid-${bp}`} className={displayClass}>
                 <BlobGrid
                   columns={columns}
+                  paddingX={!paddingXResponsive ? (paddingX as PaddingValue) : undefined}
+                  paddingY={!paddingYResponsive ? (paddingY as SizeValue) : undefined}
                   gapX={!gapXResponsive ? (gapX as SizeValue) : undefined}
                   gapY={!gapYResponsive ? (gapY as SizeValue) : undefined}
                   className={combinedClassName}
@@ -289,7 +331,7 @@ export function BlobIterator({
   if (!hasWrapper) return content
 
   return (
-    <div className={cn("relative", appearanceConfig.blobClassName)}>
+    <div className={cn(appearanceConfig.blobClassName, backgroundClasses, backgrounds.length > 0 && "relative")}>
       <BlobBackground backgrounds={backgrounds} />
       {content}
     </div>

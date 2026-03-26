@@ -16,12 +16,12 @@ interface BreakpointConfig {
 }
 
 const BREAKPOINTS: Record<Breakpoint, BreakpointConfig> = {
-  base: { label: 'Base', width: '375px' },
-  sm: { label: 'SM', width: '640px' },
-  md: { label: 'MD', width: '768px' },
-  lg: { label: 'LG', width: '1024px' },
-  xl: { label: 'XL', width: '1280px' },
-  '2xl': { label: '2XL', width: '1536px' },
+  base: { label: 'Base', width: '375px' }, // Mobile default
+  sm: { label: 'SM', width: 'var(--breakpoint-sm)' },
+  md: { label: 'MD', width: 'var(--breakpoint-md)' },
+  lg: { label: 'LG', width: 'var(--breakpoint-lg)' },
+  xl: { label: 'XL', width: 'var(--breakpoint-xl)' },
+  '2xl': { label: '2XL', width: 'var(--breakpoint-2xl)' },
   auto: { label: 'Auto', width: '100%' },
 }
 

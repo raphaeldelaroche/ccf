@@ -310,7 +310,7 @@
   --primary: var(--color-lime-300);
   --primary-foreground: var(--color-black);
   --secondary: var(--color-lime-50);
-  --secondary-foreground: var(--color-lime-700);
+  --secondary-foreground: var(--color-lime-600);
   --muted: var(--color-lime-100);
   --muted-foreground: var(--color-lime-500);
   --accent: var(--color-lime-100);

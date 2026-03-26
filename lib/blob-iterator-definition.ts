@@ -40,6 +40,16 @@ export type IteratorLayout = (typeof ITERATOR_LAYOUTS)[number]
 
 const allSizes: Record<string, string> = Object.fromEntries(SIZES.map((s) => [s, s]))
 const gapSizes: Record<string, string> = { auto: "Auto (défaut)", none: "Aucun (0)", ...allSizes }
+const paddingXOptions: Record<string, string> = {
+  auto: "Auto (défaut)",
+  none: "Aucun (0)",
+  ...allSizes,
+  "container-sm": "Container SM",
+  "container-md": "Container MD",
+  "container-lg": "Container LG",
+  "container-xl": "Container XL",
+  "container-2xl": "Container 2XL"
+}
 
 // ─── Iterator Block Definition ──────────────────────────────────────────────
 
@@ -70,16 +80,30 @@ export const IteratorBlockDefinition: BlockDefinition = {
           responsive: true,
           copyCategory: "style",
         },
+        iteratorPaddingX: {
+          type: "dropdown",
+          label: "Espacement horizontal",
+          options: paddingXOptions,
+          responsive: true,
+          copyCategory: "style",
+        },
+        iteratorPaddingY: {
+          type: "dropdown",
+          label: "Espacement vertical",
+          options: gapSizes,
+          responsive: true,
+          copyCategory: "style",
+        },
         iteratorGapX: {
           type: "dropdown",
-          label: "Espacement X",
+          label: "Espacement interne X",
           options: gapSizes,
           responsive: true,
           copyCategory: "style",
         },
         iteratorGapY: {
           type: "dropdown",
-          label: "Espacement entre les items",
+          label: "Espacement interne Y",
           options: gapSizes,
           responsive: true,
           copyCategory: "style",

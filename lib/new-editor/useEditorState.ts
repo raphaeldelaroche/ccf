@@ -8,15 +8,57 @@ import { createNewBlock } from "@/lib/new-editor/block-registry"
 import { api } from "@/lib/auth/api-client"
 import { migrateResponsiveFields, migrateXsToBaseAll } from "@/lib/new-editor/migrate-responsive-fields"
 import { refreshBlockRecursive, type RefreshMode } from "@/lib/new-editor/refresh-helpers"
-import { extractFieldsByCategory, mergeFieldsIntoData, getFieldSectionsForBlockType, type CopyMode } from "@/lib/copy-paste-utils"
+import { extractFieldsByCategory, mergeFieldsIntoData, getFieldSectionsForBlockType } from "@/lib/copy-paste-utils"
+import { useClipboardStore } from "./useClipboardStore"
 
 const MAX_HISTORY = 50
 
+// Helper pour parser les items (peut être string JSON ou array)
+function parseItems(value: unknown): BlockNode[] {
+  if (Array.isArray(value)) return value as BlockNode[]
+  if (typeof value === "string" && value.length > 0) {
+    try { return JSON.parse(value) as BlockNode[] } catch { /* ignore */ }
+  }
+  return []
+}
+
+// Helper pour cloner en profondeur une valeur
+function deepCloneValue(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(deepCloneValue)
+  if (value !== null && typeof value === "object") {
+    const cloned: Record<string, unknown> = {}
+    for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+      cloned[k] = deepCloneValue(v)
+    }
+    return cloned
+  }
+  return value
+}
+
 // Pure helper — no hook deps, safe to define at module level
 function deepCloneBlock(block: BlockNode): BlockNode {
+  // Deep clone de toutes les valeurs de data
+  const clonedData: Record<string, FormDataValue> = {}
+
+  // Vérifier que block.data existe avant de l'itérer
+  if (block.data && typeof block.data === 'object') {
+    for (const [key, value] of Object.entries(block.data)) {
+      clonedData[key] = deepCloneValue(value) as FormDataValue
+    }
+
+    // Gestion spéciale pour blobIterator : cloner récursivement les items
+    if (block.blockType === 'blobIterator' && block.data.items) {
+      const items = parseItems(block.data.items)
+      if (items.length > 0) {
+        clonedData.items = JSON.stringify(items.map(deepCloneBlock))
+      }
+    }
+  }
+
   return {
     ...block,
     id: `block-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    data: clonedData,
     innerBlocks: block.innerBlocks?.map(deepCloneBlock),
   }
 }
@@ -68,13 +110,8 @@ export function useEditorState(initialPage = "home") {
   const [newPageName, setNewPageName] = useState("")
 
   // ─── Clipboard ──────────────────────────────────────────────────────────
-  const [clipboardData, setClipboardData] = useState<{
-    blockType: BlockType
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    data: Record<string, any>
-    innerBlocks?: BlockNode[]
-    mode: CopyMode
-  } | null>(null)
+  // Utilise le store externe avec localStorage pour sync cross-tab/window
+  const { clipboardData, setClipboard } = useClipboardStore()
 
   // ─── Pages ──────────────────────────────────────────────────────────────
 
@@ -188,7 +225,7 @@ export function useEditorState(initialPage = "home") {
       return blockList.map((block) => {
         // Vérifier si ce bloc est un iterator contenant l'item
         if (block.blockType === 'blobIterator' && block.data.items) {
-          const items = block.data.items as unknown as BlockNode[]
+          const items = parseItems(block.data.items)
           const itemIndex = items.findIndex((item) => item.id === itemId)
 
           if (itemIndex !== -1) {
@@ -198,7 +235,7 @@ export function useEditorState(initialPage = "home") {
             )
             return {
               ...block,
-              data: { ...block.data, items: updatedItems as unknown as FormDataValue }
+              data: { ...block.data, items: JSON.stringify(updatedItems) }
             }
           }
         }
@@ -296,7 +333,7 @@ export function useEditorState(initialPage = "home") {
 
             // Supprimer aussi dans les innerBlocks des items d'iterator
             if (updatedBlock.blockType === 'blobIterator' && updatedBlock.data.items) {
-              const items = updatedBlock.data.items as unknown as BlockNode[]
+              const items = parseItems(updatedBlock.data.items)
               const updatedItems = items.map((item) =>
                 item.innerBlocks
                   ? { ...item, innerBlocks: deleteFrom(item.innerBlocks) }
@@ -304,7 +341,7 @@ export function useEditorState(initialPage = "home") {
               )
               return {
                 ...updatedBlock,
-                data: { ...updatedBlock.data, items: updatedItems as unknown as FormDataValue }
+                data: { ...updatedBlock.data, items: JSON.stringify(updatedItems) }
               }
             }
 
@@ -333,7 +370,7 @@ export function useEditorState(initialPage = "home") {
 
           // Dupliquer aussi dans les innerBlocks des items d'iterator
           if (updatedBlock.blockType === 'blobIterator' && updatedBlock.data.items) {
-            const items = updatedBlock.data.items as unknown as BlockNode[]
+            const items = parseItems(updatedBlock.data.items)
             const updatedItems = items.map((item) =>
               item.innerBlocks
                 ? { ...item, innerBlocks: duplicateIn(item.innerBlocks) }
@@ -341,7 +378,7 @@ export function useEditorState(initialPage = "home") {
             )
             return {
               ...updatedBlock,
-              data: { ...updatedBlock.data, items: updatedItems as unknown as FormDataValue }
+              data: { ...updatedBlock.data, items: JSON.stringify(updatedItems) }
             }
           }
 
@@ -371,7 +408,7 @@ export function useEditorState(initialPage = "home") {
 
           // Déplacer aussi dans les innerBlocks des items d'iterator
           if (updatedBlock.blockType === 'blobIterator' && updatedBlock.data.items) {
-            const items = updatedBlock.data.items as unknown as BlockNode[]
+            const items = parseItems(updatedBlock.data.items)
             const updatedItems = items.map((item) =>
               item.innerBlocks
                 ? { ...item, innerBlocks: moveIn(item.innerBlocks) }
@@ -379,7 +416,7 @@ export function useEditorState(initialPage = "home") {
             )
             return {
               ...updatedBlock,
-              data: { ...updatedBlock.data, items: updatedItems as unknown as FormDataValue }
+              data: { ...updatedBlock.data, items: JSON.stringify(updatedItems) }
             }
           }
 
@@ -410,7 +447,7 @@ export function useEditorState(initialPage = "home") {
 
           // Mettre à jour aussi dans les innerBlocks des items d'iterator
           if (updatedBlock.blockType === 'blobIterator' && updatedBlock.data.items) {
-            const items = updatedBlock.data.items as unknown as BlockNode[]
+            const items = parseItems(updatedBlock.data.items)
             const updatedItems = items.map((item) =>
               item.innerBlocks
                 ? { ...item, innerBlocks: updateIn(item.innerBlocks) }
@@ -418,7 +455,7 @@ export function useEditorState(initialPage = "home") {
             )
             return {
               ...updatedBlock,
-              data: { ...updatedBlock.data, items: updatedItems as unknown as FormDataValue }
+              data: { ...updatedBlock.data, items: JSON.stringify(updatedItems) }
             }
           }
 
@@ -447,9 +484,27 @@ export function useEditorState(initialPage = "home") {
       const findInList = (list: BlockNode[]): BlockNode | null => {
         for (const b of list) {
           if (b.id === blockId) return b
+
+          // Rechercher dans les innerBlocks normaux
           if (b.innerBlocks) {
             const found = findInList(b.innerBlocks)
             if (found) return found
+          }
+
+          // Rechercher dans les items des blobIterator
+          if (b.blockType === 'blobIterator' && b.data.items) {
+            const items = parseItems(b.data.items)
+            // Rechercher dans les items eux-mêmes
+            const foundItem = items.find(item => item.id === blockId)
+            if (foundItem) return foundItem
+
+            // Rechercher dans les innerBlocks de chaque item
+            for (const item of items) {
+              if (item.innerBlocks) {
+                const found = findInList(item.innerBlocks)
+                if (found) return found
+              }
+            }
           }
         }
         return null
@@ -463,14 +518,14 @@ export function useEditorState(initialPage = "home") {
     (blockId: string) => {
       const block = findBlockInList(blockId)
       if (block)
-        setClipboardData({
+        setClipboard({
           blockType: block.blockType,
           data: { ...block.data },
           innerBlocks: block.innerBlocks,
           mode: "full",
         })
     },
-    [findBlockInList]
+    [findBlockInList, setClipboard]
   )
 
   const handleCopyBlockStyle = useCallback(
@@ -479,13 +534,13 @@ export function useEditorState(initialPage = "home") {
       if (!block) return
       const sections = getFieldSectionsForBlockType(block.blockType)
       if (!sections) return
-      setClipboardData({
+      setClipboard({
         blockType: block.blockType,
         data: extractFieldsByCategory(block.data, "style", sections),
         mode: "style",
       })
     },
-    [findBlockInList]
+    [findBlockInList, setClipboard]
   )
 
   const handleCopyBlockContent = useCallback(
@@ -494,14 +549,14 @@ export function useEditorState(initialPage = "home") {
       if (!block) return
       const sections = getFieldSectionsForBlockType(block.blockType)
       if (!sections) return
-      setClipboardData({
+      setClipboard({
         blockType: block.blockType,
         data: extractFieldsByCategory(block.data, "content", sections),
         innerBlocks: block.innerBlocks,
         mode: "content",
       })
     },
-    [findBlockInList]
+    [findBlockInList, setClipboard]
   )
 
   const handlePasteBlock = useCallback(
@@ -512,10 +567,38 @@ export function useEditorState(initialPage = "home") {
           blocks.map((b) => {
             if (b.id === blockId) {
               if (clipboardData.mode === "full") {
-                return { ...b, data: { ...clipboardData.data } }
+                // Clone complet : préserver la structure des items si c'est un blobIterator
+                const clonedData = { ...clipboardData.data }
+                if (clipboardData.blockType === 'blobIterator' && clipboardData.data.items) {
+                  const items = parseItems(clipboardData.data.items)
+                  if (items.length > 0) {
+                    clonedData.items = JSON.stringify(items.map(deepCloneBlock))
+                  }
+                }
+                return { ...b, data: clonedData }
               }
+
               // Style or content: merge only the copied fields
-              const mergedData = mergeFieldsIntoData(b.data, clipboardData.data)
+              // Pour blobIterator, retirer temporairement items car il nécessite un traitement spécial
+              let itemsToMerge: string | undefined
+              let copiedDataForMerge = clipboardData.data
+
+              if (clipboardData.blockType === 'blobIterator' && clipboardData.data.items) {
+                itemsToMerge = clipboardData.data.items as string
+                const { items: _items, ...rest } = clipboardData.data
+                copiedDataForMerge = rest
+              }
+
+              const mergedData = mergeFieldsIntoData(b.data, copiedDataForMerge)
+
+              // Gestion spéciale pour blobIterator en mode content : remplacer complètement les items
+              if (itemsToMerge && clipboardData.mode === "content") {
+                const items = parseItems(itemsToMerge)
+                if (items.length > 0) {
+                  mergedData.items = JSON.stringify(items.map(deepCloneBlock))
+                }
+              }
+
               return {
                 ...b,
                 data: mergedData as Record<string, FormDataValue>,
@@ -524,7 +607,40 @@ export function useEditorState(initialPage = "home") {
                   : {}),
               }
             }
+
+            // Rechercher récursivement dans les innerBlocks
             if (b.innerBlocks) return { ...b, innerBlocks: updateIn(b.innerBlocks) }
+
+            // Rechercher aussi dans les items des blobIterator
+            if (b.blockType === 'blobIterator' && b.data.items) {
+              const items = parseItems(b.data.items)
+              const updatedItems = items.map((item) => {
+                if (item.id === blockId) {
+                  // Coller dans un item d'iterator
+                  if (clipboardData.mode === "full") {
+                    return { ...item, data: { ...clipboardData.data } }
+                  }
+                  const mergedData = mergeFieldsIntoData(item.data, clipboardData.data)
+                  return {
+                    ...item,
+                    data: mergedData as Record<string, FormDataValue>,
+                    ...(clipboardData.mode === "content" && clipboardData.innerBlocks
+                      ? { innerBlocks: clipboardData.innerBlocks.map(deepCloneBlock) }
+                      : {}),
+                  }
+                }
+                // Rechercher dans les innerBlocks de l'item
+                if (item.innerBlocks) {
+                  return { ...item, innerBlocks: updateIn(item.innerBlocks) }
+                }
+                return item
+              })
+              return {
+                ...b,
+                data: { ...b.data, items: JSON.stringify(updatedItems) }
+              }
+            }
+
             return b
           })
         return updateIn(prev)
@@ -596,7 +712,7 @@ export function useEditorState(initialPage = "home") {
 
           // Rafraîchir aussi dans les innerBlocks des items d'iterator
           if (updatedBlock.blockType === 'blobIterator' && updatedBlock.data.items) {
-            const items = updatedBlock.data.items as unknown as BlockNode[]
+            const items = parseItems(updatedBlock.data.items)
             const updatedItems = items.map((item) =>
               item.innerBlocks
                 ? { ...item, innerBlocks: refreshIn(item.innerBlocks) }
@@ -604,7 +720,7 @@ export function useEditorState(initialPage = "home") {
             )
             return {
               ...updatedBlock,
-              data: { ...updatedBlock.data, items: updatedItems as unknown as FormDataValue }
+              data: { ...updatedBlock.data, items: JSON.stringify(updatedItems) }
             }
           }
 
@@ -661,7 +777,7 @@ export function useEditorState(initialPage = "home") {
 
         // Chercher dans les innerBlocks des items d'iterator
         if (block.blockType === 'blobIterator' && block.data.items) {
-          const items = block.data.items as unknown as BlockNode[]
+          const items = parseItems(block.data.items)
           for (const item of items) {
             // Vérifier si c'est l'item lui-même
             if (item.id === blockId) return item

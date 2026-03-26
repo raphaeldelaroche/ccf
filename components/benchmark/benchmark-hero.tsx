@@ -1,26 +1,42 @@
-import { Badge } from "@/components/ui/badge";
+import { Blob } from "@/components/blob/blob";
+import { Title } from "@/components/blob/title";
+import { Subtitle } from "@/components/blob/subtitle";
+import { BlobBackground } from "@/components/blob/blob-background";
+import { resolveBackgrounds, resolveBackgroundClasses } from "@/config/blob-backgrounds";
+import { cn } from "@/lib/utils";
+import type { BlobConfig } from "@/lib/blob-compose";
 
-interface BenchmarkHeroProps {
-  currentStep?: number;
-  totalSteps?: number;
-}
+export function BenchmarkHero() {
+  const backgrounds = resolveBackgrounds(["plusCorners", "grid"]);
+  const backgroundClasses = resolveBackgroundClasses(["plusCorners", "grid"]);
 
-export function BenchmarkHero({ currentStep, totalSteps }: BenchmarkHeroProps) {
+  const blobConfig: BlobConfig = {
+    responsive: {
+      base: {
+        layout: "stack",
+        size: "xl",
+        align: "left",
+        paddingX: "container-xl",
+        paddingY: "2xl",
+      },
+      md: {
+        size: "2xl",
+        paddingY: "4xl",
+      },
+    },
+  };
+
   return (
-    <section className="bg-background border-b border-border py-12 sm:py-16 lg:py-24 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto text-center space-y-6">
-        <Badge variant="secondary" className="text-sm font-medium">
-          {currentStep && totalSteps
-            ? `Question ${currentStep} of ${totalSteps}`
-            : "CCF Benchmark"}
-        </Badge>
-        <h1 className="text-2xl sm:text-3xl font-semibold">
-          Discover your climate impact potential
-        </h1>
-        <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
-          In just 3 questions, uncover what your company could contribute to the global climate effort — beyond emissions, including the solutions you enable and the finance you mobilise.
-        </p>
-      </div>
+    <section className="bg-background border-b border-border">
+      <Blob {...blobConfig} className={cn(backgroundClasses, backgrounds.length > 0 && "relative")}>
+        <BlobBackground backgrounds={backgrounds} />
+        <Blob.Header>
+          <Title as="h1" emphasisText="climate impact potential">Discover your climate impact potential</Title>
+          <Subtitle>
+            In just 3 questions, uncover what your company could contribute to the global climate effort — beyond emissions, including the solutions you enable and the finance you mobilise.
+          </Subtitle>
+        </Blob.Header>
+      </Blob>
     </section>
   );
 }

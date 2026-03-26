@@ -52,9 +52,25 @@
   --container-sm: 640px;
   --container-md: 768px;
   --container-lg: 1024px;
-  --container-xl: 1280px;
+  --container-xl: 1220px;
   --container-2xl: 1536px;
-  --blob-bg-grid-columns: 3;
+  --decoration-grid-container: calc( 100vw - 32px);
+  --negative-margin-xl: max(0px, calc((100% - var(--container-xl)) / 2 * -1 + 1rem));
+
+  /* ─────────────────────────────────────────────────────
+     BREAKPOINTS - Override Tailwind v4 defaults
+
+     IMPORTANT: Tous les breakpoints utilisent px (pas rem) pour :
+     - Comportement prédictible indépendant du font-size navigateur
+     - Cohérence avec les valeurs --container-* (ligne 52-56)
+     - Alignement avec les specs du design system
+     - Éviter les conflits de cascade entre breakpoints
+     ───────────────────────────────────────────────────── */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1560px;
 
   /* Lime palette — centered on #B9EF59 oklch(88.6% 0.186 127) */
   --color-lime-50: oklch(98.5% 0.030 125);
@@ -70,6 +86,15 @@
   --color-lime-950: oklch(26.5% 0.068 129.5);
 }
 
+@media screen and (min-width: 1280px) {
+  .blob-layout-row-align-center {
+    --blob-areas: 'header figure' '. figure' '. figure' !important;
+  }
+
+  .blob-layout-row-align-center > [data-slot="blob-header"] {
+    align-self: start !important;
+  }
+}
 
 @layer base {
   * {
@@ -203,13 +228,22 @@
   }
 }
 
+[data-slot="eyebrow"] {
+  font-family: var(--font-maison-mono);
+}
 
 [data-slot="blob-header"] > [data-slot="title"] {
   font-weight: 400 !important;
 }
 
-[data-slot="blob-header"] > [data-slot="subtitle"] {
-  color: #444;
+
+[data-slot="blob-header"] > [data-slot="title"] mark {
+  font-family: var(--font-accent);
+  font-size: 110%;
+  background-image: linear-gradient(to right, transparent, transparent), linear-gradient(to right, var(--color-lime-300), var(--color-lime-300));
+  background-size: 100% 0.15em, 100% 0.15em;
+  background-position: 100% 100%, 0 95%;
+  background-repeat: no-repeat;
 }
 
 [data-slot="blob-actions"] > [data-slot="button"] {
@@ -221,10 +255,14 @@
 }
 
 /* Responsive blob background */
+@media (min-width: 0px)  { :root { --blob-bg-grid-columns: 12; } }
 @media (min-width: 640px)  { :root { --blob-bg-grid-columns: 3; } }
 @media (min-width: 768px)  { :root { --blob-bg-grid-columns: 5; } }
 @media (min-width: 1024px) { :root { --blob-bg-grid-columns: 7; } }
-@media (min-width: 1280px) { :root {--blob-bg-grid-columns: 9; } }
+@media (min-width: 1280px) { :root {--blob-bg-grid-columns: 6; } }
+
+
+@media (min-width: 1560px) { :root {--decoration-grid-container: calc( var(--container-2xl) )!important; } }
 
 [data-slot="marker"].marker-grid-lines {
   border-radius: 0;
@@ -289,3 +327,4 @@
     calc(100% - var(--inset) + var(--half-plus)) calc(100% - var(--inset) + var(--half-plus));
   background-repeat: no-repeat;
 }
+

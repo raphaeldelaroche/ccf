@@ -4,25 +4,46 @@ import type { ReactNode } from "react"
 /**
  * Configuration d'un background de Blob
  *
- * Chaque background est rendu comme une div absolue dans le blob.
+ * Chaque background peut être rendu de deux façons :
+ * - 'div' (défaut) : Rendu comme une div absolue dans le blob (pour contenu React complexe)
+ * - 'class' : Appliqué comme classe CSS directement sur le conteneur Blob (pour backgrounds CSS simples)
+ *
  * Plusieurs backgrounds peuvent être empilés (multiselect).
+ *
+ * Z-INDEX SYSTEM (rendu 'div' uniquement):
+ * Le contenu du blob (marker, header, actions, content, figure) est à z-index: 10
+ *
+ * - zIndex ≤ 10 : Background derrière le contenu (solides, patterns, photos)
+ *   Exemples: 0 (défaut), 2 (logos)
+ *
+ * - zIndex > 10 : Background devant le contenu (éléments décoratifs de premier plan)
+ *   Exemples: 15 (lignes), 30 (plus aux coins)
+ *
+ * Les valeurs sont appliquées telles quelles (aucun offset).
  */
 export interface BackgroundDefinition {
   /** Nom affiché dans le multiselect */
   label: string
-  /** Classes CSS appliquées à la div background */
+  /** Classes CSS appliquées (à la div background ou au conteneur selon renderAs) */
   className: string
-  /** Ordre d'empilement (défaut: 0, plus bas = plus en arrière) */
+  /**
+   * Ordre d'empilement (défaut: 0, plus haut = plus en avant)
+   * - Valeurs ≤ 10 : Derrière le contenu du blob
+   * - Valeurs > 10 : Devant le contenu du blob (décoratifs)
+   * Uniquement pour renderAs: 'div'
+   */
   zIndex?: number
-  /** Contenu React optionnel (SVG, shapes, éléments décoratifs) */
+  /** Contenu React optionnel (SVG, shapes, éléments décoratifs) - Uniquement pour renderAs: 'div' */
   content?: ReactNode
+  /** Mode de rendu : 'div' (défaut, backward compatible) ou 'class' (appliqué au conteneur) */
+  renderAs?: 'div' | 'class'
 }
 
 // ─── SVG data URIs ──────────────────────────────────────────────────────────
 
-const PLUS_SVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Cpath d='M6 2v8M2 6h8' stroke='%23000' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E"
+const PLUS_SVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Cpath d='M10 4v12M4 10h12' stroke='%23000' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E"
 
-const PLUS_SMALL_SVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M20 18v4M18 20h4' stroke='%23000' stroke-width='0.5' stroke-linecap='round' opacity='0.15'/%3E%3C/svg%3E"
+const PLUS_SMALL_SVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M20 16v8M16 20h8' stroke='%23000' stroke-width='0.5' stroke-linecap='round' opacity='0.15'/%3E%3C/svg%3E"
 
 
 /**
@@ -37,26 +58,45 @@ export const BACKGROUNDS: Record<string, BackgroundDefinition> = {
   solidGray: {
     label: "Fond gris",
     className: "bg-[#F7F7F7]",
+    renderAs: 'class',
   },
   solidWhite: {
     label: "Fond blanc",
     className: "bg-white",
+    renderAs: 'class',
+  },
+  solidPrimaryLight: {
+    label: "Fond primaire clair",
+    className: "bg-primary/20",
+    renderAs: 'class',
   },
   // ─── Patterns ───────────────────────────────────────────────────────────────
   dots: {
     label: "Points",
     className: "bg-[radial-gradient(circle,_#00000010_1px,_transparent_1px)] bg-[size:20px_20px]",
   },
-  grid: {
-    label: "Quadrillage",
+  gradientfromtransparentToBlackToTRansparent: {
+    label: "Dégradé transparent > noir > transparent",
     className: "",
     content: (
       <div
-        className="absolute inset-0 mx-auto max-w-[var(--container-xl)]"
+        className="absolute inset-0"
+        style={{
+          backgroundImage: "linear-gradient(to right, transparent, #00000015, transparent)",
+        }}
+      />
+    ),
+  },
+  grid: {
+    label: "Quadrillage",
+    className: "bg-quadrillage",
+    content: (
+      <div
+        className="absolute inset-0 mx-auto max-w-[var(--container-2xl)]"
         style={{
           backgroundImage:
             "linear-gradient(to right, #00000010 1px, transparent 1px), linear-gradient(to bottom, #00000010 1px, transparent 1px)",
-          backgroundSize: "calc(var(--container-xl) / var(--blob-bg-grid-columns)) calc(var(--container-xl) / var(--blob-bg-grid-columns))",
+          backgroundSize: "calc(var(--container-2xl) / var(--blob-bg-grid-columns)) calc(var(--container-2xl) / var(--blob-bg-grid-columns))",
         }}
       />
     ),
@@ -68,7 +108,7 @@ export const BACKGROUNDS: Record<string, BackgroundDefinition> = {
 
   plusPattern: {
     label: "Petits plus",
-    className: "",
+    className: "bg-petits-plus",
     content: (
       <div
         className="absolute top-0 bottom-0"
@@ -86,19 +126,21 @@ export const BACKGROUNDS: Record<string, BackgroundDefinition> = {
   // ─── Décoratifs (migrés depuis appearances) ────────────────────────────────
   plusCorners: {
     label: "Plus aux coins",
-    className: "overflow-visible",
-    zIndex: 20,
+    className: "bg-plus-aux-coins overflow-visible",
+    zIndex: 60,
     content: (
       <div
-      className="absolute inset-0 mx-auto max-w-[calc(var(--container-xl))]"
+      className="absolute inset-0"
       >
         <div
-          className="absolute -inset-x-1.5 inset-y-0 overflow-hidden "
+          className="absolute inset-x-4 inset-y-0 mx-auto max-w-[calc(var(--decoration-grid-container)+20px)] overflow-hidden "
           style={{
-            top: -7,
-            bottom: -6,
+            top: -11,
+            bottom: -10,
+            left: -10,
+            right: -10,
             backgroundImage: `url("${PLUS_SVG}"), url("${PLUS_SVG}"), url("${PLUS_SVG}"), url("${PLUS_SVG}")`,
-            backgroundSize: "12px 12px",
+            backgroundSize: "20px 20px",
             backgroundPosition: "top left, top right, bottom left, bottom right",
             backgroundRepeat: "no-repeat",
           }}
@@ -108,23 +150,25 @@ export const BACKGROUNDS: Record<string, BackgroundDefinition> = {
   },
   greenPhoto: {
     label: "Photo verte",
-    className: "-z-10",
+    className: "-z-30",
     content: (
-      <Image
-        src="/green-background.jpg"
-        alt=""
-        fill
-        className="object-cover object-center"
-      />
+      <div className="absolute inset-0 -z-10">
+        <Image
+          src="/green-background-2.jpg"
+          alt=""
+          fill
+          className="object-cover object-center"
+        />
+      </div>
     ),
   },
   lineSide: {
     label: "Lignes latérales",
     className: "",
-    zIndex: 1,
+    zIndex: 15,
     content: (
       <div
-        className="absolute inset-0 mx-auto max-w-[var(--container-xl)]"
+        className="absolute inset-0 mx-auto max-w-[var(--decoration-grid-container)]"
         style={{
           backgroundImage:
             "linear-gradient(to right, var(--border) 1px, transparent 1px), linear-gradient(to left, var(--border) 1px, transparent 1px)",
@@ -133,6 +177,53 @@ export const BACKGROUNDS: Record<string, BackgroundDefinition> = {
           backgroundRepeat: "no-repeat",
         }}
       />
+    ),
+  },
+  lineTop: {
+    label: "Ligne supérieure",
+    className: "",
+    zIndex: 15,
+    content: (
+      <div
+        className="absolute inset-x-0 top-0 w-full border-t"
+      />
+    ),
+  },
+  lineBottom: {
+    label: "Ligne inférieure",
+    className: "",
+    zIndex: 15,
+    content: (
+      <div
+        className="absolute inset-x-0 bottom-0 w-full border-b"
+      />
+    ),
+  },
+  foundersLogos: {
+    label: "Logos des fondateurs",
+    className: "",
+    zIndex: 2,
+    content: (
+      <div className="absolute inset-0 mx-auto max-w-[var(--container-2xl)]">
+        {/* Logo Sweep - bas gauche */}
+        <div className="absolute bottom-0 xl:bottom-6 left-16 h-20 w-16 md:size-28 -mb-2">
+          <Image
+            src="/logos/logo-sweep.png"
+            alt="Sweep"
+            fill
+            className="object-contain object-center"
+          />
+        </div>
+        {/* Logo Mirova Research Center - bas droit */}
+        <div className="absolute bottom-0 xl:bottom-6 right-16 h-20 w-16 md:size-28">
+          <Image
+            src="/logos/logo-mirova-research-center.png"
+            alt="Mirova Research Center"
+            fill
+            className="object-contain object-center"
+          />
+        </div>
+      </div>
     ),
   },
 }
@@ -158,7 +249,7 @@ export function normalizeBackground(value?: string | string[]): string[] {
 
 /**
  * Résout les clés de background en tableau de BackgroundDefinition.
- * Retourne un tableau (chaque background = une div séparée).
+ * Retourne uniquement les backgrounds de type 'div' (chaque background = une div séparée).
  */
 export function resolveBackgrounds(
   keys?: string | string[]
@@ -167,4 +258,23 @@ export function resolveBackgrounds(
   return normalized
     .map((k) => BACKGROUNDS[k])
     .filter(Boolean)
+    .filter((bg) => (bg.renderAs ?? 'div') === 'div')
+}
+
+/**
+ * Résout les clés de background et retourne les classes CSS des backgrounds de type 'class'.
+ * Ces classes sont appliquées directement sur le conteneur Blob.
+ */
+export function resolveBackgroundClasses(
+  keys?: string | string[]
+): string {
+  const normalized = normalizeBackground(keys)
+  const classBackgrounds = normalized
+    .map((k) => BACKGROUNDS[k])
+    .filter(Boolean)
+    .filter((bg) => bg.renderAs === 'class')
+
+  return classBackgrounds
+    .map((bg) => bg.className)
+    .join(' ')
 }

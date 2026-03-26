@@ -31,10 +31,13 @@
   --spacing-eyebrow-top: var(--size-eyebrow-margin-top);
   --width-media: var(--size-media-width);
   --height-media: var(--size-media-height);
+  --width-marker: var(--size-marker-width);
   --size-media-icon: var(--size-media-icon-size);
   --spacing-actions: var(--size-actions-gap);
   --height-button: var(--size-button-height);
+  --width-button: var(--size-button-height); /* Icon buttons use height for width */
   --spacing-button-x: var(--size-button-padding-x);
+  --spacing-button-icon-x: var(--size-button-icon-padding-x);
   --text-button: var(--size-button-font-size);
   --radius-button: var(--size-button-border-radius);
   --spacing-button-gap: var(--size-button-gap);
@@ -108,11 +111,11 @@
     text-align: var(--blob-align, left);
     justify-items: var(--blob-align-justify, start);
 
-    & [data-slot="marker"]       { grid-area: marker; align-self: start; font-size: var(--size-marker-font-size); }
-    & [data-slot="blob-header"]  { grid-area: header; justify-self: stretch; align-self: start; align-items: var(--blob-align-flex, flex-start); padding-inline: var(--spacing-header-padding-x, 0); padding-block: var(--spacing-header-padding-y, 0); }
-    & [data-slot="blob-actions"] { grid-area: actions; align-self: start; justify-content: var(--blob-align-flex, flex-start); }
-    & [data-slot="blob-content"] { grid-area: content; align-self: start; min-width: 0; }
-    & [data-slot="blob-figure"]  { grid-area: figure; align-self: start; }
+    & [data-slot="marker"]       { grid-area: marker; align-self: start; font-size: var(--size-marker-font-size); position: relative; z-index: 10; }
+    & [data-slot="blob-header"]  { grid-area: header; justify-self: stretch; align-self: start; align-items: var(--blob-align-flex, flex-start); padding-inline: var(--spacing-header-padding-x, 0); padding-block: var(--spacing-header-padding-y, 0); position: relative; z-index: 10; }
+    & [data-slot="blob-actions"] { grid-area: actions; align-self: start; justify-content: var(--blob-align-flex, flex-start); position: relative; z-index: 10; }
+    & [data-slot="blob-content"] { grid-area: content; align-self: start; min-width: 0; position: relative; z-index: 10; }
+    & [data-slot="blob-figure"]  { grid-area: figure; align-self: start; position: relative; z-index: 10; }
     & [data-slot="blob-background"] { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
   }
 }
@@ -233,42 +236,56 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--spacing-gap-y, var(--spacing-section)) var(--spacing-gap-x, var(--spacing-section));
+  padding-inline: var(--spacing-padding-x, 0);
+  padding-block: var(--spacing-padding-y, 0);
 }
 
 @utility blob-iterator-grid-2 {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: var(--spacing-gap-y, var(--spacing-section)) var(--spacing-gap-x, var(--spacing-section));
+  padding-inline: var(--spacing-padding-x, 0);
+  padding-block: var(--spacing-padding-y, 0);
 }
 
 @utility blob-iterator-grid-3 {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: var(--spacing-gap-y, var(--spacing-section)) var(--spacing-gap-x, var(--spacing-section));
+  padding-inline: var(--spacing-padding-x, 0);
+  padding-block: var(--spacing-padding-y, 0);
 }
 
 @utility blob-iterator-grid-4 {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: var(--spacing-gap-y, var(--spacing-section)) var(--spacing-gap-x, var(--spacing-section));
+  padding-inline: var(--spacing-padding-x, 0);
+  padding-block: var(--spacing-padding-y, 0);
 }
 
 @utility blob-iterator-grid-5 {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: var(--spacing-gap-y, var(--spacing-section)) var(--spacing-gap-x, var(--spacing-section));
+  padding-inline: var(--spacing-padding-x, 0);
+  padding-block: var(--spacing-padding-y, 0);
 }
 
 @utility blob-iterator-grid-6 {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   gap: var(--spacing-gap-y, var(--spacing-section)) var(--spacing-gap-x, var(--spacing-section));
+  padding-inline: var(--spacing-padding-x, 0);
+  padding-block: var(--spacing-padding-y, 0);
 }
 
 @utility blob-iterator-grid-auto {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
   gap: var(--spacing-gap-y, var(--spacing-section)) var(--spacing-gap-x, var(--spacing-section));
+  padding-inline: var(--spacing-padding-x, 0);
+  padding-block: var(--spacing-padding-y, 0);
 }
 
 @utility blob-iterator-swiper {

@@ -9,6 +9,8 @@ import { ButtonTooltipInspector } from "./ButtonTooltipInspector"
 import { ParagraphInspector } from "./ParagraphInspector"
 import { DividerInspector } from "./DividerInspector"
 import { ListInspector } from "./ListInspector"
+import { FaqInspector } from "./FaqInspector"
+import { FormInspector } from "./FormInspector"
 import { ScrollArea } from "@/components/ui/scroll-area"
 
 interface BlockInspectorProps {
@@ -106,6 +108,15 @@ export function BlockInspector({
             data={selectedBlock.data}
             onUpdate={handleUpdate}
           />
+        )}
+        {selectedBlock.blockType === "faq" && (
+          <FaqInspector
+            data={selectedBlock.data}
+            onUpdate={handleUpdate}
+          />
+        )}
+        {selectedBlock.blockType === "form" && (
+          <FormInspector />
         )}
       </ScrollArea>
     </div>

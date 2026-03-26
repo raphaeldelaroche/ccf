@@ -8,7 +8,7 @@
 
 import type { BlobComposableProps, ResponsiveProps, ResponsiveBreakpointProps } from "@/lib/blob-compose"
 import { convertResponsiveToString } from "@/lib/blob-compose"
-import { mapFormDataToBlob, type BlobFormData, type MappedBlobData } from "@/lib/blob-form-mapper"
+import { mapFormDataToBlob, type BlobFormData, type MappedBlobData, type IconData } from "@/lib/blob-form-mapper"
 import type { SwiperOptions } from "swiper/types"
 import type { BlockNode } from "@/lib/new-editor/block-types"
 import type { FormDataValue } from "@/types/editor"
@@ -38,6 +38,7 @@ function setResponsiveValue<K extends keyof ResponsiveBreakpointProps>(
 export interface BlobIteratorFormData {
   // Iterator container config
   iteratorLayout?: string
+  iteratorPaddingX?: string; iteratorPaddingY?: string
   iteratorGapX?: string; iteratorGapY?: string
   swiperSlideWidth?: string
   swiperNavigation?: boolean
@@ -60,6 +61,8 @@ export interface BlobIteratorFormData {
   direction?: string
   align?: string
   markerPosition?: string
+  markerSize?: string
+  markerWidth?: string
   appearance?: string | string[]
   background?: string | string[]
 
@@ -89,6 +92,8 @@ export interface SwiperResponsiveConfig {
 export interface MappedIteratorData {
   // Props pour BlobIterator (always strings in final output)
   iteratorLayout: string
+  iteratorPaddingX: string
+  iteratorPaddingY: string
   iteratorGapX: string
   iteratorGapY: string
   swiperOptions?: Partial<SwiperOptions>
@@ -154,6 +159,12 @@ function buildSharedBlobProps(formData: BlobIteratorFormData): {
   }
   if (isShared("markerPosition")) {
     setResponsiveValue(responsive, 'base', 'marker', formData.markerPosition as FormDataValue)
+  }
+  if (isShared("markerSize")) {
+    setResponsiveValue(responsive, 'base', 'markerSize', formData.markerSize as FormDataValue)
+  }
+  if (isShared("markerWidth")) {
+    setResponsiveValue(responsive, 'base', 'markerWidth', formData.markerWidth as FormDataValue)
   }
   if (isShared("paddingX")) {
     setResponsiveValue(responsive, 'base', 'paddingX', formData.paddingX as FormDataValue)
@@ -429,7 +440,7 @@ function mapIteratorItem(
   }
 
   // Convertir en BlobFormData avec les valeurs et le responsive object
-  const itemFormData: BlobFormData = {
+  const itemFormData = {
     // Header fields
     title: getFieldValue("title") as string | undefined,
     emphasisText: getFieldValue("emphasisText") as string | undefined,
@@ -440,11 +451,12 @@ function mapIteratorItem(
     // Marker fields
     markerType: getFieldValue("markerType") as string | undefined,
     markerContent: getFieldValue("markerContent") as string | undefined,
-    markerIcon: getFieldValue("markerIcon") as string | undefined,
+    markerIcon: getFieldValue("markerIcon") as string | IconData | null | undefined,  // Can be IconData object or legacy string
     markerImage: getFieldValue("markerImage") as string | undefined,
     markerPosition: getFieldValue("markerPosition") as string | undefined,
     markerStyle: getFieldValue("markerStyle") as string | undefined,
     markerSize: getFieldValue("markerSize") as string | undefined,
+    markerWidth: getFieldValue("markerWidth") as string | undefined,
     markerTheme: getFieldValue("markerTheme") as string | undefined,
     markerRounded: getFieldValue("markerRounded") as string | undefined,
 
@@ -497,7 +509,7 @@ function mapIteratorItem(
   }
 
   // Utiliser le mapper blob existant et préserver les innerBlocks et l'ID
-  const mappedBlob = mapFormDataToBlob(itemFormData);
+  const mappedBlob = mapFormDataToBlob(itemFormData as unknown as BlobFormData);
 
   return {
     ...mappedBlob,
@@ -522,7 +534,10 @@ export function mapIteratorFormData(formData: BlobIteratorFormData): MappedItera
   const responsive = formData.responsive as ResponsiveProps | undefined
 
   // Helper to get container prop as string (responsive or simple)
-  const getContainerPropString = (key: "iteratorLayout" | "iteratorGapX" | "iteratorGapY", fallback: string): string => {
+  const getContainerPropString = (
+    key: "iteratorLayout" | "iteratorPaddingX" | "iteratorPaddingY" | "iteratorGapX" | "iteratorGapY",
+    fallback: string
+  ): string => {
     if (responsive) {
       // Try to convert responsive object to string
       const responsiveString = convertResponsiveToString(responsive, key)
@@ -538,8 +553,10 @@ export function mapIteratorFormData(formData: BlobIteratorFormData): MappedItera
     return directValue || legacyValue || fallback
   }
 
-  return {
+  const result = {
     iteratorLayout: getContainerPropString("iteratorLayout", "grid-auto"),
+    iteratorPaddingX: getContainerPropString("iteratorPaddingX", "none"),
+    iteratorPaddingY: getContainerPropString("iteratorPaddingY", "none"),
     iteratorGapX: getContainerPropString("iteratorGapX", "md"),
     iteratorGapY: getContainerPropString("iteratorGapY", "md"),
     swiperOptions,
@@ -552,4 +569,6 @@ export function mapIteratorFormData(formData: BlobIteratorFormData): MappedItera
     sharedBackground,
     items,
   }
+
+  return result
 }

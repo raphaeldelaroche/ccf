@@ -7,7 +7,7 @@ import { Title } from '@/components/blob/title';
 import { Subtitle } from '@/components/blob/subtitle';
 import { Marker } from '@/components/blob/marker';
 import { resolveAppearances } from '@/config/blob-appearances';
-import { resolveBackgrounds } from '@/config/blob-backgrounds';
+import { resolveBackgrounds, resolveBackgroundClasses } from '@/config/blob-backgrounds';
 import { BlobBackground } from '@/components/blob/blob-background';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -45,11 +45,12 @@ export function BlobBlock({ data, renderInnerBlock, innerBlocks }: {
   // Récupérer la configuration d'apparence
   const appearanceConfig = resolveAppearances(appearance);
   const backgrounds = resolveBackgrounds(background);
+  const backgroundClasses = resolveBackgroundClasses(background);
 
   const markerChildren = resolveMarkerContent(marker?.type, marker?.icon, marker?.content, marker?.image);
 
   return (
-    <Blob {...blobProps} className={cn(appearanceConfig.blobClassName, blobProps.className)}>
+    <Blob {...blobProps} className={cn(appearanceConfig.blobClassName, backgroundClasses, backgrounds.length > 0 && "relative", blobProps.className)}>
       <BlobBackground backgrounds={backgrounds} />
       {markerChildren && (
         <Marker
@@ -70,6 +71,16 @@ export function BlobBlock({ data, renderInnerBlock, innerBlocks }: {
             height={figure.height}
             className="w-full"
           />
+        </Blob.Figure>
+      )}
+
+      {figure?.type === 'innerBlocks' && innerBlocks && innerBlocks.length > 0 && renderInnerBlock && (
+        <Blob.Figure className={cn(appearanceConfig.figureClassName)}>
+          {innerBlocks.map((innerBlock, index) => (
+            <React.Fragment key={index}>
+              {renderInnerBlock(innerBlock)}
+            </React.Fragment>
+          ))}
         </Blob.Figure>
       )}
 
@@ -94,31 +105,54 @@ export function BlobBlock({ data, renderInnerBlock, innerBlocks }: {
         </Blob.Header>
       )}
 
-      {content?.enabled && (!innerBlocks || innerBlocks.length === 0) && (
+      {content?.enabled && content.contentType !== "innerBlocks" && (
         <Blob.Content className={cn(appearanceConfig.contentClassName)}>
           <p>{content.text}</p>
         </Blob.Content>
       )}
 
-      {innerBlocks && innerBlocks.length > 0 && renderInnerBlock && (
+      {content?.contentType === "innerBlocks" && innerBlocks && innerBlocks.length > 0 && renderInnerBlock && (
         <Blob.Content className={cn(appearanceConfig.contentClassName)}>
-          <div className="space-y-4">
-            {innerBlocks.map((innerBlock, index) => (
-              <React.Fragment key={index}>
-                {renderInnerBlock(innerBlock)}
-              </React.Fragment>
-            ))}
-          </div>
+          {innerBlocks.map((innerBlock, index) => (
+            <React.Fragment key={index}>
+              {renderInnerBlock(innerBlock)}
+            </React.Fragment>
+          ))}
         </Blob.Content>
       )}
 
       {actions && actions.length > 0 && (
         <Blob.Actions className={cn(appearanceConfig.actionsClassName)}>
-          {actions.map((btn, i) => (
-            <Button key={i} asChild variant={btn.variant} data-theme={btn.theme} className={btn.theme ? `theme-${btn.theme}` : undefined}>
-              <Link {...btn.linkProps}>{btn.label}</Link>
-            </Button>
-          ))}
+          {actions.map((btn, i) => {
+            const iconElement = btn.icon ? renderIconObject(btn.icon.iconObject) : null
+            const isIconOnly = (!btn.label?.trim()) && btn.icon && btn.iconType !== "none"
+            const iconLeft = !isIconOnly && btn.iconType === "left" && iconElement
+            const iconRight = !isIconOnly && btn.iconType === "right" && iconElement
+
+            return (
+              <Button
+                key={i}
+                asChild
+                variant={btn.variant}
+                size={isIconOnly ? "icon-only" : undefined}
+                data-theme={btn.theme}
+                className={btn.theme ? `theme-${btn.theme}` : undefined}
+                aria-label={isIconOnly ? btn.label || "Button" : undefined}
+              >
+                <Link {...btn.linkProps}>
+                  {isIconOnly ? (
+                    <span className="w-5 h-5 shrink-0 flex items-center justify-center">{iconElement}</span>
+                  ) : (
+                    <>
+                      {iconLeft && <span className="w-4 h-4 shrink-0">{iconElement}</span>}
+                      {btn.label}
+                      {iconRight && <span className="w-4 h-4 shrink-0">{iconElement}</span>}
+                    </>
+                  )}
+                </Link>
+              </Button>
+            )
+          })}
         </Blob.Actions>
       )}
     </Blob>

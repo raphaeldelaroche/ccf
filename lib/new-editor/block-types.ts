@@ -5,7 +5,7 @@ import type { FormDataValue } from '@/types/editor';
  * Supporte 3 types de blocs: Blob, BlobIterator et ButtonTooltip
  */
 
-export type BlockType = 'blob' | 'blobIterator' | 'buttonTooltip' | 'paragraph' | 'divider' | 'list';
+export type BlockType = 'blob' | 'blobIterator' | 'buttonTooltip' | 'paragraph' | 'divider' | 'list' | 'faq' | 'form';
 
 export interface BlockNode {
   id: string;

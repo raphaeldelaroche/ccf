@@ -9,16 +9,18 @@ import { Label } from "@/components/ui/label"
 import { GripVertical, Plus, Copy, Trash2 } from "lucide-react"
 import { evaluateShowIf } from "@/lib/new-editor/showif-evaluator"
 import type { Field } from "@/lib/blob-fields"
+import type { FormDataValue } from "@/types/editor"
 import { cn } from "@/lib/utils"
 import { useUser } from "@/lib/auth/UserContext"
 import { canEditRepeaterField } from "@/lib/auth/field-permissions"
 
 // Mirror of BlobInspector / ItemBlobInspector FIELD_TYPE_MAP (no compat, no sections)
-const FIELD_TYPE_MAP: Partial<Record<string, "text" | "textarea" | "select" | "checkbox">> = {
+const FIELD_TYPE_MAP: Partial<Record<string, "text" | "textarea" | "select" | "checkbox" | "icon">> = {
   text: "text",
   textarea: "textarea",
   dropdown: "select",
   checkbox: "checkbox",
+  icon: "icon",
   image: "text",
   video: "text",
 }
@@ -72,6 +74,7 @@ function buildDefaultRow(fields: Record<string, Field>): RepeaterRow {
   const row: RepeaterRow = {}
   for (const [key, field] of Object.entries(fields)) {
     if (field.type === "checkbox") row[key] = "false"
+    else if (field.type === "icon") row[key] = "null"
     else if (field.type === "dropdown") row[key] = Object.keys(field.options)[0] ?? ""
     else row[key] = ""
   }
@@ -150,8 +153,18 @@ export function RepeaterInspector({
     next.splice(i + 1, 0, deepCloneWithNewIds(rows[i]) as RepeaterRow)
     commit(next)
   }
-  const updateRow = (i: number, key: string, v: string | boolean | string[]) =>
-    commit(rows.map((r, idx) => (idx === i ? { ...r, [key]: Array.isArray(v) ? JSON.stringify(v) : String(v) } : r)))
+  const updateRow = (i: number, key: string, v: FormDataValue) => {
+    // Serialize value based on type
+    const serializedValue = Array.isArray(v)
+      ? JSON.stringify(v)
+      : typeof v === "object" && v !== null && 'iconObject' in v  // IconData check
+      ? JSON.stringify(v)
+      : typeof v === "object" && v !== null
+      ? JSON.stringify(v)
+      : String(v)
+
+    commit(rows.map((r, idx) => (idx === i ? { ...r, [key]: serializedValue } : r)))
+  }
 
   const handleDragStart = (i: number) => { dragIndex.current = i }
   const handleDragOver = (e: React.DragEvent, i: number) => {
@@ -242,14 +255,27 @@ export function RepeaterInspector({
                     }
                     const type = FIELD_TYPE_MAP[fieldDef.type] ?? "text"
                     const options = fieldDef.type === "dropdown" ? fieldDef.options : undefined
-                    const rawVal = row[key] ?? (fieldDef.type === "checkbox" ? "false" : "")
+                    const iconOptions = fieldDef.type === "icon" ? fieldDef.options : undefined
+                    const rawVal = row[key] ?? (fieldDef.type === "checkbox" ? "false" : fieldDef.type === "icon" ? "null" : "")
+
+                    // Handle IconData deserialization
+                    let value = rawVal
+                    if (fieldDef.type === "icon" && typeof rawVal === "string" && rawVal && rawVal !== "null") {
+                      try {
+                        value = JSON.parse(rawVal)
+                      } catch {
+                        value = null
+                      }
+                    }
+
                     return (
                       <InspectorField
                         key={key}
                         label={fieldDef.label}
-                        value={rawVal}
+                        value={value}
                         type={type}
                         options={options}
+                        iconOptions={iconOptions}
                         onChange={(v) => updateRow(i, key, v)}
                       />
                     )

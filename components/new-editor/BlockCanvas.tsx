@@ -46,29 +46,29 @@ export function BlockCanvas({
   clipboardBlockType,
   previewBreakpoint = 'auto',
 }: BlockCanvasProps) {
-  // Mapping des breakpoints vers les classes Tailwind
-  const getWidthClass = () => {
+  // Mapping des breakpoints vers les valeurs CSS
+  const getMaxWidth = () => {
     switch (previewBreakpoint) {
       case 'base':
-        return 'max-w-[375px]'
+        return '375px' // Mobile default
       case 'sm':
-        return 'max-w-[640px]'
+        return 'var(--breakpoint-sm)'
       case 'md':
-        return 'max-w-[768px]'
+        return 'var(--breakpoint-md)'
       case 'lg':
-        return 'max-w-[1024px]'
+        return 'var(--breakpoint-lg)'
       case 'xl':
-        return 'max-w-[1280px]'
+        return 'var(--breakpoint-xl)'
       case '2xl':
-        return 'max-w-[1536px]'
+        return 'var(--breakpoint-2xl)'
       case 'auto':
       default:
-        return 'w-full'
+        return undefined
     }
   }
 
   const isResponsiveMode = previewBreakpoint !== 'auto'
-  const widthClass = getWidthClass()
+  const maxWidth = getMaxWidth()
 
   if (blocks.length === 0) {
     return (
@@ -90,8 +90,12 @@ export function BlockCanvas({
         }}
       >
         <div
-          className={`${widthClass} ${isResponsiveMode ? 'mx-auto bg-white shadow-lg' : ''} transition-all duration-300`}
-          style={isResponsiveMode ? { containerType: 'inline-size' } : undefined}
+          className={`${isResponsiveMode ? 'mx-auto bg-white shadow-lg' : 'w-full'} transition-all duration-300`}
+          style={
+            isResponsiveMode
+              ? { containerType: 'inline-size', maxWidth }
+              : undefined
+          }
         >
           {blocks.map((block, index) => (
             <BlockRenderer

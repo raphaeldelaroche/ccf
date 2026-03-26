@@ -14,7 +14,7 @@
   --blob-rows: auto;
   align-content: start;
 
-  & [data-slot="blob-header"] { align-self: center; }
+  & > [data-slot="blob-header"] { align-self: center; }
   
   &:where(:not(:has(> [data-slot="marker"])))                                               { --blob-areas: "figure" "header" "actions" "content"; --blob-columns: 1fr; }
   &:where(:not(:has(> [data-slot="blob-actions"])))                                         { --blob-areas: "figure figure" "marker header" "content content"; }
@@ -40,8 +40,8 @@
   --blob-rows: auto;
   align-content: start;
 
-  & [data-slot="blob-header"] { align-self: center; }
-  & [data-slot="blob-actions"] { align-self: end; }
+  & > [data-slot="blob-header"] { align-self: center; }
+  & > [data-slot="blob-actions"] { align-self: end; }
 
   &:where(:not(:has(> [data-slot="marker"])))                                               { --blob-areas: "figure" "header" "content" "actions"; --blob-columns: 1fr; }
   &:where(:not(:has(> [data-slot="blob-actions"])))                                         { --blob-areas: "figure figure" "marker header" "content content"; }
@@ -90,7 +90,7 @@
   --blob-columns: 1fr auto;
   --blob-rows: auto auto 1fr auto;
 
-  & [data-slot="blob-actions"] { align-self: end; }
+  & > [data-slot="blob-actions"] { align-self: end; }
 
   &:where(:not(:has(> [data-slot="marker"])))                                               { --blob-areas: "figure" "header" "content" "actions"; --blob-columns: 1fr; }
   &:where(:not(:has(> [data-slot="blob-actions"])))                                         { --blob-areas: "figure figure" "header marker" "content content"; }
@@ -140,7 +140,7 @@
   --blob-rows: auto auto auto 1fr auto;
   align-content: start;
 
-  & [data-slot="blob-actions"] { align-self: end; }
+  & > [data-slot="blob-actions"] { align-self: end; }
 
   &:where(:not(:has(> [data-slot="marker"])))                                               { --blob-areas: "figure" "header" "content" "actions"; --blob-rows: auto auto 1fr auto; }
   &:where(:not(:has(> [data-slot="blob-actions"])))                                         { --blob-areas: "figure" "marker" "header" "content"; --blob-rows: auto auto auto 1fr; }
@@ -400,8 +400,8 @@
   --blob-rows: auto;
   align-content: start;
 
-  & [data-slot="blob-header"],
-  & [data-slot="blob-actions"] { align-self: end; }
+  & > [data-slot="blob-header"],
+  & > [data-slot="blob-actions"] { align-self: end; }
 
   &:where(:not(:has(> [data-slot="marker"])))                                                                      { --blob-areas: "figure figure" "header actions" "content content"; }
   &:where(:not(:has(> [data-slot="blob-content"])))                                                                { --blob-areas: "figure figure" "marker marker" "header actions"; }
@@ -426,8 +426,8 @@
   --blob-rows: auto;
   align-content: start;
 
-  & [data-slot="blob-header"] { align-self: center; }
-  & [data-slot="blob-actions"] { align-self: end; justify-self: end; }
+  & > [data-slot="blob-header"] { align-self: center; }
+  & > [data-slot="blob-actions"] { align-self: end; justify-self: end; }
 
   &:where(:not(:has(> [data-slot="marker"])))                                               { --blob-areas: "figure figure figure" "header header actions" "content content content"; }
   &:where(:not(:has(> [data-slot="blob-content"])))                                         { --blob-areas: "figure figure figure" "marker header actions"; }
@@ -452,8 +452,8 @@
   --blob-rows: auto;
   align-content: start;
 
-  & [data-slot="blob-header"],
-  & [data-slot="blob-actions"] { align-self: end; }
+  & > [data-slot="blob-header"],
+  & > [data-slot="blob-actions"] { align-self: end; }
 
   &:where(:not(:has(> [data-slot="marker"])))                                                                      { --blob-areas: "content content" "header actions" "figure figure"; }
   &:where(:not(:has(> [data-slot="blob-content"])))                                                                { --blob-areas: "marker marker" "header actions" "figure figure"; }
@@ -478,8 +478,8 @@
   --blob-rows: auto;
   align-content: start;
 
-  & [data-slot="blob-header"] { align-self: center; }
-  & [data-slot="blob-actions"] { align-self: end; }
+  & > [data-slot="blob-header"] { align-self: center; }
+  & > [data-slot="blob-actions"] { align-self: end; }
 
   &:where(:not(:has(> [data-slot="blob-content"])))                                         { --blob-areas: "marker header actions" "figure figure figure"; }
   &:where(:not(:has(> [data-slot="blob-figure"])))                                          { --blob-areas: "content content content" "marker header actions"; }

@@ -1,0 +1,113 @@
+"use client"
+
+import { InspectorField } from "./InspectorField"
+import { CollapsibleSection } from "./CollapsibleSection"
+import { RepeaterInspector } from "./RepeaterInspector"
+import { faqFields } from "@/lib/faq-fields"
+import type { Field } from "@/lib/blob-fields"
+import type { FormDataValue } from "@/types/editor"
+import { useUser } from "@/lib/auth/UserContext"
+import { isEngineer, isEditor, isReviewer } from "@/lib/auth/permissions"
+
+// Maps blob-fields types to InspectorField types
+const FIELD_TYPE_MAP: Partial<Record<string, "text" | "textarea" | "select" | "checkbox">> = {
+  text: "text",
+  textarea: "textarea",
+  dropdown: "select",
+  checkbox: "checkbox",
+}
+
+interface FaqInspectorProps {
+  data: Record<string, FormDataValue>
+  onUpdate: (updates: Record<string, FormDataValue>) => void
+}
+
+export function FaqInspector({ data, onUpdate }: FaqInspectorProps) {
+  const { user } = useUser()
+
+  const handleChange = (key: string, value: FormDataValue) => {
+    onUpdate({ [key]: value })
+  }
+
+  function renderField(fieldKey: string, fieldDef: Field, onChange: (v: FormDataValue) => void) {
+    const rawValue = data[fieldKey]
+
+    // ── Repeater → RepeaterInspector ──────────────────────────────────────
+    if (fieldDef.type === "repeater") {
+      return (
+        <RepeaterInspector
+          key={fieldKey}
+          label={fieldDef.label}
+          value={(rawValue as string) || "[]"}
+          fields={fieldDef.fields}
+          onChange={(v) => onChange(v)}
+          parentKey={fieldKey}
+        />
+      )
+    }
+
+    // ── Standard fields ────────────────────────────────────────────────────
+    const inspectorType = FIELD_TYPE_MAP[fieldDef.type] ?? "text"
+
+    let options: Record<string, string> | undefined
+    if (fieldDef.type === "dropdown") {
+      options = fieldDef.emptyLabel
+        ? { "": fieldDef.emptyLabel, ...fieldDef.options }
+        : fieldDef.options
+    }
+
+    const value = rawValue !== undefined ? rawValue : fieldDef.type === "checkbox" ? false : ""
+
+    return (
+      <InspectorField
+        key={fieldKey}
+        label={fieldDef.label}
+        value={value as string | boolean}
+        type={inspectorType}
+        options={options}
+        onChange={onChange}
+      />
+    )
+  }
+
+  return (
+    <div>
+      {Object.entries(faqFields).map(([sectionKey, section]) => {
+        const visibleFields = Object.entries(section.fields).filter(([, fieldDef]) => {
+          // Reviewers cannot edit anything
+          if (isReviewer(user.role)) return false
+
+          // Engineers can edit all fields
+          if (isEngineer(user.role)) return true
+
+          // Editors can only edit repeater fields (faqItems section)
+          // Configuration and Style sections are blocked for editors
+          if (isEditor(user.role)) {
+            // Allow repeater fields (faqItems)
+            if (fieldDef.type === 'repeater') return true
+            // Block all other fields (configuration, style)
+            return false
+          }
+
+          return false
+        })
+
+        if (visibleFields.length === 0) return null
+
+        return (
+          <CollapsibleSection
+            key={sectionKey}
+            title={section.label}
+            defaultOpen={sectionKey === "content"}
+          >
+            <div className="pt-3 space-y-3">
+              {visibleFields.map(([fieldKey, fieldDef]) =>
+                renderField(fieldKey, fieldDef, (v) => handleChange(fieldKey, v))
+              )}
+            </div>
+          </CollapsibleSection>
+        )
+      })}
+    </div>
+  )
+}

@@ -42,8 +42,8 @@ export function parseTitleWithBreaks(
 
   // Remplacer les marqueurs par des caractères spéciaux
   let processedTitle = title;
-  processedTitle = processedTitle.replace(/\s*\/\/\/\s*/g, RESPONSIVE_BREAK_MARKER);
-  processedTitle = processedTitle.replace(/\s*\/\/\s*/g, FORCE_BREAK_MARKER);
+  processedTitle = processedTitle.replace(/\s*\/\/\s*/g, RESPONSIVE_BREAK_MARKER);
+  processedTitle = processedTitle.replace(/\s*\/\/\/\s*/g, FORCE_BREAK_MARKER);
 
   // Découper le titre en segments
   const rawSegments: Array<{ text: string; breakType?: "responsive" | "force" }> = [];

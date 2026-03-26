@@ -67,7 +67,7 @@ function renderParsedTitle(title: string, emphasisText?: string): React.ReactNod
       case "emphasis":
         // Texte en surbrillance
         return (
-          <mark key={index} className="bg-gray-200">
+          <mark key={index} className="bg-transparent">
             {segment.content}
           </mark>
         );

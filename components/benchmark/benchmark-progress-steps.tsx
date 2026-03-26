@@ -16,13 +16,13 @@ export function BenchmarkProgressSteps({ totalSteps, currentStep }: BenchmarkPro
         return (
           <div
             key={index}
-            className="relative flex-1 h-2 rounded-full bg-muted overflow-hidden"
+            className="theme-lime relative flex-1 h-2 rounded-full bg-gray-200 overflow-hidden"
           >
             <div
               className={cn(
                 "absolute inset-0 rounded-full transition-all duration-500 ease-out",
-                isCompleted && "bg-foreground w-full",
-                isCurrent && "bg-foreground animate-progress",
+                isCompleted && "bg-primary w-full",
+                isCurrent && "bg-primary animate-progress",
                 isUpcoming && "bg-transparent w-0"
               )}
               style={

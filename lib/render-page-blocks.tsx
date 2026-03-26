@@ -7,15 +7,18 @@
 
 import React from "react"
 import type { BlockNode } from "@/lib/new-editor/block-types"
-import { mapFormDataToBlob } from "@/lib/blob-form-mapper"
+import { mapFormDataToBlob, type BlobFormData } from "@/lib/blob-form-mapper"
 import { mapIteratorFormData } from "@/lib/blob-iterator-mapper"
 import { mapButtonTooltipFormData } from "@/lib/button-tooltip-mapper"
+import { mapFaqFormData } from "@/lib/faq-mapper"
 import { BlobBlock } from "@/components/blocks/BlockBlob"
 import { BlockBlobIterator } from "@/components/blocks/BlockBlobIterator"
 import { BlockButtonTooltip } from "@/components/blocks/BlockButtonTooltip"
 import { BlockParagraph } from "@/components/blocks/BlockParagraph"
 import { BlockDivider } from "@/components/blocks/BlockDivider"
 import { BlockList } from "@/components/blocks/BlockList"
+import { BlockFaq } from "@/components/blocks/BlockFaq"
+import { BlockForm } from "@/components/blocks/BlockForm"
 
 /**
  * Rend récursivement un bloc selon son type
@@ -26,10 +29,10 @@ export function renderBlock(block: BlockNode): React.ReactNode {
   try {
     switch (blockType) {
       case "blob": {
-        const mappedData = mapFormDataToBlob(data)
+        const mappedData = mapFormDataToBlob(data as BlobFormData)
 
-        // Si le bloc a un contentType "innerBlocks" et des innerBlocks, on les rend
-        const hasInnerBlocks = data.contentType === "innerBlocks" && innerBlocks && innerBlocks.length > 0
+        // Si le bloc a un contentType "innerBlocks" OU figureType "innerBlocks" et des innerBlocks, on les rend
+        const hasInnerBlocks = (data.contentType === "innerBlocks" || data.figureType === "innerBlocks") && innerBlocks && innerBlocks.length > 0
 
         return (
           <BlobBlock
@@ -79,6 +82,15 @@ export function renderBlock(block: BlockNode): React.ReactNode {
           ? (data.items as Array<{title: string; subtitle?: string}>)
           : (() => { try { return JSON.parse((data.items as string) || "[]") } catch { return [] } })()
         return <BlockList key={block.id} items={items} icon={(data.icon as string) || "arrowRight"} />
+      }
+
+      case "faq": {
+        const mappedData = mapFaqFormData(data)
+        return <BlockFaq key={block.id} data={mappedData} />
+      }
+
+      case "form": {
+        return <BlockForm key={block.id} />
       }
 
       default:

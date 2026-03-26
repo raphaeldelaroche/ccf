@@ -11,14 +11,14 @@
  */
 
 import type { BlobComposableProps, ResponsiveProps, ResponsiveBreakpointProps } from "@/lib/blob-compose"
+import { convertResponsiveToString } from "@/lib/blob-compose"
 import { iconOptions, type IconData } from "@/lib/blob-fields"
 import { normalizeAppearance } from "@/config/blob-appearances"
 import { normalizeBackground } from "@/config/blob-backgrounds"
+import type { FormDataValue } from "@/types/editor"
 
 // Re-export IconData pour faciliter les imports
 export type { IconData }
-
-type FormDataValue = string | boolean | string[] | Array<Record<string, unknown>> | ResponsiveProps
 
 export interface BlobFormData {
   [key: string]: FormDataValue | undefined
@@ -33,10 +33,11 @@ export interface BlobFormData {
   // Marker
   markerType?: string
   markerContent?: string
-  markerIcon?: string
+  markerIcon?: string | IconData | null  // Can be legacy string key, IconData object, or null
   markerPosition?: string
   markerStyle?: string
   markerSize?: string
+  markerWidth?: string
   markerTheme?: string
   markerImage?: string
   markerRounded?: string
@@ -58,6 +59,8 @@ export interface BlobFormData {
     variant?: string
     theme?: string
     opensInNewTab?: boolean
+    iconType?: string
+    icon?: IconData | null
   }>
 
   // Content
@@ -93,8 +96,8 @@ export interface BlobFormData {
   titleAs?: string
   eyebrowAs?: string
 
-  // Responsive
-  responsive?: ResponsiveProps
+  // Responsive (cast as FormDataValue for index signature compatibility)
+  responsive?: ResponsiveProps & FormDataValue
 }
 
 export type ButtonVariant = 'default' | 'secondary' | 'outline' | 'ghost' | 'link';
@@ -166,7 +169,7 @@ export interface MappedBlobData {
   }
 
   figure?: {
-    type: "image" | "video"
+    type: "image" | "video" | "innerBlocks"
     src: string
     alt: string
     width: number
@@ -177,6 +180,8 @@ export interface MappedBlobData {
     label: string
     variant: ButtonVariant
     theme?: string
+    iconType?: "none" | "left" | "right"
+    icon?: IconData
     /** Props de lien pré-calculées (href, target, rel) */
     linkProps: {
       href: string
@@ -207,6 +212,59 @@ export interface MappedBlobData {
     reason: string
     value: unknown
   }>
+}
+
+/**
+ * Convertit les valeurs responsive de markerSize en classes CSS avec préfixe blob-size-
+ * Ex: { base: "md", lg: "xl" } → "blob-size-md lg:blob-size-xl"
+ */
+function buildResponsiveMarkerSizeClasses(responsive: ResponsiveProps | undefined): string {
+  if (!responsive) return ''
+
+  const markerSizeString = convertResponsiveToString(responsive, 'markerSize')
+  if (!markerSizeString) return ''
+
+  // Convertir "md lg:xl" → "blob-size-md lg:blob-size-xl"
+  // Skip "auto" values as they don't need CSS classes
+  return markerSizeString
+    .split(' ')
+    .map(part => {
+      if (part.includes(':')) {
+        // Breakpoint préfixé (ex: "lg:xl")
+        const [bp, size] = part.split(':')
+        if (size === 'auto') return null // Skip auto
+        return `${bp}:blob-size-${size}`
+      } else {
+        // Base sans préfixe (ex: "md")
+        if (part === 'auto') return null // Skip auto
+        return `blob-size-${part}`
+      }
+    })
+    .filter(Boolean)
+    .join(' ')
+}
+
+function buildResponsiveMarkerWidthClasses(responsive: ResponsiveProps | undefined): string {
+  if (!responsive) return 'w-media' // Fallback par défaut pour compatibilité arrière
+
+  const markerWidthString = convertResponsiveToString(responsive, 'markerWidth')
+  if (!markerWidthString) return 'w-media' // Fallback par défaut
+
+  // Convertir "default lg:auto" → "w-marker lg:w-auto"
+  return markerWidthString
+    .split(' ')
+    .map(part => {
+      if (part.includes(':')) {
+        // Breakpoint préfixé (ex: "lg:auto")
+        const [bp, width] = part.split(':')
+        return width === 'auto' ? `${bp}:w-auto` : `${bp}:w-marker`
+      } else {
+        // Base sans préfixe (ex: "default" ou "auto")
+        return part === 'auto' ? 'w-auto' : 'w-marker'
+      }
+    })
+    .filter(Boolean)
+    .join(' ')
 }
 
 /**
@@ -275,6 +333,7 @@ export function mapFormDataToBlob(formData: BlobFormData): MappedBlobData {
     headerPaddingX,
     headerPaddingY,
     figureBleed,
+    markerSize: formData.markerSize && formData.markerSize !== 'auto' ? formData.markerSize : undefined,
   } as ResponsiveBreakpointProps
 
   // Helper: filter out undefined keys from an object to avoid spread operator issues
@@ -337,8 +396,10 @@ export function mapFormDataToBlob(formData: BlobFormData): MappedBlobData {
   const markerData = formData.markerType && formData.markerType !== "none" ? {
     type: formData.markerType as "text" | "icon" | "image",
     content: formData.markerContent,
-    icon: formData.markerIcon && typeof formData.markerIcon === 'string'
-      ? iconOptions[formData.markerIcon]
+    icon: formData.markerIcon && typeof formData.markerIcon === 'object'
+      ? formData.markerIcon  // IconData object from IconifyPicker
+      : formData.markerIcon && typeof formData.markerIcon === 'string'
+      ? iconOptions[formData.markerIcon]  // Legacy string key fallback
       : undefined,
     image: formData.markerImage,
     style: toMarkerVariant(formData.markerStyle),
@@ -347,14 +408,17 @@ export function mapFormDataToBlob(formData: BlobFormData): MappedBlobData {
     rounded: formData.markerRounded === 'rounded-full',
     className: [
       formData.markerTheme ? `theme-${formData.markerTheme}` : '',
-      formData.markerSize && formData.markerSize !== 'auto' ? `blob-size-${formData.markerSize}` : '',
+      buildResponsiveMarkerSizeClasses(formData.responsive as ResponsiveProps),
+      buildResponsiveMarkerWidthClasses(formData.responsive as ResponsiveProps),
     ].filter(Boolean).join(' '),
   } : undefined
 
   // ── Figure data ──
   const figure = formData.figureType && formData.figureType !== "none" ? {
-    type: formData.figureType as "image" | "video",
-    src: (formData.figureType === "image" ? formData.image : formData.video) as string,
+    type: formData.figureType as "image" | "video" | "innerBlocks",
+    src: formData.figureType === "innerBlocks"
+      ? ""
+      : (formData.figureType === "image" ? formData.image : formData.video) as string,
     alt: '',
     width: 1920,
     height: 1080,
@@ -378,10 +442,30 @@ export function mapFormDataToBlob(formData: BlobFormData): MappedBlobData {
             ? btn.externalHref
             : undefined
         const opensInNewTab = btn.opensInNewTab === true || btn.opensInNewTab === "true"
+
+        // Parse icon if it's a JSON string
+        let icon: IconData | undefined = undefined
+        if (btn.icon) {
+          if (typeof btn.icon === 'object') {
+            icon = btn.icon  // Already an IconData object
+          } else if (typeof btn.icon === 'string') {
+            try {
+              const parsed = JSON.parse(btn.icon)
+              if (parsed && typeof parsed === 'object' && 'iconObject' in parsed) {
+                icon = parsed  // Successfully parsed IconData
+              }
+            } catch {
+              // Invalid JSON, ignore
+            }
+          }
+        }
+
         return {
           label: btn.label || "",
           variant: toButtonVariant(btn.variant),
           theme: btn.theme,
+          iconType: btn.iconType as "none" | "left" | "right" | undefined,
+          icon,
           linkProps: {
             href: href ?? '#',
             target: opensInNewTab ? '_blank' as const : undefined,

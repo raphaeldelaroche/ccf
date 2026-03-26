@@ -35,6 +35,7 @@ const RESPONSIVE_FIELDS = [
   "direction",
   "marker", // Alias de markerPosition
   "markerPosition",
+  "markerSize",
   "actions",
   "align",
   "figureWidth",

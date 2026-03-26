@@ -5,11 +5,12 @@
 
 import type { LucideIcon } from 'lucide-react';
 import type { FormDataValue } from '@/types/editor';
-import { Box, LayoutGrid, HelpCircle, AlignLeft, SeparatorHorizontal, List } from 'lucide-react';
+import { Box, LayoutGrid, HelpCircle, AlignLeft, SeparatorHorizontal, List, MessageCircleQuestion, Mail } from 'lucide-react';
 import { BlockType } from './block-types';
 import fieldSections, { type Field as BlobField, type FieldSection } from '@/lib/blob-fields';
 import { IteratorBlockDefinition } from '@/lib/blob-iterator-definition';
 import { buttonTooltipFields } from '@/lib/button-tooltip-fields';
+import { faqFields } from '@/lib/faq-fields';
 
 export interface BlockDefinition {
   label: string;
@@ -127,6 +128,29 @@ export const BLOCK_REGISTRY: Record<BlockType, BlockDefinition> = {
       items: '[]',
       icon: 'arrowRight',
     },
+  },
+
+  faq: {
+    label: 'FAQ',
+    icon: MessageCircleQuestion,
+    description: 'Questions et réponses avec accordion',
+    allowedInnerBlocks: [], // Pas de blocs imbriqués
+    sections: faqFields,
+    initialValues: {
+      faqItems: '[]',
+      accordionType: 'single',
+      collapsible: true,
+      spacing: 'md',
+    },
+  },
+
+  form: {
+    label: 'Formulaire',
+    icon: Mail,
+    description: 'Formulaire de contact statique (skeleton)',
+    allowedInnerBlocks: [], // Pas de blocs imbriqués
+    sections: {}, // Aucune configuration
+    initialValues: {}, // Aucune valeur initiale
   },
 };
 

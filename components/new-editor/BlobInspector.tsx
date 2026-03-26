@@ -5,7 +5,7 @@ import { InspectorField } from "./InspectorField"
 import { CollapsibleSection } from "./CollapsibleSection"
 import { RepeaterInspector } from "./RepeaterInspector"
 import { BreakpointTabs } from "./BreakpointTabs"
-import fieldSections, { type Field } from "@/lib/blob-fields"
+import fieldSections, { type Field, type IconData } from "@/lib/blob-fields"
 import { evaluateShowIf } from "@/lib/new-editor/showif-evaluator"
 import { computeCompatibility, type OptionState } from "@/lib/use-blob-compatibility"
 import type { FormDataValue } from "@/types/editor"
@@ -19,13 +19,13 @@ import {
 import type { ResponsiveBreakpointProps } from "@/lib/blob-compose"
 
 // Maps blob-fields types to InspectorField types
-const FIELD_TYPE_MAP: Partial<Record<string, "text" | "textarea" | "select" | "checkbox" | "icon" | "multiselect">> = {
+const FIELD_TYPE_MAP: Partial<Record<string, "text" | "textarea" | "select" | "checkbox" | "icon" | "multiselect" | "file">> = {
   text: "text",
   textarea: "textarea",
   dropdown: "select",
   checkbox: "checkbox",
   icon: "icon",
-  image: "text",  // URL input
+  image: "file",  // File input
   video: "text",  // URL input
   multiselect: "multiselect",
 }
@@ -66,31 +66,35 @@ export function BlobInspector({
     [data]
   )
 
-  const handleChange = (key: string, value: string | boolean | string[]) => {
+  const handleChange = (key: string, value: FormDataValue) => {
     onUpdate({ [key]: value })
   }
 
-  const handleResponsiveChange = (key: string, value: string | boolean | string[]) => {
-    const newResponsive = { ...responsiveData }
+  const handleResponsiveChange = (key: string, value: FormDataValue) => {
+    // CRITICAL: Use data.responsive directly instead of responsiveData memo
+    // to avoid stale closure when multiple fields update rapidly
+    const currentResponsive = (data.responsive as ResponsiveProps) || {}
 
-    if (!newResponsive[activeBreakpoint]) {
-      newResponsive[activeBreakpoint] = {}
-    }
+    // Deep copy: copy the top-level responsive object AND the current breakpoint object
+    const newResponsive = { ...currentResponsive }
+
+    // Create a defensive copy of the current breakpoint's data to prevent reference issues
+    const currentBreakpointData = { ...(newResponsive[activeBreakpoint] || {}) }
 
     // If value is empty/undefined, remove it from the breakpoint
-    if (value === "" || value === undefined || value === null || value === "auto") {
-      const breakpointData = { ...newResponsive[activeBreakpoint] }
-      delete breakpointData[key as keyof typeof breakpointData]
+    if (value === "" || value === undefined || value === null) {
+      delete currentBreakpointData[key as keyof typeof currentBreakpointData]
 
       // If breakpoint is now empty, remove it entirely (except base)
-      if (Object.keys(breakpointData).length === 0 && activeBreakpoint !== "base") {
+      if (Object.keys(currentBreakpointData).length === 0 && activeBreakpoint !== "base") {
         delete newResponsive[activeBreakpoint]
       } else {
-        newResponsive[activeBreakpoint] = breakpointData
+        newResponsive[activeBreakpoint] = currentBreakpointData
       }
     } else {
+      // Merge the new value into the copied breakpoint data
       newResponsive[activeBreakpoint] = {
-        ...newResponsive[activeBreakpoint],
+        ...currentBreakpointData,
         [key]: value
       }
     }
@@ -101,25 +105,85 @@ export function BlobInspector({
   const handleResetBreakpoint = (breakpoint: Breakpoint) => {
     if (breakpoint === "base") return
 
-    const newResponsive = { ...responsiveData }
+    // Use data.responsive directly to avoid stale closure
+    const currentResponsive = (data.responsive as ResponsiveProps) || {}
+    const newResponsive = { ...currentResponsive }
     delete newResponsive[breakpoint]
     onUpdate({ responsive: newResponsive })
   }
 
   const handleCopyBreakpoint = (breakpoint: Breakpoint) => {
-    const breakpointData = responsiveData[breakpoint] || {}
+    // Use data.responsive directly to avoid stale closure
+    const currentResponsive = (data.responsive as ResponsiveProps) || {}
+    const breakpointData = currentResponsive[breakpoint] || {}
     setCopiedBreakpointValues(breakpointData)
   }
 
   const handlePasteBreakpoint = (breakpoint: Breakpoint) => {
     if (!copiedBreakpointValues) return
 
-    const newResponsive = { ...responsiveData }
+    // Use data.responsive directly to avoid stale closure
+    const currentResponsive = (data.responsive as ResponsiveProps) || {}
+    const newResponsive = { ...currentResponsive }
     newResponsive[breakpoint] = { ...copiedBreakpointValues }
     onUpdate({ responsive: newResponsive })
   }
 
-  function renderField(fieldKey: string, fieldDef: Field, onChange: (v: string | boolean | string[]) => void) {
+  const handleResetField = (fieldKey: string) => {
+    // Use data.responsive directly to avoid stale closure
+    const currentResponsive = (data.responsive as ResponsiveProps) || {}
+    const newResponsive = { ...currentResponsive }
+
+    if (activeBreakpoint === "base") {
+      // For base: remove the field to clear it
+      if (!newResponsive.base) return // Nothing to reset
+
+      const breakpointData = { ...newResponsive.base }
+      delete breakpointData[fieldKey as keyof typeof breakpointData]
+
+      if (Object.keys(breakpointData).length === 0) {
+        delete newResponsive.base
+      } else {
+        newResponsive.base = breakpointData
+      }
+    } else {
+      // For other breakpoints: remove the override to restore inheritance
+      const breakpointData = { ...(newResponsive[activeBreakpoint] || {}) }
+      delete breakpointData[fieldKey as keyof typeof breakpointData]
+
+      if (Object.keys(breakpointData).length === 0) {
+        delete newResponsive[activeBreakpoint]
+      } else {
+        newResponsive[activeBreakpoint] = breakpointData
+      }
+    }
+
+    onUpdate({ responsive: newResponsive })
+  }
+
+  const handleResetNonResponsiveField = (fieldKey: string) => {
+    // For non-responsive fields, determine the appropriate empty value based on type
+    const fieldDef = Object.values(fieldSections)
+      .flatMap(section => Object.entries(section.fields))
+      .find(([key]) => key === fieldKey)?.[1]
+
+    if (!fieldDef) return
+
+    let emptyValue: FormDataValue
+    if (fieldDef.type === "checkbox") {
+      emptyValue = false
+    } else if (fieldDef.type === "multiselect" || fieldDef.type === "repeater") {
+      emptyValue = []
+    } else if (fieldDef.type === "icon" || fieldDef.type === "image") {
+      emptyValue = null
+    } else {
+      emptyValue = ""
+    }
+
+    onUpdate({ [fieldKey]: emptyValue })
+  }
+
+  function renderField(fieldKey: string, fieldDef: Field, onChange: (v: FormDataValue) => void) {
     // Check if field is responsive
     const isResponsive = "responsive" in fieldDef && fieldDef.responsive === true
 
@@ -147,7 +211,7 @@ export function BlobInspector({
           label={fieldDef.label}
           value={(rawValue as string) || "[]"}
           fields={fieldDef.fields}
-          onChange={(v) => onChange(v as string)}
+          onChange={(v) => onChange(v)}
           parentKey={fieldKey}
         />
       )
@@ -197,13 +261,15 @@ export function BlobInspector({
         ? false
         : fieldDef.type === "multiselect"
           ? []
-          : ""
+          : fieldDef.type === "icon"
+            ? null
+            : ""
 
     return (
       <InspectorField
         key={fieldKey}
         label={fieldDef.label}
-        value={value as string | boolean | string[]}
+        value={value as string | boolean | string[] | IconData | null}
         type={inspectorType}
         options={options}
         compatOptions={compatOptions}
@@ -214,6 +280,13 @@ export function BlobInspector({
         currentBreakpoint={isResponsive && canSeeResponsive ? activeBreakpoint : undefined}
         responsiveValues={isResponsive && canSeeResponsive ? responsiveData : undefined}
         fieldKey={isResponsive && canSeeResponsive ? (fieldDef.compatKey || fieldKey) : undefined}
+        onReset={
+          isResponsive && canSeeResponsive
+            ? () => handleResetField(fieldDef.compatKey || fieldKey)
+            : !isResponsive && activeBreakpoint === "base"
+            ? () => handleResetNonResponsiveField(fieldKey)
+            : undefined
+        }
       />
     )
   }
@@ -280,7 +353,7 @@ export function BlobInspector({
                 const isResponsive = "responsive" in fieldDef && fieldDef.responsive === true
                 const onChange = isResponsive ? handleResponsiveChange : handleChange
                 const responsiveKey = isResponsive && 'compatKey' in fieldDef && fieldDef.compatKey ? fieldDef.compatKey : fieldKey
-                return renderField(fieldKey, fieldDef, (v) => onChange(responsiveKey, v))
+                return renderField(fieldKey, fieldDef, (v: FormDataValue) => onChange(responsiveKey, v))
               })}
             </div>
           </CollapsibleSection>

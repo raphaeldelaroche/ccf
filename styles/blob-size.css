@@ -15,7 +15,7 @@
   /* Heading */
   --size-heading-font-size: 1.25rem; /* 20px */
   --size-heading-line-height: 1.4;
-  --size-heading-margin-bottom: 0.125rem; /* 2px */
+  --size-heading-margin-bottom: 0.125rem; /* 2px — exponential progression to 32px at 8xl */
 
   /* Body */
   --size-body-font-size: 0.875rem; /* 14px */
@@ -27,6 +27,7 @@
   --size-media-width: calc( (var(--size-heading-font-size) * 1.2 + var(--size-heading-margin-bottom) + var(--size-lead-font-size) * 1.5) * 1.05 );
   --size-media-height: var(--size-media-width);
   --size-media-icon-size: calc( var(--size-media-width) * 0.5 );
+  --size-marker-width: var(--size-media-width);
   --size-marker-font-size: calc( var(--size-media-width) * 0.45 );
 
   /* Actions */
@@ -35,6 +36,7 @@
   /* Button */
   --size-button-height: 2.25rem; /* 36px */
   --size-button-padding-x: 0.75rem; /* 12px */
+  --size-button-icon-padding-x: 0; /* Icon-only button padding */
   --size-button-font-size: 0.875rem; /* 14px */
   --size-button-border-radius: 0.5rem; /* 6px */
   --size-button-gap: 0.375rem; /* 6px */
@@ -43,6 +45,8 @@
   --size-section-gap: 1rem; /* 16px */
   --size-section-padding-x: 1.5rem; /* 24px */
   --size-section-padding-y: 2.5rem; /* 40px */
+
+  --blob-container-padding-x: 2rem;
 }
 
 /* ==========================================
@@ -70,6 +74,7 @@
   --size-media-width: calc( (var(--size-heading-font-size) * 1.2 + var(--size-heading-margin-bottom) + var(--size-lead-font-size) * 1.5) * 1.05 );
   --size-media-height: var(--size-media-width);
   --size-media-icon-size: calc( var(--size-media-width) * 0.5 );
+  --size-marker-width: var(--size-media-width);
   --size-marker-font-size: calc( var(--size-media-width) * 0.45 );
 
   /* Actions */
@@ -78,6 +83,7 @@
   /* Button */
   --size-button-height: 2.25rem;
   --size-button-padding-x: 0.75rem;
+  --size-button-icon-padding-x: 0;
   --size-button-font-size: 0.875rem;
   --size-button-border-radius: 0.5rem;
   --size-button-gap: 0.375rem;
@@ -89,7 +95,6 @@
   --spacing-section: var(--size-section-gap);
   --spacing-section-x: var(--size-section-padding-x);
   --spacing-section-y: var(--size-section-padding-y);
-  --spacing-padding-x: 0; --spacing-padding-y: 0;
 }
 
 @utility blob-size-sm {
@@ -101,7 +106,7 @@
   /* Heading */
   --size-heading-font-size: 1rem; /* 16px */
   --size-heading-line-height: 1.45;
-  --size-heading-margin-bottom: 0.125rem;
+  --size-heading-margin-bottom: 0.0625rem; /* 1px */
 
   /* Body */
   --size-body-font-size: 0.875rem; /* 14px */
@@ -113,6 +118,7 @@
   --size-media-width: calc( (var(--size-heading-font-size) * 1.2 + var(--size-heading-margin-bottom) + var(--size-lead-font-size) * 1.5) * 1.05 );
   --size-media-height: var(--size-media-width);
   --size-media-icon-size: calc( var(--size-media-width) * 0.5 );
+  --size-marker-width: var(--size-media-width);
   --size-marker-font-size: calc( var(--size-media-width) * 0.45 );
 
   /* Actions */
@@ -121,6 +127,7 @@
   /* Button */
   --size-button-height: 2.25rem;
   --size-button-padding-x: 0.75rem;
+  --size-button-icon-padding-x: 0;
   --size-button-font-size: 0.875rem;
   --size-button-border-radius: 0.5rem;
   --size-button-gap: 0.375rem;
@@ -132,7 +139,6 @@
   --spacing-section: var(--size-section-gap);
   --spacing-section-x: var(--size-section-padding-x);
   --spacing-section-y: var(--size-section-padding-y);
-  --spacing-padding-x: 0; --spacing-padding-y: 0;
 }
 
 @utility blob-size-md {
@@ -156,6 +162,7 @@
   --size-media-width: calc( (var(--size-heading-font-size) * 1.2 + var(--size-heading-margin-bottom) + var(--size-lead-font-size) * 1.5) * 1.05 );
   --size-media-height: var(--size-media-width);
   --size-media-icon-size: calc( var(--size-media-width) * 0.5 );
+  --size-marker-width: var(--size-media-width);
   --size-marker-font-size: calc( var(--size-media-width) * 0.45 );
 
   /* Actions */
@@ -164,6 +171,7 @@
   /* Button */
   --size-button-height: 2.25rem;
   --size-button-padding-x: 0.75rem;
+  --size-button-icon-padding-x: 0;
   --size-button-font-size: 0.875rem;
   --size-button-border-radius: 0.5rem;
   --size-button-gap: 0.375rem;
@@ -175,7 +183,6 @@
   --spacing-section: var(--size-section-gap);
   --spacing-section-x: var(--size-section-padding-x);
   --spacing-section-y: var(--size-section-padding-y);
-  --spacing-padding-x: 0; --spacing-padding-y: 0;
 }
 
 @utility blob-size-lg {
@@ -187,7 +194,7 @@
   /* Heading */
   --size-heading-font-size: 1.5rem;
   --size-heading-line-height: 1.35;
-  --size-heading-margin-bottom: 0.25rem;
+  --size-heading-margin-bottom: 0.1875rem; /* 3px */
 
   /* Body */
   --size-body-font-size: 0.875rem; /* 14px */
@@ -199,6 +206,7 @@
   --size-media-width: calc( (var(--size-heading-font-size) * 1.2 + var(--size-heading-margin-bottom) + var(--size-lead-font-size) * 1.5) * 1.05 );
   --size-media-height: var(--size-media-width);
   --size-media-icon-size: calc( var(--size-media-width) * 0.5 );
+  --size-marker-width: var(--size-media-width);
   --size-marker-font-size: calc( var(--size-media-width) * 0.45 );
 
   /* Actions */
@@ -207,6 +215,7 @@
   /* Button */
   --size-button-height: 2.75rem;
   --size-button-padding-x: 1.5rem;
+  --size-button-icon-padding-x: 0;
   --size-button-font-size: 1rem;
   --size-button-border-radius: 0.625rem;
   --size-button-gap: 0.5rem;
@@ -218,7 +227,6 @@
   --spacing-section: var(--size-section-gap);
   --spacing-section-x: var(--size-section-padding-x);
   --spacing-section-y: var(--size-section-padding-y);
-  --spacing-padding-x: 0; --spacing-padding-y: 0;
 }
 
 @utility blob-size-xl {
@@ -230,7 +238,7 @@
   /* Heading */
   --size-heading-font-size: 1.875rem;
   --size-heading-line-height: 1.3;
-  --size-heading-margin-bottom: 0.25rem;
+  --size-heading-margin-bottom: 0.3125rem; /* 5px */
 
   /* Body */
   --size-body-font-size: 0.9375rem; /* 15px */
@@ -242,6 +250,7 @@
   --size-media-width: calc( (var(--size-heading-font-size) * 1.2 + var(--size-heading-margin-bottom) + var(--size-lead-font-size) * 1.5) * 1.05 );
   --size-media-height: var(--size-media-width);
   --size-media-icon-size: calc( var(--size-media-width) * 0.5 );
+  --size-marker-width: var(--size-media-width);
   --size-marker-font-size: calc( var(--size-media-width) * 0.45 );
 
   /* Actions */
@@ -250,6 +259,7 @@
   /* Button */
   --size-button-height: 2.75rem;
   --size-button-padding-x: 1.5rem;
+  --size-button-icon-padding-x: 0;
   --size-button-font-size: 1rem;
   --size-button-border-radius: 0.625rem;
   --size-button-gap: 0.5rem;
@@ -261,7 +271,6 @@
   --spacing-section: var(--size-section-gap);
   --spacing-section-x: var(--size-section-padding-x);
   --spacing-section-y: var(--size-section-padding-y);
-  --spacing-padding-x: 0; --spacing-padding-y: 0;
 }
 
 @utility blob-size-2xl {
@@ -273,7 +282,7 @@
   /* Heading */
   --size-heading-font-size: 2.25rem; /* 36px */
   --size-heading-line-height: 1.25;
-  --size-heading-margin-bottom: 0.25rem;
+  --size-heading-margin-bottom: 0.5rem; /* 8px */
 
   /* Body */
   --size-body-font-size: 0.9375rem; /* 15px */
@@ -285,6 +294,7 @@
   --size-media-width: calc( (var(--size-heading-font-size) * 1.2 + var(--size-heading-margin-bottom) + var(--size-lead-font-size) * 1.5) * 1.05 );
   --size-media-height: var(--size-media-width);
   --size-media-icon-size: calc( var(--size-media-width) * 0.5 );
+  --size-marker-width: var(--size-media-width);
   --size-marker-font-size: calc( var(--size-media-width) * 0.45 );
 
   /* Actions */
@@ -293,6 +303,7 @@
   /* Button */
   --size-button-height: 3.25rem;
   --size-button-padding-x: 1.5rem;
+  --size-button-icon-padding-x: 0;
   --size-button-font-size: 1rem;
   --size-button-border-radius: 0.625rem;
   --size-button-gap: 0.75rem;
@@ -304,7 +315,6 @@
   --spacing-section: var(--size-section-gap);
   --spacing-section-x: var(--size-section-padding-x);
   --spacing-section-y: var(--size-section-padding-y);
-  --spacing-padding-x: 0; --spacing-padding-y: 0;
 }
 
 @utility blob-size-3xl {
@@ -316,7 +326,7 @@
   /* Heading */
   --size-heading-font-size: 2.75rem; /* 44px */
   --size-heading-line-height: 1.2;
-  --size-heading-margin-bottom: 0.25rem;
+  --size-heading-margin-bottom: 0.75rem; /* 12px */
 
   /* Body */
   --size-body-font-size: 1rem; /* 16px */
@@ -328,6 +338,7 @@
   --size-media-width: calc( (var(--size-heading-font-size) * 1.2 + var(--size-heading-margin-bottom) + var(--size-lead-font-size) * 1.5) * 1.05 );
   --size-media-height: var(--size-media-width);
   --size-media-icon-size: calc( var(--size-media-width) * 0.5 );
+  --size-marker-width: var(--size-media-width);
   --size-marker-font-size: calc( var(--size-media-width) * 0.45 );
 
   /* Actions */
@@ -336,6 +347,7 @@
   /* Button */
   --size-button-height: 3.25rem;
   --size-button-padding-x: 1.5rem;
+  --size-button-icon-padding-x: 0;
   --size-button-font-size: 1rem;
   --size-button-border-radius: 0.625rem;
   --size-button-gap: 0.75rem;
@@ -347,7 +359,6 @@
   --spacing-section: var(--size-section-gap);
   --spacing-section-x: var(--size-section-padding-x);
   --spacing-section-y: var(--size-section-padding-y);
-  --spacing-padding-x: 0; --spacing-padding-y: 0;
 }
 
 @utility blob-size-4xl {
@@ -359,7 +370,7 @@
   /* Heading */
   --size-heading-font-size: 3.25rem; /* 52px */
   --size-heading-line-height: 1.15;
-  --size-heading-margin-bottom: 0.25rem;
+  --size-heading-margin-bottom: 1.125rem; /* 18px */
 
   /* Body */
   --size-body-font-size: 1rem; /* 16px */
@@ -371,6 +382,7 @@
   --size-media-width: calc( (var(--size-heading-font-size) * 1.2 + var(--size-heading-margin-bottom) + var(--size-lead-font-size) * 1.5) * 1.05 );
   --size-media-height: var(--size-media-width);
   --size-media-icon-size: calc( var(--size-media-width) * 0.5 );
+  --size-marker-width: var(--size-media-width);
   --size-marker-font-size: calc( var(--size-media-width) * 0.45 );
 
   /* Actions */
@@ -379,6 +391,7 @@
   /* Button */
   --size-button-height: 3.25rem;
   --size-button-padding-x: 1.5rem;
+  --size-button-icon-padding-x: 0;
   --size-button-font-size: 1rem;
   --size-button-border-radius: 0.625rem;
   --size-button-gap: 0.75rem;
@@ -390,7 +403,6 @@
   --spacing-section: var(--size-section-gap);
   --spacing-section-x: var(--size-section-padding-x);
   --spacing-section-y: var(--size-section-padding-y);
-  --spacing-padding-x: 0; --spacing-padding-y: 0;
 }
 
 @utility blob-size-5xl {
@@ -400,9 +412,9 @@
   --size-eyebrow-margin-bottom: var(--size-heading-margin-bottom);
 
   /* Heading */
-  --size-heading-font-size: 3.75rem; /* 60px */
+  --size-heading-font-size: 3.5rem; /* 60px */
   --size-heading-line-height: 1.15;
-  --size-heading-margin-bottom: 0.25rem;
+  --size-heading-margin-bottom: 1.5rem; /* 24px */
 
   /* Body */
   --size-body-font-size: 1rem; /* 16px */
@@ -414,14 +426,16 @@
   --size-media-width: calc( (var(--size-heading-font-size) * 1.2 + var(--size-heading-margin-bottom) + var(--size-lead-font-size) * 1.5) * 1.05 );
   --size-media-height: var(--size-media-width);
   --size-media-icon-size: calc( var(--size-media-width) * 0.5 );
+  --size-marker-width: var(--size-media-width);
   --size-marker-font-size: calc( var(--size-media-width) * 0.45 );
 
   /* Actions */
   --size-actions-gap: 0.625rem;
 
   /* Button */
-  --size-button-height: 3.75rem;
-  --size-button-padding-x: 2rem;
+  --size-button-height: 3.5rem;
+  --size-button-padding-x: 2.25rem;
+  --size-button-icon-padding-x: 0;
   --size-button-font-size: 1rem;
   --size-button-border-radius: 0.625rem;
   --size-button-gap: 0.75rem;
@@ -433,7 +447,6 @@
   --spacing-section: var(--size-section-gap);
   --spacing-section-x: var(--size-section-padding-x);
   --spacing-section-y: var(--size-section-padding-y);
-  --spacing-padding-x: 0; --spacing-padding-y: 0;
 }
 
 @utility blob-size-6xl {
@@ -445,7 +458,7 @@
   /* Heading */
   --size-heading-font-size: 4.5rem; /* 72px */
   --size-heading-line-height: 1.15;
-  --size-heading-margin-bottom: 0.25rem;
+  --size-heading-margin-bottom: 1.75rem; /* 28px */
 
   /* Body */
   --size-body-font-size: 1rem; /* 16px */
@@ -457,14 +470,16 @@
   --size-media-width: calc( (var(--size-heading-font-size) * 1.2 + var(--size-heading-margin-bottom) + var(--size-lead-font-size) * 1.5) * 1.05 );
   --size-media-height: var(--size-media-width);
   --size-media-icon-size: calc( var(--size-media-width) * 0.5 );
+  --size-marker-width: var(--size-media-width);
   --size-marker-font-size: calc( var(--size-media-width) * 0.45 );
 
   /* Actions */
   --size-actions-gap: 0.625rem;
 
   /* Button */
-  --size-button-height: 3.75rem;
-  --size-button-padding-x: 2rem;
+  --size-button-height: 3.5rem;
+  --size-button-padding-x: 2.25rem;
+  --size-button-icon-padding-x: 0;
   --size-button-font-size: 1rem;
   --size-button-border-radius: 0.625rem;
   --size-button-gap: 0.75rem;
@@ -476,7 +491,6 @@
   --spacing-section: var(--size-section-gap);
   --spacing-section-x: var(--size-section-padding-x);
   --spacing-section-y: var(--size-section-padding-y);
-  --spacing-padding-x: 0; --spacing-padding-y: 0;
 }
 
 /* ==========================================
@@ -493,7 +507,7 @@
   /* Heading */
   --size-heading-font-size: 5.25rem; /* 84px */
   --size-heading-line-height: 1.05;
-  --size-heading-margin-bottom: 1rem;
+  --size-heading-margin-bottom: 1.875rem; /* 30px */
 
   /* Body */
   --size-body-font-size: 1.0625rem; /* 17px */
@@ -505,14 +519,16 @@
   --size-media-width: calc( (var(--size-heading-font-size) * 1.2 + var(--size-heading-margin-bottom) + var(--size-lead-font-size) * 1.5) * 1.05 );
   --size-media-height: var(--size-media-width);
   --size-media-icon-size: calc( var(--size-media-width) * 0.5 );
+  --size-marker-width: var(--size-media-width);
   --size-marker-font-size: calc( var(--size-media-width) * 0.45 );
 
   /* Actions */
   --size-actions-gap: 0.625rem;
 
   /* Button */
-  --size-button-height: 3.75rem;
-  --size-button-padding-x: 2rem;
+  --size-button-height: 3.5rem;
+  --size-button-padding-x: 2.25rem;
+  --size-button-icon-padding-x: 0;
   --size-button-font-size: 1rem;
   --size-button-border-radius: 0.625rem;
   --size-button-gap: 0.75rem;
@@ -524,7 +540,6 @@
   --spacing-section: var(--size-section-gap);
   --spacing-section-x: var(--size-section-padding-x);
   --spacing-section-y: var(--size-section-padding-y);
-  --spacing-padding-x: 0; --spacing-padding-y: 0;
 }
 
 @utility blob-size-8xl {
@@ -536,26 +551,27 @@
   /* Heading */
   --size-heading-font-size: 6rem; /* 96px */
   --size-heading-line-height: 1.05;
-  --size-heading-margin-bottom: 1rem;
+  --size-heading-margin-bottom: 2rem; /* 32px */
 
   /* Body */
   --size-body-font-size: 1.0625rem; /* 17px */
 
   /* Lead */
-  --size-lead-font-size: 1.125rem;
+  --size-lead-font-size: 1.25rem;
 
   /* Media — (3.5×1.2 + 0.25 + 1.125×1.5) × 1.05 ≈ 6.44rem */
   --size-media-width: calc( (var(--size-heading-font-size) * 1.2 + var(--size-heading-margin-bottom) + var(--size-lead-font-size) * 1.5) * 1.05 );
   --size-media-height: var(--size-media-width);
   --size-media-icon-size: calc( var(--size-media-width) * 0.5 );
+  --size-marker-width: var(--size-media-width);
   --size-marker-font-size: calc( var(--size-media-width) * 0.45 );
 
   /* Actions */
   --size-actions-gap: 0.625rem;
 
   /* Button */
-  --size-button-height: 4.25rem;
-  --size-button-padding-x: 2.25rem;
+  --size-button-height: 3.5rem;
+  --size-button-padding-x: 2.5rem;
   --size-button-font-size: 1rem;
   --size-button-border-radius: 0.75rem;
   --size-button-gap: 0.75rem;
@@ -567,7 +583,6 @@
   --spacing-section: var(--size-section-gap);
   --spacing-section-x: var(--size-section-padding-x);
   --spacing-section-y: var(--size-section-padding-y);
-  --spacing-padding-x: 0; --spacing-padding-y: 0;
 }
 
 @utility blob-size-9xl {
@@ -579,7 +594,7 @@
   /* Heading */
   --size-heading-font-size: 6.75rem; /* 108px */
   --size-heading-line-height: 1.05;
-  --size-heading-margin-bottom: 1rem;
+  --size-heading-margin-bottom: 2rem; /* 32px */
 
   /* Body */
   --size-body-font-size: 1.0625rem; /* 17px */
@@ -587,18 +602,20 @@
   /* Lead */
   --size-lead-font-size: 1.125rem;
 
-  /* Media — (3.75×1.2 + 0.25 + 1.125×1.5) × 1.05 ≈ 6.74rem */
+  /* Media — (3.5×1.2 + 0.25 + 1.125×1.5) × 1.05 ≈ 6.74rem */
   --size-media-width: calc( (var(--size-heading-font-size) * 1.2 + var(--size-heading-margin-bottom) + var(--size-lead-font-size) * 1.5) * 1.05 );
   --size-media-height: var(--size-media-width);
   --size-media-icon-size: calc( var(--size-media-width) * 0.5 );
+  --size-marker-width: var(--size-media-width);
   --size-marker-font-size: calc( var(--size-media-width) * 0.45 );
 
   /* Actions */
   --size-actions-gap: 0.625rem;
 
   /* Button */
-  --size-button-height: 3.75rem;
+  --size-button-height: 3.5rem;
   --size-button-padding-x: 2.25rem;
+  --size-button-icon-padding-x: 0;
   --size-button-font-size: 1rem;
   --size-button-border-radius: 0.75rem;
   --size-button-gap: 0.75rem;
@@ -610,7 +627,6 @@
   --spacing-section: var(--size-section-gap);
   --spacing-section-x: var(--size-section-padding-x);
   --spacing-section-y: var(--size-section-padding-y);
-  --spacing-padding-x: 0; --spacing-padding-y: 0;
 }
 
 @utility blob-size-10xl {
@@ -622,7 +638,7 @@
   /* Heading */
   --size-heading-font-size: 7.5rem; /* 120px */
   --size-heading-line-height: 1.05;
-  --size-heading-margin-bottom: 1rem;
+  --size-heading-margin-bottom: 2rem; /* 32px */
 
   /* Body */
   --size-body-font-size: 1.0625rem; /* 17px */
@@ -634,13 +650,14 @@
   --size-media-width: calc( (var(--size-heading-font-size) * 1.2 + var(--size-heading-margin-bottom) + var(--size-lead-font-size) * 1.5) * 1.05 );
   --size-media-height: var(--size-media-width);
   --size-media-icon-size: calc( var(--size-media-width) * 0.5 );
+  --size-marker-width: var(--size-media-width);
   --size-marker-font-size: calc( var(--size-media-width) * 0.45 );
 
   /* Actions */
   --size-actions-gap: 0.625rem;
 
   /* Button */
-  --size-button-height: 3.75rem;
+  --size-button-height: 3.5rem;
   --size-button-padding-x: 2.5rem;
   --size-button-font-size: 1rem;
   --size-button-border-radius: 0.75rem;
@@ -653,13 +670,12 @@
   --spacing-section: var(--size-section-gap);
   --spacing-section-x: var(--size-section-padding-x);
   --spacing-section-y: var(--size-section-padding-y);
-  --spacing-padding-x: 0; --spacing-padding-y: 0;
 }
 
 @utility blob-gap-x-none { --spacing-gap-x: 0; }
 @utility blob-gap-y-none { --spacing-gap-y: 0; }
-@utility blob-gap-x-xs { --spacing-gap-x: 1rem; }
-@utility blob-gap-y-xs { --spacing-gap-y: 1rem; }
+@utility blob-gap-x-xs { --spacing-gap-x: 0.5rem; }
+@utility blob-gap-y-xs { --spacing-gap-y: 0.5rem; }
 @utility blob-gap-x-sm { --spacing-gap-x: 1.125rem; }
 @utility blob-gap-y-sm { --spacing-gap-y: 1.125rem; }
 @utility blob-gap-x-md { --spacing-gap-x: 1.25rem; }
@@ -707,11 +723,11 @@
 @utility blob-padding-x-8xl { --spacing-padding-x: 8rem; }
 @utility blob-padding-x-9xl { --spacing-padding-x: 9rem; }
 @utility blob-padding-x-10xl { --spacing-padding-x: 10rem; }
-@utility blob-padding-x-container-sm  { --spacing-padding-x: max(0px, calc(max(1rem, (100% - var(--container-sm-width, 42rem)) / 2))); } 
-@utility blob-padding-x-container-md  { --spacing-padding-x: max(0px, calc(max(1rem, (100% - var(--container-md-width, 56rem)) / 2))); } 
-@utility blob-padding-x-container-lg  { --spacing-padding-x: max(0px, calc(max(1rem, (100% - var(--container-lg-width, 72rem)) / 2))); } 
-@utility blob-padding-x-container-xl  { --spacing-padding-x: max(0px, calc(max(1rem, (100% - var(--container-xl-width, 80rem)) / 2))); } 
-@utility blob-padding-x-container-2xl { --spacing-padding-x: max(0px, calc(max(1rem, (100% - var(--container-2xl-width, 96rem)) / 2))); }
+@utility blob-padding-x-container-sm  { --spacing-padding-x: max(0px, calc(max(var(--blob-container-padding-x), (100% - var(--container-sm, 42rem)) / 2))); } 
+@utility blob-padding-x-container-md  { --spacing-padding-x: max(0px, calc(max(var(--blob-container-padding-x), (100% - var(--container-md, 56rem)) / 2))); } 
+@utility blob-padding-x-container-lg  { --spacing-padding-x: max(0px, calc(max(var(--blob-container-padding-x), (100% - var(--container-lg, 72rem)) / 2))); } 
+@utility blob-padding-x-container-xl  { --spacing-padding-x: max(0px, calc(max(var(--blob-container-padding-x), (100% - var(--container-xl, 80rem)) / 2))); } 
+@utility blob-padding-x-container-2xl { --spacing-padding-x: max(0px, calc(max(var(--blob-container-padding-x), (100% - var(--container-2xl, 96rem)) / 2))); }
 
 /* ==========================================
    PADDING-Y UTILITIES (padding block - override de size)
@@ -754,11 +770,11 @@
 @utility blob-header-padding-x-8xl { --spacing-header-padding-x: 8rem; }
 @utility blob-header-padding-x-9xl { --spacing-header-padding-x: 9rem; }
 @utility blob-header-padding-x-10xl { --spacing-header-padding-x: 10rem; }
-@utility blob-header-padding-x-container-sm  { --spacing-header-padding-x: max(0px, calc(max(1rem, (100% - var(--container-sm-width, 42rem)) / 2))); }
-@utility blob-header-padding-x-container-md  { --spacing-header-padding-x: max(0px, calc(max(1rem, (100% - var(--container-md-width, 56rem)) / 2))); }
-@utility blob-header-padding-x-container-lg  { --spacing-header-padding-x: max(0px, calc(max(1rem, (100% - var(--container-lg-width, 72rem)) / 2))); }
-@utility blob-header-padding-x-container-xl  { --spacing-header-padding-x: max(0px, calc(max(1rem, (100% - var(--container-xl-width, 80rem)) / 2))); }
-@utility blob-header-padding-x-container-2xl { --spacing-header-padding-x: max(0px, calc(max(1rem, (100% - var(--container-2xl-width, 96rem)) / 2))); }
+@utility blob-header-padding-x-container-sm  { --spacing-header-padding-x: max(0px, calc(max(var(--blob-container-padding-x), (100% - var(--container-sm, 42rem)) / 2))); }
+@utility blob-header-padding-x-container-md  { --spacing-header-padding-x: max(0px, calc(max(var(--blob-container-padding-x), (100% - var(--container-md, 56rem)) / 2))); }
+@utility blob-header-padding-x-container-lg  { --spacing-header-padding-x: max(0px, calc(max(var(--blob-container-padding-x), (100% - var(--container-lg, 72rem)) / 2))); }
+@utility blob-header-padding-x-container-xl  { --spacing-header-padding-x: max(0px, calc(max(var(--blob-container-padding-x), (100% - var(--container-xl, 80rem)) / 2))); }
+@utility blob-header-padding-x-container-2xl { --spacing-header-padding-x: max(0px, calc(max(var(--blob-container-padding-x), (100% - var(--container-2xl, 96rem)) / 2))); }
 
 /* ==========================================
    HEADER PADDING-Y UTILITIES (padding block du blob-header uniquement)
@@ -780,11 +796,11 @@
 @utility blob-header-padding-y-8xl { --spacing-header-padding-y: 8rem; }
 @utility blob-header-padding-y-9xl { --spacing-header-padding-y: 9rem; }
 @utility blob-header-padding-y-10xl { --spacing-header-padding-y: 10rem; }
-@utility blob-header-padding-y-container-sm  { --spacing-header-padding-y: max(0px, calc(max(1rem, (100% - var(--container-sm-width, 42rem)) / 2))); }
-@utility blob-header-padding-y-container-md  { --spacing-header-padding-y: max(0px, calc(max(1rem, (100% - var(--container-md-width, 56rem)) / 2))); }
-@utility blob-header-padding-y-container-lg  { --spacing-header-padding-y: max(0px, calc(max(1rem, (100% - var(--container-lg-width, 72rem)) / 2))); }
-@utility blob-header-padding-y-container-xl  { --spacing-header-padding-y: max(0px, calc(max(1rem, (100% - var(--container-xl-width, 80rem)) / 2))); }
-@utility blob-header-padding-y-container-2xl { --spacing-header-padding-y: max(0px, calc(max(1rem, (100% - var(--container-2xl-width, 96rem)) / 2))); }
+@utility blob-header-padding-y-container-sm  { --spacing-header-padding-y: max(0px, calc(max(var(--blob-container-padding-x), (100% - var(--container-sm, 42rem)) / 2))); }
+@utility blob-header-padding-y-container-md  { --spacing-header-padding-y: max(0px, calc(max(var(--blob-container-padding-x), (100% - var(--container-md, 56rem)) / 2))); }
+@utility blob-header-padding-y-container-lg  { --spacing-header-padding-y: max(0px, calc(max(var(--blob-container-padding-x), (100% - var(--container-lg, 72rem)) / 2))); }
+@utility blob-header-padding-y-container-xl  { --spacing-header-padding-y: max(0px, calc(max(var(--blob-container-padding-x), (100% - var(--container-xl, 80rem)) / 2))); }
+@utility blob-header-padding-y-container-2xl { --spacing-header-padding-y: max(0px, calc(max(var(--blob-container-padding-x), (100% - var(--container-2xl, 96rem)) / 2))); }
 
 /* ==========================================
    MARKER GHOST VARIANT - Increased size
@@ -793,6 +809,7 @@
 
 [data-slot="marker"][data-variant="ghost"] {
   --size-media-icon-size: calc( var(--size-heading-font-size) * 1.375 );
+  --size-marker-width: calc( var(--size-heading-font-size) * 3.5 );
   --size-marker-font-size: calc( var(--size-heading-font-size) * 2.2 );
   line-height: 1;
   color: var(--primary);

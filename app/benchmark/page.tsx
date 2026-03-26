@@ -29,6 +29,7 @@ import { BenchmarkProgressSteps } from "@/components/benchmark/benchmark-progres
 import { BenchmarkQuestionCard } from "@/components/benchmark/benchmark-question-card";
 import { BenchmarkEmailDialog } from "@/components/benchmark/benchmark-email-dialog";
 import { BenchmarkNotification } from "@/components/benchmark/benchmark-notification";
+import { Blob, BlobContent } from "@/components/blob/blob";
 
 export default function BenchmarkPage() {
   const router = useRouter();
@@ -139,7 +140,7 @@ export default function BenchmarkPage() {
               className={cn(
                 "flex items-center justify-center text-center cursor-pointer rounded-lg border-2 p-6 text-base font-medium transition-all duration-300 ease-out hover:border-foreground/40 hover:bg-muted/30",
                 answers[step.id] === option.id
-                  ? "border-foreground bg-muted/50 scale-[1.02]"
+                  ? "border-lime-500 bg-lime-100 scale-[1.02]"
                   : "border-border"
               )}
             >
@@ -156,6 +157,7 @@ export default function BenchmarkPage() {
 
   return (
     <div className="flex flex-col lg:flex-row min-h-screen">
+
       <BenchmarkAside currentStep={submitted ? 2 : 1} />
       <BenchmarkMobileHeader currentStep={submitted ? 2 : 1} />
 
@@ -164,13 +166,18 @@ export default function BenchmarkPage() {
           <BenchmarkConfirmation />
         ) : (
           <>
-            <BenchmarkHero
-              currentStep={currentStep + 1}
-              totalSteps={STEPS.length}
-            />
+            <BenchmarkHero />
 
-            <div className="flex items-center justify-center px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24">
-              <div className="w-full max-w-3xl space-y-10">
+            <Blob
+              responsive={{
+                base: {
+                  layout: "stack",
+                  paddingX: "container-xl",
+                  paddingY: "2xl",
+                },
+              }}
+            >
+              <BlobContent>
                 <BenchmarkProgressSteps
                   totalSteps={STEPS.length}
                   currentStep={currentStep}
@@ -187,8 +194,8 @@ export default function BenchmarkPage() {
                 >
                   {renderInput()}
                 </BenchmarkQuestionCard>
-              </div>
-            </div>
+                </BlobContent>
+              </Blob>
           </>
         )}
 

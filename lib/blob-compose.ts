@@ -48,8 +48,12 @@ export interface ResponsiveBreakpointProps {
   headerPaddingX?: PaddingValue
   headerPaddingY?: PaddingValue
   figureBleed?: FigureBleedValue
+  markerSize?: SizeValue
+  markerWidth?: "default" | "auto"
   // Iterator container props
   iteratorLayout?: string
+  iteratorPaddingX?: PaddingValue
+  iteratorPaddingY?: SizeValue
   iteratorGapX?: SizeValue
   iteratorGapY?: SizeValue
   swiperSlidesPerView?: string
@@ -78,6 +82,52 @@ export type BlobComposableProps = {
   responsive?: ResponsiveProps
   /** Thème de couleur (ex: "brand", "blue", "red") */
   theme?: string
+}
+
+/**
+ * Type helper pour construire des configs Blob manuellement dans votre code.
+ *
+ * Ce type élimine le besoin de `as const` sur chaque propriété grâce à l'annotation de type.
+ * TypeScript infère automatiquement les types littéraux corrects pour layout, size, align, etc.
+ *
+ * **Architecture** :
+ * - Blob est un composant Server Component réutilisable entre sites
+ * - BlobConfig ne contient QUE les props du composant Blob lui-même
+ * - Les appearance/background sont site-spécifiques et appliqués externally via className
+ *
+ * @example
+ * ```tsx
+ * import type { BlobConfig } from '@/lib/blob-compose'
+ *
+ * const config: BlobConfig = {
+ *   responsive: {
+ *     base: {
+ *       layout: "stack",        // ✅ Auto-complétion : "stack" | "bar" | "row"
+ *       size: "xl",             // ✅ Auto-complétion : "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | ...
+ *       align: "center",        // ✅ Auto-complétion : "left" | "center" | "right"
+ *       paddingX: "container-xl",
+ *       paddingY: "2xl",
+ *     },
+ *     md: {
+ *       size: "2xl",
+ *       paddingY: "4xl",
+ *     },
+ *   },
+ *   theme: "brand",
+ * }
+ *
+ * <Blob {...config}>
+ *   <Blob.Header>...</Blob.Header>
+ * </Blob>
+ * ```
+ *
+ * @see BlobComposableProps - Le type de base (équivalent sans className)
+ * @see ResponsiveProps - Structure de l'objet responsive
+ * @see ResponsiveBreakpointProps - Props disponibles par breakpoint
+ */
+export type BlobConfig = BlobComposableProps & {
+  /** Classes CSS additionnelles (Tailwind, custom, ou appearance resolved) */
+  className?: string
 }
 
 /* ── Conversion objet → string ── */

@@ -7,7 +7,11 @@ interface UseKeyboardShortcutsOptions {
   onDeleteSelected: () => void
   onUndo: () => void
   onRedo: () => void
+  onCopy?: () => void
+  onCopyStyle?: () => void
+  onPaste?: () => void
   hasSelection: boolean
+  hasClipboard?: boolean
 }
 
 export function useKeyboardShortcuts({
@@ -15,7 +19,11 @@ export function useKeyboardShortcuts({
   onDeleteSelected,
   onUndo,
   onRedo,
+  onCopy,
+  onCopyStyle,
+  onPaste,
   hasSelection,
+  hasClipboard,
 }: UseKeyboardShortcutsOptions) {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -45,6 +53,27 @@ export function useKeyboardShortcuts({
         return
       }
 
+      // Cmd+C / Ctrl+C → copier le bloc sélectionné
+      if ((e.metaKey || e.ctrlKey) && !e.shiftKey && e.key === "c" && hasSelection && onCopy) {
+        e.preventDefault()
+        onCopy()
+        return
+      }
+
+      // Cmd+Shift+C / Ctrl+Shift+C → copier le style du bloc sélectionné
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === "c" && hasSelection && onCopyStyle) {
+        e.preventDefault()
+        onCopyStyle()
+        return
+      }
+
+      // Cmd+V / Ctrl+V → coller dans le bloc sélectionné
+      if ((e.metaKey || e.ctrlKey) && e.key === "v" && hasSelection && hasClipboard && onPaste) {
+        e.preventDefault()
+        onPaste()
+        return
+      }
+
       // Backspace / Delete → supprime le bloc sélectionné
       if ((e.key === "Backspace" || e.key === "Delete") && hasSelection) {
         e.preventDefault()
@@ -54,5 +83,5 @@ export function useKeyboardShortcuts({
 
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [onSave, onDeleteSelected, onUndo, onRedo, hasSelection])
+  }, [onSave, onDeleteSelected, onUndo, onRedo, onCopy, onCopyStyle, onPaste, hasSelection, hasClipboard])
 }

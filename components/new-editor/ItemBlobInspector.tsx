@@ -12,13 +12,13 @@ import { useUser } from "@/lib/auth/UserContext"
 import { canEditField } from "@/lib/auth/field-permissions"
 
 // Mirror of BlobInspector's FIELD_TYPE_MAP
-const FIELD_TYPE_MAP: Partial<Record<string, "text" | "textarea" | "select" | "checkbox" | "icon" | "multiselect">> = {
+const FIELD_TYPE_MAP: Partial<Record<string, "text" | "textarea" | "select" | "checkbox" | "icon" | "multiselect" | "file">> = {
   text: "text",
   textarea: "textarea",
   dropdown: "select",
   checkbox: "checkbox",
   icon: "icon",
-  image: "text",
+  image: "file",
   video: "text",
   multiselect: "multiselect",
 }

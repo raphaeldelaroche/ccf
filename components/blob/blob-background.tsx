@@ -16,7 +16,7 @@ export function BlobBackground({ backgrounds }: BlobBackgroundProps) {
           data-slot="blob-background"
           aria-hidden="true"
           className={cn("absolute inset-0 pointer-events-none", bg.className)}
-          style={{ zIndex: (bg.zIndex ?? 0) - 10 }}
+          style={{ zIndex: bg.zIndex ?? 0 }}
         >
           {bg.content}
         </div>

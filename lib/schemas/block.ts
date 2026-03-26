@@ -56,6 +56,7 @@ export const BlockDataSchema = z
     markerContent: z.string().optional(),
     markerStyle: z.string().optional(),
     markerSize: z.string().optional(),
+    markerWidth: z.string().optional(),
     markerTheme: z.string().optional(),
     markerShape: z.string().optional(),
 

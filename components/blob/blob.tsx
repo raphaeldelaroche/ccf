@@ -39,7 +39,7 @@ function Blob({
    ======================================= */
 
 const blobActionsVariants = cva(
-  "flex gap-actions [&>button]:h-button [&>button]:px-button-x [&>button]:text-button [&>button]:rounded-button [&>button]:gap-button [&>a]:h-button [&>a]:px-button-x [&>a]:text-button [&>a]:rounded-button [&>a]:gap-button",
+  "flex gap-actions [&>button:not([data-size*='icon'])]:px-button-x [&>button]:h-button [&>button]:text-button [&>button]:rounded-button [&>button]:gap-button [&>button[data-size*='icon']]:w-button [&>a:not([data-size*='icon'])]:px-button-x [&>a]:h-button [&>a]:text-button [&>a]:rounded-button [&>a]:gap-button [&>a[data-size*='icon']]:w-button",
   {
     variants: {
       layout: {
