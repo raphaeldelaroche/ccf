@@ -8,7 +8,7 @@ import { createNewBlock } from "@/lib/new-editor/block-registry"
 import { api } from "@/lib/auth/api-client"
 import { migrateResponsiveFields, migrateXsToBaseAll } from "@/lib/new-editor/migrate-responsive-fields"
 import { refreshBlockRecursive, type RefreshMode } from "@/lib/new-editor/refresh-helpers"
-import { extractFieldsByCategory, mergeFieldsIntoData, getFieldSectionsForBlockType } from "@/lib/copy-paste-utils"
+import { extractFieldsByCategory, mergeFieldsIntoData, getFieldSectionsForBlockType, type CopyMode } from "@/lib/copy-paste-utils"
 import { useClipboardStore } from "./useClipboardStore"
 
 const MAX_HISTORY = 50

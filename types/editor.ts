@@ -3,7 +3,7 @@ import type { IconData } from "@/lib/blob-fields";
 /**
  * Valeur générique d'un champ de formulaire
  */
-export type FormDataValue = string | boolean | string[] | Array<Record<string, unknown>> | Record<string, unknown> | IconData | null;
+export type FormDataValue = string | number | boolean | string[] | Array<Record<string, unknown>> | Record<string, unknown> | IconData | null;
 
 /**
  * Représente un bloc dans l'éditeur avec sa hiérarchie

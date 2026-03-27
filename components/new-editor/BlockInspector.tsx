@@ -116,7 +116,10 @@ export function BlockInspector({
           />
         )}
         {selectedBlock.blockType === "form" && (
-          <FormInspector />
+          <FormInspector
+            data={selectedBlock.data}
+            onUpdate={handleUpdate}
+          />
         )}
       </ScrollArea>
     </div>

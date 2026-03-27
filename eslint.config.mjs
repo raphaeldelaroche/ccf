@@ -11,6 +11,10 @@ const eslintConfig = defineConfig([
         "warn",
         { varsIgnorePattern: "^_", argsIgnorePattern: "^_" },
       ],
+      "@typescript-eslint/no-unsafe-assignment": "error",
+      "@typescript-eslint/no-unsafe-member-access": "error",
+      "@typescript-eslint/no-unsafe-call": "error",
+      "@typescript-eslint/no-unsafe-return": "error",
     },
   },
   // Override default ignores of eslint-config-next.

@@ -1,58 +1,47 @@
 /**
- * SITEMAP PAGE
+ * PAGE D'ACCUEIL
  *
- * Vue d'ensemble de toutes les pages du projet.
- * Table principale avec édition & suppression.
- * Extensible : section stats, filtres, création… à venir.
+ * Affiche le contenu de la page "home" depuis Redis (page:home).
+ * C'est la page principale du site accessible à la racine (/).
  */
 
-import { listPagesWithDetails } from "@/lib/page-storage"
-import { SitemapClient } from "@/components/sitemap/SitemapClient"
-import { SitemapHeader } from "@/components/sitemap/SitemapHeader"
-import { NAVIGATION_PAGES } from "@/config/navigation"
+import { notFound } from "next/navigation"
+import { loadPage } from "@/lib/page-storage"
+import { renderBlocks } from "@/lib/render-page-blocks"
+import { PublicPageHeader } from "@/components/public/PublicPageHeader"
+import type { BlockNode } from "@/lib/new-editor/block-types"
+import { Footer } from "@/components/layout/footer"
+import { getPageMetadata } from "@/lib/seo/get-page-metadata"
 
 export const dynamic = "force-dynamic"
 
-export default async function SitemapPage() {
-  const allPages = await listPagesWithDetails()
-  const navSlugs = new Set(NAVIGATION_PAGES.map((p) => p.slug))
-  const redisPages = allPages.filter((p) => navSlugs.has(p.slug))
-  const redisSlugs = new Set(redisPages.map((p) => p.slug))
+export default async function HomePage() {
+  // Charger les données de la page "home"
+  const pageData = await loadPage("home")
 
-  // Static pages (have href in config) not stored in Redis
-  const staticEntries = NAVIGATION_PAGES
-    .filter((n) => n.href && !redisSlugs.has(n.slug))
-    .map((n) => ({ slug: n.slug, title: n.title }))
-
-  const staticHrefs: Record<string, string> = Object.fromEntries(
-    NAVIGATION_PAGES
-      .filter((n) => n.href && !redisSlugs.has(n.slug))
-      .map((n) => [n.slug, n.href!])
-  )
-
-  const navOrder = NAVIGATION_PAGES.map((p) => p.slug)
-  const pages = [...redisPages, ...staticEntries]
-    .sort((a, b) => navOrder.indexOf(a.slug) - navOrder.indexOf(b.slug))
+  // 404 si la page n'existe pas
+  if (!pageData) {
+    notFound()
+  }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="mx-auto max-w-6xl px-6 py-10">
-
-        {/* ── Header ─────────────────────────────────────── */}
-        <SitemapHeader />
-
-        {/* ── Stats (future: bloc de KPIs) ───────────────── */}
-        {/* <SitemapStats pages={pages} /> */}
-
-        {/* ── Table principale ────────────────────────────── */}
-        <section>
-          <SitemapClient pages={pages} navSlugs={navSlugs} staticHrefs={staticHrefs} />
-        </section>
-
-        {/* ── Sections futures ────────────────────────────── */}
-        {/* <SitemapPresets /> */}
-        {/* <SitemapActivity /> */}
-      </div>
-    </div>
+    <>
+      <PublicPageHeader />
+      <main>
+        {/* Rendu des blocs */}
+        <div className="flex flex-col">
+          {renderBlocks(pageData.blocks as BlockNode[])}
+        </div>
+      </main>
+      <Footer />
+    </>
   )
+}
+
+/**
+ * Génération des métadonnées pour SEO
+ * Utilise la configuration centralisée dans config/seo-pages.ts
+ */
+export async function generateMetadata() {
+  return getPageMetadata("home")
 }

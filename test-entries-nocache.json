@@ -1,0 +1,3 @@
+{
+  "query": "query GetEntries { gfEntries(first: 50, where: { formIds: [3] }) { nodes { ... on GfSubmittedEntry { databaseId dateCreated formFields { nodes { ... on TextField { databaseId label value } ... on SelectField { databaseId label value } ... on EmailField { databaseId label value } } } } } } }"
+}

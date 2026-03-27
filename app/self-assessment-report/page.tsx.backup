@@ -1,0 +1,358 @@
+"use client";
+
+import { PILLARS } from "@/lib/self-assessment/self-assessment-report-data";
+import { getSectorData } from "@/lib/self-assessment/sector-data";
+import { Info, Eye, EyeOff } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { PublicPageHeader } from "@/components/public/PublicPageHeader";
+import { SelfAssessmentIntro } from "@/components/self-assessment/self-assessment-intro";
+import { ReportChartSection } from "@/components/self-assessment-report/report-chart-section";
+import { ReportExplanation } from "@/components/self-assessment-report/report-explanation";
+import { SectorNavigation } from "@/components/self-assessment-report/sector-navigation";
+import { Blob, BlobContent } from "@/components/blob/blob";
+import { BlobBackground } from "@/components/blob/blob-background";
+import { resolveBackgrounds } from "@/config/blob-backgrounds";
+import { Marker } from "@/components/blob/marker";
+import { Title } from "@/components/blob/title";
+import Link from "next/link";
+import { Footer } from "@/components/layout/footer";
+import { createContext, useContext, useState, ReactNode, useEffect, useRef } from "react";
+import { decodeTokenClient as decodeToken } from "@/lib/self-assessment/token-utils-client";
+import { setAssessmentToken } from "@/lib/self-assessment/cookie-utils";
+
+// Context for highlighting dynamic data
+const DynamicDataContext = createContext<{
+  isHighlighted: boolean;
+  toggleHighlight: () => void;
+}>({
+  isHighlighted: false,
+  toggleHighlight: () => {},
+});
+
+export const useDynamicData = () => useContext(DynamicDataContext);
+
+// Wrapper component for dynamic data
+export function DynamicData({ children }: { children: ReactNode }) {
+  const { isHighlighted } = useDynamicData();
+  return (
+    <span
+      className={
+        isHighlighted
+          ? "bg-yellow-200 dark:bg-yellow-900/50 outline outline-2 outline-yellow-400 dark:outline-yellow-600 rounded px-1"
+          : ""
+      }
+    >
+      {children}
+    </span>
+  );
+}
+
+export default function SelfAssessmentReportPage() {
+  // Always start with false to match server-side render
+  const [isHighlighted, setIsHighlighted] = useState(false);
+  const hasLoadedFromStorage = useRef(false);
+
+  // Load from localStorage only on client after hydration
+  // This is the correct pattern to avoid hydration mismatch with localStorage
+  useEffect(() => {
+    if (!hasLoadedFromStorage.current) {
+      hasLoadedFromStorage.current = true;
+      const saved = localStorage.getItem('ccf-highlight-dynamic');
+      if (saved === 'true') {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setIsHighlighted(true);
+      }
+    }
+  }, []);
+
+  const toggleHighlight = () => {
+    setIsHighlighted(prev => {
+      const newValue = !prev;
+      localStorage.setItem('ccf-highlight-dynamic', String(newValue));
+      return newValue;
+    });
+  };
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token");
+  const sectorParam = searchParams.get("sector");
+
+  // Decode token if present, otherwise use sector parameter
+  let sectorId: string | null = null;
+  let assessmentToken: string | null = null;
+
+  if (token) {
+    // Decode the JWT token
+    const decoded = decodeToken(token);
+    if (decoded) {
+      sectorId = decoded.sector;
+      assessmentToken = token;
+
+      // Store token in cookie for later use
+      setAssessmentToken(token);
+    } else {
+      // Token is invalid or expired
+      return (
+        <>
+          <PublicPageHeader />
+          <div className="flex items-center justify-center p-8">
+            <div className="text-center">
+              <h1 className="text-2xl font-bold mb-4">Invalid or Expired Link</h1>
+              <p className="text-muted-foreground mb-6">
+                This report link is invalid or has expired. Please check your email for a valid link or take the assessment again.
+              </p>
+              <Link
+                href="/self-assessment"
+                className="text-brand-600 hover:text-brand-700 underline"
+              >
+                Take the self-assessment again
+              </Link>
+            </div>
+          </div>
+        </>
+      );
+    }
+  } else if (sectorParam) {
+    // Fallback to sector parameter for backward compatibility
+    sectorId = sectorParam;
+  }
+
+  // Validation: check if sector parameter exists
+  if (!sectorId) {
+    return (
+      <>
+        <PublicPageHeader />
+        <div className="flex items-center justify-center p-8">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold mb-4">Invalid Report Link</h1>
+            <p className="text-muted-foreground mb-6">
+              This report link is missing the required information. Please check your email for the correct link.
+            </p>
+            <Link
+              href="/self-assessment"
+              className="text-brand-600 hover:text-brand-700 underline"
+            >
+              Take the self-assessment again
+            </Link>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // Get sector data
+  const sectorData = getSectorData(sectorId);
+
+  // Validation: check if sector exists
+  if (!sectorData) {
+    return (
+      <>
+        <PublicPageHeader />
+        <div className="flex items-center justify-center p-8">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold mb-4">Sector Not Found</h1>
+            <p className="text-muted-foreground mb-6">
+              The sector ”{sectorId}“ was not found in our database.
+            </p>
+            <Link
+              href="/self-assessment"
+              className="text-brand-600 hover:text-brand-700 underline"
+            >
+              Take the self-assessment again
+            </Link>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // Validation: check if sector has data available
+  if (!sectorData.hasData) {
+    return (
+      <>
+        <PublicPageHeader />
+        <div className="flex items-center justify-center p-8">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold mb-4">Report Not Yet Available</h1>
+            <p className="text-muted-foreground mb-6">
+              {sectorData.displayMessage}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              We&apos;ll reach out soon with personalized insights about your climate contribution potential.
+            </p>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // Build result object from sector data
+  const result = {
+    sector: sectorData.label,
+    score: sectorData.sum,
+    alpha: sectorData.alpha,
+    beta: sectorData.beta,
+    gamma: sectorData.gamma,
+    contextMessage: sectorData.contextMessage,
+  };
+
+  return (
+    <DynamicDataContext.Provider value={{ isHighlighted, toggleHighlight }}>
+      <PublicPageHeader />
+
+      {/* Floating Development Zone - Will be removed in production */}
+      <div className="fixed top-4 left-4 z-50 flex flex-col gap-3">
+        <SectorNavigation currentSectorId={sectorId} />
+
+        {/* Dynamic Data Highlighter Toggle */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleHighlight();
+          }}
+          className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border-2 border-yellow-400 rounded-lg shadow-lg hover:bg-yellow-50 dark:hover:bg-gray-700 transition-colors"
+          title={isHighlighted ? "Hide dynamic data" : "Show dynamic data"}
+        >
+          {isHighlighted ? (
+            <EyeOff className="size-5 text-yellow-600" />
+          ) : (
+            <Eye className="size-5 text-yellow-600" />
+          )}
+          <span className="text-sm font-medium">
+            {isHighlighted ? "Hide" : "Show"} Dynamic
+          </span>
+        </button>
+      </div>
+
+      <div className="min-h-screen">
+        <main className="flex-1">
+          <SelfAssessmentIntro
+            stepNumber="02"
+            title="Your climate contribution potential"
+            subtitle={<DynamicData>{result.contextMessage}</DynamicData>}
+            eyebrow={<>Sector: <DynamicData>{result.sector}</DynamicData></>}
+            emphasisText="climate contribution potential"
+            style="active"
+          />
+
+          <Blob
+            responsive={{
+              base: {
+                marker: "left",
+                markerWidth: "default",
+                layout: "stack",
+                size: "md",
+                align: "left",
+                paddingX: "lg",
+                paddingY: "lg",
+              },
+              md: {
+                paddingX: "container-lg",
+                paddingY: "xl",
+              },
+            }}
+            className="overflow-hidden"
+          >
+            <BlobBackground backgrounds={resolveBackgrounds(["plusCorners", "lineSide", "lineBottom"])} />
+            <Marker className="blob-size-xl" rounded variant={"ghost"}>
+              <Info className="!size-10 text-lime-300" />
+            </Marker>
+            <Blob.Header>
+              <Title>
+                <div className="text-base">
+                  This is your contributive potential, not your final scorecard. This
+                score represents what your company could contribute at maximum — not
+                what it does today. The full scorecard measures your actual performance.
+                </div>
+              </Title>
+            </Blob.Header>
+          </Blob>
+
+
+          <Blob
+            responsive={{
+              base: {
+                marker: "left",
+                markerWidth: "default",
+                layout: "stack",
+                size: "md",
+                align: "left",
+                paddingX: "lg",
+                paddingY: "lg",
+              },
+              md: {
+                paddingX: "container-lg",
+                paddingY: "xl",
+              },
+            }}
+            className="overflow-hidden"
+          >
+            <BlobBackground backgrounds={resolveBackgrounds(["plusCorners", "lineSide", "lineBottom"])} />
+            <Blob.Content>
+              
+
+            <ReportChartSection
+              score={result.score}
+              pillars={PILLARS}
+              pillarValues={{
+                alpha: result.alpha,
+                beta: result.beta,
+                gamma: result.gamma,
+              }}
+              highlightDynamic={isHighlighted}
+            />
+
+            </Blob.Content>
+          </Blob>
+
+        <Blob
+        
+          responsive={{
+            base: {
+              marker: "left",
+              markerWidth: "default",
+              layout: "stack",
+              size: "md",
+              align: "left",
+              paddingX: "lg",
+              paddingY: "lg",
+            },
+            md: {
+              paddingX: "container-lg",
+              paddingY: "xl",
+            },
+          }}
+        >
+          <BlobBackground backgrounds={resolveBackgrounds(["plusCorners", "lineSide", "lineBottom"])} />
+          <BlobContent>
+            <ReportExplanation
+              sector={result.sector}
+              beta={result.beta}
+              contextMessage={result.contextMessage}
+              highlightDynamic={isHighlighted}
+            />
+          </BlobContent>
+        </Blob>
+
+
+        {/* <NetZeroCTA /> */}
+
+        <SelfAssessmentIntro
+          stepNumber="03"
+          title="Discover your actual contribution"
+          emphasisText="actual contribution"
+          subtitle="This self-assessment reveals your potential. The CCF scorecard measures where you truly stand — and what your investors, your clients and your peers don't yet see in your climate actions."
+          style="active"
+          buttonLabel="Request my full scorecard"
+          buttonHref={assessmentToken ? `/self-assessment-request?token=${assessmentToken}` : "/scorecard-request"}
+          buttonTheme="brand"
+          appearance={["headerWidthTwoThirds", "actionsOffsetMarker"]}
+          background={["lineSide", "plusCorners", "timelineVerticalLineX"]}
+        />
+        </main>
+      </div>
+      <Footer />
+    </DynamicDataContext.Provider>
+  );
+}

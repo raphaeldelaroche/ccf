@@ -11,6 +11,7 @@ import fieldSections, { type Field as BlobField, type FieldSection } from '@/lib
 import { IteratorBlockDefinition } from '@/lib/blob-iterator-definition';
 import { buttonTooltipFields } from '@/lib/button-tooltip-fields';
 import { faqFields } from '@/lib/faq-fields';
+import { formFieldSections } from '@/lib/form-fields';
 
 export interface BlockDefinition {
   label: string;
@@ -147,10 +148,14 @@ export const BLOCK_REGISTRY: Record<BlockType, BlockDefinition> = {
   form: {
     label: 'Formulaire',
     icon: Mail,
-    description: 'Formulaire de contact statique (skeleton)',
+    description: 'Formulaire Gravity Forms configurable',
     allowedInnerBlocks: [], // Pas de blocs imbriqués
-    sections: {}, // Aucune configuration
-    initialValues: {}, // Aucune valeur initiale
+    sections: formFieldSections,
+    initialValues: {
+      formId: 1,
+      successMessage: 'Thank you for your submission! We will get back to you soon.',
+      debug: true, // Activé temporairement pour debug
+    },
   },
 };
 

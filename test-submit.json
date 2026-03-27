@@ -1,0 +1,26 @@
+{
+  "query": "mutation SubmitForm($id: ID!, $fieldValues: [FormFieldValuesInput!]!) { submitGfForm(input: { id: $id, fieldValues: $fieldValues }) { confirmation { type message } errors { id message } entry { id ... on GfSubmittedEntry { databaseId } } } }",
+  "variables": {
+    "id": "3",
+    "fieldValues": [
+      {
+        "id": 1,
+        "value": "technology"
+      },
+      {
+        "id": 3,
+        "value": "pme"
+      },
+      {
+        "id": 5,
+        "value": "europe"
+      },
+      {
+        "id": 6,
+        "emailValues": {
+          "value": "test@example.com"
+        }
+      }
+    ]
+  }
+}

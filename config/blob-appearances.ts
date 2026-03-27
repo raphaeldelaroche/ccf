@@ -1,4 +1,4 @@
-import { negative } from "zod";
+// removed unused import: negative from zod
 
 /**
  * Configuration d'une apparence de Blob
@@ -105,6 +105,10 @@ export const APPEARANCES: Record<string, AppearanceDefinition> = {
     label: "Header : Largeur 2/3",
     headerClassName: "max-w-[calc(var(--container-xl)/3*2)]"
   },
+  actionsOffsetMarker: {
+    label: "Actions : Décalage aligné sur marker",
+    actionsClassName: "!pl-[calc(var(--size-media-width)+var(--spacing-section))]"
+  },
   gridTwoColumnsLikeContainer: {
     // Ici, on cherche à appliquer un pading latéral aux 2 colonnes de la grille pour faire comme si elles étaient dans un --container-xl
     label: "Grille 2 colonnes avec padding comme container",
@@ -133,15 +137,15 @@ export const APPEARANCES: Record<string, AppearanceDefinition> = {
   },
   eyebrowAsBadge: {
     label: "Surtitre : style badge",
-    headerClassName: "[&_>[data-slot='eyebrow']]:inline-block [&_[data-slot='eyebrow']]:bg-white [&_[data-slot='eyebrow']]:text-foreground [&_[data-slot='eyebrow']]:px-3.5 [&_[data-slot='eyebrow']]:py-2 [&_[data-slot='eyebrow']]:rounded-full [&_[data-slot='eyebrow']]:text-xs [&_[data-slot='eyebrow']]:mb-3",
+    headerClassName: "[&_>[data-slot='eyebrow']]:inline-block [&_[data-slot='eyebrow']]:bg-white [&_[data-slot='eyebrow']]:text-foreground [&_[data-slot='eyebrow']]:px-[1.25em] [&_[data-slot='eyebrow']]:py-[0.5em] [&_[data-slot='eyebrow']]:rounded-full [&_[data-slot='eyebrow']]:text-xs [&_[data-slot='eyebrow']]:mb-3",
   },
   eyebrowBadgePrimary: {
     label: "Surtitre : badge primaire",
-    headerClassName: "[&_>[data-slot='eyebrow']]:inline-block [&_[data-slot='eyebrow']]:bg-primary [&_[data-slot='eyebrow']]:text-primary-foreground [&_[data-slot='eyebrow']]:px-3.5 [&_[data-slot='eyebrow']]:py-2 [&_[data-slot='eyebrow']]:rounded-full [&_[data-slot='eyebrow']]:text-xs [&_[data-slot='eyebrow']]:mb-3",
+    headerClassName: "[&_>[data-slot='eyebrow']]:inline-block [&_[data-slot='eyebrow']]:bg-primary [&_[data-slot='eyebrow']]:text-primary-foreground",
   },
   eyebrowBadgeOutline: {
     label: "Surtitre : badge contour",
-    headerClassName: "[&_>[data-slot='eyebrow']]:inline-block [&_[data-slot='eyebrow']]:border [&_[data-slot='eyebrow']]:border-border [&_[data-slot='eyebrow']]:text-foreground [&_[data-slot='eyebrow']]:px-3.5 [&_[data-slot='eyebrow']]:py-2 [&_[data-slot='eyebrow']]:rounded-full [&_[data-slot='eyebrow']]:text-xs [&_[data-slot='eyebrow']]:mb-3",
+    headerClassName: "[&_>[data-slot='eyebrow']]:inline-block [&_[data-slot='eyebrow']]:border [&_[data-slot='eyebrow']]:border-border [&_[data-slot='eyebrow']]:text-foreground",
   },
   markerTextMono: {
     label: "Marqueur : Texte monospace",
@@ -153,7 +157,7 @@ export const APPEARANCES: Record<string, AppearanceDefinition> = {
   },
   negativeMarinTop: {
     label: "Marge négative en haut",
-    blobClassName: "lg:-mt-26 xl:-mt-32 2xl:-mt-56",
+    blobClassName: "lg:-mt-26 xl:-mt-32 2xl:-mt-32",
   },
 };
 

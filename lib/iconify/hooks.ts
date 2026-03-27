@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { retryOperation, applySvgStrokeWidth } from "./utils";
 
 /**
@@ -15,17 +15,19 @@ export function useIconifySearch(
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    // Don't search for empty queries
-    if (!query.trim()) {
-      setResults([]);
-      setLoading(false);
-      setError(null);
-      return;
-    }
-
     let cancelled = false;
 
     const searchIcons = async () => {
+      // Don't search for empty queries
+      if (!query.trim()) {
+        if (!cancelled) {
+          setResults([]);
+          setLoading(false);
+          setError(null);
+        }
+        return;
+      }
+
       setLoading(true);
       setError(null);
 
@@ -85,17 +87,16 @@ export function useIconifySvg(
 
   useEffect(() => {
     if (!iconName) {
-      setSvg(null);
-      setLoading(false);
-      setError(null);
       return;
     }
 
     let cancelled = false;
 
     const fetchSvg = async () => {
-      setLoading(true);
-      setError(null);
+      if (!cancelled) {
+        setLoading(true);
+        setError(null);
+      }
 
       try {
         // Remove collection prefix from icon name if present (e.g., "lucide:hand" → "hand")
@@ -144,7 +145,7 @@ export function useIconifySvg(
  * Fetch and parse icon to IconData format
  * Combines SVG fetch + parsing into single hook
  */
-import { IconData, IconObject } from "@/lib/blob-fields";
+import { IconData } from "@/lib/blob-fields";
 import { parseSvgToObject } from "./utils";
 
 export function useIconifyIcon(
@@ -164,18 +165,15 @@ export function useIconifyIcon(
     strokeWidth
   );
 
-  const [iconData, setIconData] = useState<IconData | null>(null);
-
-  useEffect(() => {
+  const iconData = useMemo<IconData | null>(() => {
     if (!svg || !iconName) {
-      setIconData(null);
-      return;
+      return null;
     }
 
     const iconObject = parseSvgToObject(svg);
 
     if (iconObject) {
-      setIconData({
+      return {
         name: iconName,
         collection,
         metadata: {
@@ -183,10 +181,10 @@ export function useIconifyIcon(
           strokeWidth,
         },
         iconObject,
-      });
-    } else {
-      setIconData(null);
+      };
     }
+
+    return null;
   }, [svg, iconName, collection, size, strokeWidth]);
 
   return { iconData, loading, error };

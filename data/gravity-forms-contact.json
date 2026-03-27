@@ -1,0 +1,124 @@
+{
+  "title": "Contact Form",
+  "description": "Get in touch with us",
+  "databaseId": 1,
+  "cssClass": "contact-form",
+  "dateCreated": "2026-03-27T10:00:00+00:00",
+  "submitButton": {
+    "type": "text",
+    "text": "Send Message"
+  },
+  "pagination": null,
+  "formFields": {
+    "nodes": [
+      {
+        "databaseId": 1,
+        "type": "TEXT",
+        "label": "Full Name",
+        "isRequired": true,
+        "description": null,
+        "placeholder": "John Doe",
+        "defaultValue": "",
+        "cssClass": "gfield-fullname"
+      },
+      {
+        "databaseId": 2,
+        "type": "EMAIL",
+        "label": "Email Address",
+        "isRequired": true,
+        "description": "We'll never share your email with anyone else",
+        "placeholder": "john.doe@example.com",
+        "defaultValue": "",
+        "cssClass": "gfield-email"
+      },
+      {
+        "databaseId": 3,
+        "type": "PHONE",
+        "label": "Phone Number",
+        "isRequired": false,
+        "description": null,
+        "placeholder": "+1 (555) 123-4567",
+        "defaultValue": "",
+        "cssClass": "gfield-phone"
+      },
+      {
+        "databaseId": 4,
+        "type": "SELECT",
+        "label": "Subject",
+        "isRequired": true,
+        "description": null,
+        "placeholder": "Select a subject",
+        "defaultValue": "",
+        "cssClass": "gfield-subject",
+        "choices": [
+          {
+            "text": "General Inquiry",
+            "value": "general",
+            "isSelected": false
+          },
+          {
+            "text": "Technical Support",
+            "value": "support",
+            "isSelected": false
+          },
+          {
+            "text": "Sales Question",
+            "value": "sales",
+            "isSelected": false
+          },
+          {
+            "text": "Partnership Opportunity",
+            "value": "partnership",
+            "isSelected": false
+          },
+          {
+            "text": "Other",
+            "value": "other",
+            "isSelected": false
+          }
+        ]
+      },
+      {
+        "databaseId": 5,
+        "type": "TEXTAREA",
+        "label": "Message",
+        "isRequired": true,
+        "description": "Please provide as much detail as possible",
+        "placeholder": "Tell us more about your inquiry...",
+        "defaultValue": "",
+        "cssClass": "gfield-message",
+        "rows": 6
+      },
+      {
+        "databaseId": 6,
+        "type": "CHECKBOX",
+        "label": "Preferences",
+        "isRequired": false,
+        "description": null,
+        "cssClass": "gfield-preferences",
+        "inputs": [
+          {
+            "id": "6.1",
+            "label": "Subscribe to newsletter"
+          },
+          {
+            "id": "6.2",
+            "label": "I agree to the privacy policy"
+          }
+        ],
+        "choices": [
+          {
+            "text": "Subscribe to newsletter",
+            "value": "newsletter",
+            "isSelected": false
+          },
+          {
+            "text": "I agree to the privacy policy",
+            "value": "privacy",
+            "isSelected": false
+          }
+        ]
+      }
+    ]
+  }
+}

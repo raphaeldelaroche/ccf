@@ -1,0 +1,124 @@
+{
+  "title": "Self-Assessment Form",
+  "description": "Evaluate your climate contribution potential in 3 questions",
+  "databaseId": 3,
+  "cssClass": "self-assessment-form",
+  "dateCreated": "2026-03-27T10:00:00+00:00",
+  "submitButton": {
+    "type": "text",
+    "text": "Receive my contributive potential"
+  },
+  "pagination": {
+    "type": "percentage",
+    "style": "custom",
+    "backgroundColor": "#f5f5f5",
+    "color": "#333333"
+  },
+  "formFields": {
+    "nodes": [
+      {
+        "databaseId": 1,
+        "type": "SELECT",
+        "label": "What is your main sector of activity?",
+        "isRequired": true,
+        "description": null,
+        "placeholder": "Select your sector",
+        "defaultValue": "",
+        "cssClass": "gfield-sector",
+        "choices": [
+          { "text": "Technology / Software / IT", "value": "technology", "isSelected": false },
+          { "text": "Marketing / Advertising / Communications", "value": "marketing", "isSelected": false },
+          { "text": "Media / Entertainment / Publishing", "value": "media", "isSelected": false },
+          { "text": "Professional Services / Consulting", "value": "professional_services", "isSelected": false },
+          { "text": "Accounting / Audit / Legal / HR", "value": "accounting_legal", "isSelected": false },
+          { "text": "Financial Services / Banking", "value": "financial_services", "isSelected": false },
+          { "text": "Insurance", "value": "insurance", "isSelected": false },
+          { "text": "Real Estate", "value": "real_estate", "isSelected": false },
+          { "text": "Construction / Infrastructure", "value": "construction", "isSelected": false },
+          { "text": "Manufacturing / Engineering", "value": "manufacturing", "isSelected": false },
+          { "text": "Automotive", "value": "automotive", "isSelected": false },
+          { "text": "Energy / Utilities / Oil & Gas", "value": "energy_utilities", "isSelected": false },
+          { "text": "Oil & Gas", "value": "oil_gas", "isSelected": false },
+          { "text": "Electricity", "value": "electricity", "isSelected": false },
+          { "text": "Waste Management", "value": "waste", "isSelected": false },
+          { "text": "Transportation / Logistics / Supply Chain", "value": "transportation", "isSelected": false },
+          { "text": "Retail", "value": "retail", "isSelected": false },
+          { "text": "Hospitality / Tourism / Travel", "value": "hospitality", "isSelected": false },
+          { "text": "Food & Beverage", "value": "food_beverage", "isSelected": false },
+          { "text": "Healthcare / Medical / Hospitals", "value": "healthcare", "isSelected": false },
+          { "text": "Pharmaceuticals / Biotechnology", "value": "pharma_biotech", "isSelected": false },
+          { "text": "Education / Training / E-learning", "value": "education", "isSelected": false },
+          { "text": "Non-profit / NGO", "value": "nonprofit", "isSelected": false },
+          { "text": "Public Sector / Government", "value": "government", "isSelected": false },
+          { "text": "Agriculture / Forestry / Fishing", "value": "agriculture", "isSelected": false },
+          { "text": "Arts / Design / Creative Services", "value": "arts_design", "isSelected": false },
+          { "text": "Consumer Goods", "value": "consumer_goods", "isSelected": false },
+          { "text": "Telecommunications", "value": "telecom", "isSelected": false },
+          { "text": "Other", "value": "other", "isSelected": false }
+        ]
+      },
+      {
+        "databaseId": 2,
+        "type": "PAGE",
+        "label": "Page Break 1",
+        "nextButton": {
+          "type": "text",
+          "text": "Continue → Company size"
+        }
+      },
+      {
+        "databaseId": 3,
+        "type": "SELECT",
+        "label": "What is the size of your company?",
+        "isRequired": true,
+        "description": null,
+        "placeholder": "Select company size",
+        "defaultValue": "",
+        "cssClass": "gfield-size",
+        "choices": [
+          { "text": "1 – 49 employees", "value": "tpe", "isSelected": false },
+          { "text": "50 – 249 employees", "value": "pme", "isSelected": false },
+          { "text": "250 – 4,999 employees", "value": "eti", "isSelected": false },
+          { "text": "5,000+ employees", "value": "ge", "isSelected": false }
+        ]
+      },
+      {
+        "databaseId": 4,
+        "type": "PAGE",
+        "label": "Page Break 2",
+        "nextButton": {
+          "type": "text",
+          "text": "Continue → Geographic area"
+        }
+      },
+      {
+        "databaseId": 5,
+        "type": "SELECT",
+        "label": "Where are most of your operations based?",
+        "isRequired": true,
+        "description": null,
+        "placeholder": "Select geographic area",
+        "defaultValue": "",
+        "cssClass": "gfield-geography",
+        "choices": [
+          { "text": "Europe", "value": "europe", "isSelected": false },
+          { "text": "North America", "value": "north_america", "isSelected": false },
+          { "text": "Asia-Pacific", "value": "asia_pacific", "isSelected": false },
+          { "text": "Latin America", "value": "latin_america", "isSelected": false },
+          { "text": "Africa & Middle East", "value": "africa_middle_east", "isSelected": false },
+          { "text": "Global (no dominant region)", "value": "global", "isSelected": false }
+        ]
+      },
+      {
+        "databaseId": 6,
+        "type": "EMAIL",
+        "label": "Email address",
+        "isRequired": true,
+        "description": "We'll send your climate contribution potential report to this email",
+        "placeholder": "your.email@company.com",
+        "defaultValue": "",
+        "cssClass": "gfield-email"
+      }
+    ]
+  }
+}

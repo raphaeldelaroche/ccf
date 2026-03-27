@@ -73,17 +73,28 @@ export const BACKGROUNDS: Record<string, BackgroundDefinition> = {
   // ─── Patterns ───────────────────────────────────────────────────────────────
   dots: {
     label: "Points",
-    className: "bg-[radial-gradient(circle,_#00000010_1px,_transparent_1px)] bg-[size:20px_20px]",
+    className: "bg-[radial-gradient(circle,_#00000020_1px,_transparent_1px)] bg-[size:20px_20px]",
   },
-  gradientfromtransparentToBlackToTRansparent: {
+  gradientfromtransparentToBlackToTransparent: {
     label: "Dégradé transparent > noir > transparent",
     className: "",
+    zIndex: 5,
     content: (
       <div
         className="absolute inset-0"
         style={{
-          backgroundImage: "linear-gradient(to right, transparent, #00000015, transparent)",
+          backgroundImage: "radial-gradient(circle at center, transparent, rgba(0, 0, 0, 0.05) 50%, transparent 100%)",
         }}
+      />
+    ),
+  },
+  grayGradientFromBottom: {
+    label: "Dégradé gris depuis le bas",
+    className: "",
+    zIndex: 25,
+    content: (
+      <div
+        className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#F7F7F7] to-transparent via-[#F7F7F7]"
       />
     ),
   },
@@ -127,7 +138,7 @@ export const BACKGROUNDS: Record<string, BackgroundDefinition> = {
   plusCorners: {
     label: "Plus aux coins",
     className: "bg-plus-aux-coins overflow-visible",
-    zIndex: 60,
+    zIndex: 15,
     content: (
       <div
       className="absolute inset-0"
@@ -226,6 +237,36 @@ export const BACKGROUNDS: Record<string, BackgroundDefinition> = {
       </div>
     ),
   },
+
+  timelineVerticalLine1: {
+    label: "Timeline ligne verticale #1",
+    className: "",
+    content: (
+      <div
+        className="absolute top-0 left-[calc(var(--spacing-padding-x)+(var(--size-media-width)/2))] top-[var(--spacing-padding-y)] h-128 -z-10 w-px"
+        style={{
+          backgroundImage: "linear-gradient(to bottom, #999 10px, transparent 10px)",
+          backgroundSize: "1px 20px",
+          backgroundRepeat: "repeat-y"
+        }}
+      />
+    )
+  },
+
+  timelineVerticalLineX: {
+    label: "Timeline ligne verticale #X",
+    className: "",
+    content: (
+      <div
+        className="absolute top-0 left-[calc(var(--spacing-padding-x)+(var(--size-media-width)/2))] top-0 h-128 -z-10 w-px"
+        style={{
+          backgroundImage: "linear-gradient(to bottom, #999 10px, transparent 10px)",
+          backgroundSize: "1px 20px",
+          backgroundRepeat: "repeat-y"
+        }}
+      />
+    )
+  }
 }
 
 /**

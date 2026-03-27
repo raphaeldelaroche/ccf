@@ -11,6 +11,7 @@ import { mapFormDataToBlob, type BlobFormData } from "@/lib/blob-form-mapper"
 import { mapIteratorFormData } from "@/lib/blob-iterator-mapper"
 import { mapButtonTooltipFormData } from "@/lib/button-tooltip-mapper"
 import { mapFaqFormData } from "@/lib/faq-mapper"
+import { mapFormData } from "@/lib/form-mapper"
 import { BlobBlock } from "@/components/blocks/BlockBlob"
 import { BlockBlobIterator } from "@/components/blocks/BlockBlobIterator"
 import { BlockButtonTooltip } from "@/components/blocks/BlockButtonTooltip"
@@ -90,7 +91,8 @@ export function renderBlock(block: BlockNode): React.ReactNode {
       }
 
       case "form": {
-        return <BlockForm key={block.id} />
+        const formProps = mapFormData(data)
+        return <BlockForm key={block.id} {...formProps} />
       }
 
       default:

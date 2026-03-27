@@ -1,0 +1,4 @@
+{
+  "query": "query GetEntry($id: ID!) { gfEntry(id: $id, idType: DATABASE_ID) { ... on GfSubmittedEntry { databaseId formDatabaseId formFields { nodes { ... on TextField { databaseId value } ... on SelectField { databaseId value } ... on EmailField { databaseId value } } } } } }",
+  "variables": { "id": "8" }
+}

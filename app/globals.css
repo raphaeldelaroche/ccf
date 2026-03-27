@@ -240,6 +240,7 @@
 [data-slot="blob-header"] > [data-slot="title"] mark {
   font-family: var(--font-accent);
   font-size: 110%;
+  line-height: 90%;
   background-image: linear-gradient(to right, transparent, transparent), linear-gradient(to right, var(--color-lime-300), var(--color-lime-300));
   background-size: 100% 0.15em, 100% 0.15em;
   background-position: 100% 100%, 0 95%;
@@ -249,7 +250,7 @@
 [data-slot="blob-actions"] > [data-slot="button"] {
   font-family: var(--font-maison-mono);
   text-transform: uppercase;
-  font-weight: normal !important;
+  font-weight: 400 !important;
   border-radius: 20rem;
   line-height: 1;
 }

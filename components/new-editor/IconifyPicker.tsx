@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import { IconData } from "@/lib/blob-fields";
 import { useIconifySearch, useIconifyIcon } from "@/lib/iconify/hooks";
 import { useDebounce } from "@/lib/iconify/utils";
@@ -210,7 +210,7 @@ export function IconifyPicker({
           className="w-full h-8 text-xs"
           onClick={() => setMode("search")}
         >
-          Changer l'icône
+          Changer l&apos;icône
         </Button>
       </div>
     );

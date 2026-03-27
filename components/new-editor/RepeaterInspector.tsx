@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { GripVertical, Plus, Copy, Trash2 } from "lucide-react"
 import { evaluateShowIf } from "@/lib/new-editor/showif-evaluator"
-import type { Field } from "@/lib/blob-fields"
+import type { Field, IconData } from "@/lib/blob-fields"
 import type { FormDataValue } from "@/types/editor"
 import { cn } from "@/lib/utils"
 import { useUser } from "@/lib/auth/UserContext"
@@ -259,10 +259,10 @@ export function RepeaterInspector({
                     const rawVal = row[key] ?? (fieldDef.type === "checkbox" ? "false" : fieldDef.type === "icon" ? "null" : "")
 
                     // Handle IconData deserialization
-                    let value = rawVal
+                    let value: string | boolean | string[] | IconData | null = rawVal
                     if (fieldDef.type === "icon" && typeof rawVal === "string" && rawVal && rawVal !== "null") {
                       try {
-                        value = JSON.parse(rawVal)
+                        value = JSON.parse(rawVal) as IconData
                       } catch {
                         value = null
                       }

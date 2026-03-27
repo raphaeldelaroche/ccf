@@ -1,0 +1,3 @@
+{
+  "query": "query { gfForm(id: \"3\", idType: DATABASE_ID) { ... on GfForm { databaseId title entries(first: 20) { nodes { ... on GfSubmittedEntry { databaseId dateCreated formFields { nodes { ... on TextField { databaseId label value } ... on SelectField { databaseId label value } ... on EmailField { databaseId label value } } } } } } } } }"
+}

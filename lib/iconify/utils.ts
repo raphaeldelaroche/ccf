@@ -62,7 +62,7 @@ export function parseSvgToObject(svgString: string): IconObject | null {
     }
 
     return nodeToObject(svg);
-  } catch (error) {
+  } catch {
     // Silent failure in production
     return null;
   }

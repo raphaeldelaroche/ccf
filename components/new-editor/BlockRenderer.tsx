@@ -26,6 +26,7 @@ import { mapFormDataToBlob } from "@/lib/blob-form-mapper"
 import { mapIteratorFormData } from "@/lib/blob-iterator-mapper"
 import { mapButtonTooltipFormData } from "@/lib/button-tooltip-mapper"
 import { mapFaqFormData } from "@/lib/faq-mapper"
+import { mapFormData } from "@/lib/form-mapper"
 import { BlockButtonTooltip } from "@/components/blocks/BlockButtonTooltip"
 import { BlockParagraph } from "@/components/blocks/BlockParagraph"
 import { BlockDivider } from "@/components/blocks/BlockDivider"
@@ -530,7 +531,8 @@ export function BlockRenderer({
     }
 
     if (block.blockType === "form") {
-      return <BlockForm />
+      const formProps = mapFormData(block.data)
+      return <BlockForm {...formProps} />
     }
 
     return <div className="p-4 bg-muted text-sm">Type de bloc inconnu: {block.blockType}</div>
