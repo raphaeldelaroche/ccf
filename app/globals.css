@@ -239,6 +239,7 @@
 
 [data-slot="blob-header"] > [data-slot="title"] mark {
   font-family: var(--font-accent);
+  font-style: italic;
   font-size: 110%;
   line-height: 90%;
   background-image: linear-gradient(to right, transparent, transparent), linear-gradient(to right, var(--color-lime-300), var(--color-lime-300));
