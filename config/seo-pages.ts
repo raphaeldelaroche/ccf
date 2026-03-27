@@ -24,25 +24,26 @@ import { Metadata } from "next"
  */
 export const PAGE_SEO_CONFIG: Record<string, Metadata> = {
   home: {
-    title: "Climate Contribution Framework — Measure Corporate Net Zero Impact",
+    title: "Climate Contribution Framework — Standardized Corporate Climate Assessment",
     description:
-      "The meta-framework aggregating climate standards. Convert emissions data into comparable 0-100 scores with sector weighting. Zero additional reporting.",
+      "A science-based meta-framework for corporate climate accountability. Aggregates disclosure standards into sector-weighted scores through transparent α/β/γ coefficient methodology. Complements SBTi, TCFD, and GHG Protocol.",
     keywords: [
       "climate contribution framework",
-      "net zero measurement",
-      "corporate climate action",
-      "ESG scoring",
-      "carbon accounting",
-      "SBTi",
-      "scope 3 emissions",
-      "climate accountability",
-      "sector weighted scoring",
-      "climate meta-framework",
+      "corporate climate accountability",
+      "climate disclosure standards",
+      "sector-weighted climate assessment",
+      "science-based climate methodology",
+      "SBTi complementary framework",
+      "TCFD disclosure",
+      "GHG Protocol integration",
+      "climate materiality assessment",
+      "standardized climate scoring",
+      "multi-stakeholder climate framework",
     ],
     openGraph: {
-      title: "Climate Contribution Framework — Measure Corporate Net Zero Impact",
+      title: "Climate Contribution Framework — Standardized Corporate Climate Assessment",
       description:
-        "Take climate action, get the credit you deserve. The comprehensive climate impact metric businesses have been missing.",
+        "A science-based meta-framework for corporate climate accountability. Transparent methodology aggregating climate disclosure standards into reproducible sector-weighted assessments.",
       type: "website",
       locale: "en_US",
       siteName: "Climate Contribution Framework",
@@ -50,9 +51,9 @@ export const PAGE_SEO_CONFIG: Record<string, Metadata> = {
     },
     twitter: {
       card: "summary_large_image",
-      title: "Climate Contribution Framework — Measure Corporate Net Zero Impact",
+      title: "Climate Contribution Framework — Standardized Corporate Climate Assessment",
       description:
-        "Take climate action, get the credit you deserve. The comprehensive climate impact metric businesses have been missing.",
+        "A science-based meta-framework for corporate climate accountability. Transparent methodology aggregating climate disclosure standards into reproducible sector-weighted assessments.",
       images: ["/cover.jpg"],
     },
     robots: {
@@ -62,25 +63,26 @@ export const PAGE_SEO_CONFIG: Record<string, Metadata> = {
   },
 
   about: {
-    title: "About CCF — Co-initiated by Sweep & Mirova Research Center",
+    title: "About CCF — Multi-stakeholder Initiative for Climate Standardization",
     description:
-      "The Climate Contribution Framework brings together sustainable finance research and climate data expertise. Backed by WBCSD, SBTi, and leading enterprises.",
+      "Co-initiated by Sweep and Mirova Research Center. Developed through multi-stakeholder collaboration with climate standard bodies, research institutions, and corporate sustainability leaders. Advisory committee includes SBTi, WBCSD representatives.",
     keywords: [
-      "Sweep climate",
-      "Mirova research",
-      "climate framework initiative",
-      "SBTi partnership",
-      "WBCSD",
-      "corporate climate accountability",
-      "climate action framework",
-      "net zero initiative",
+      "climate framework governance",
+      "multi-stakeholder climate initiative",
+      "Sweep climate data",
+      "Mirova sustainable finance research",
+      "SBTi collaboration",
+      "WBCSD partnership",
+      "climate standard development",
+      "corporate climate accountability governance",
       "climate advisory committee",
-      "ESG framework",
+      "climate framework co-development",
+      "institutional climate initiative",
     ],
     openGraph: {
-      title: "About CCF — Co-initiated by Sweep & Mirova Research Center",
+      title: "About CCF — Multi-stakeholder Initiative for Climate Standardization",
       description:
-        "A shared framework for corporate climate accountability. Co-initiated by Sweep and the Mirova Research Center.",
+        "A collaborative framework for corporate climate accountability. Co-initiated by Sweep and Mirova Research Center with multi-stakeholder governance and advisory oversight.",
       type: "website",
       locale: "en_US",
       siteName: "Climate Contribution Framework",
@@ -88,9 +90,9 @@ export const PAGE_SEO_CONFIG: Record<string, Metadata> = {
     },
     twitter: {
       card: "summary_large_image",
-      title: "About CCF — Co-initiated by Sweep & Mirova Research Center",
+      title: "About CCF — Multi-stakeholder Initiative for Climate Standardization",
       description:
-        "A shared framework for corporate climate accountability. Co-initiated by Sweep and the Mirova Research Center.",
+        "A collaborative framework for corporate climate accountability. Co-initiated by Sweep and Mirova Research Center with multi-stakeholder governance and advisory oversight.",
       images: ["/cover.jpg"],
     },
     robots: {
@@ -100,26 +102,27 @@ export const PAGE_SEO_CONFIG: Record<string, Metadata> = {
   },
 
   methodology: {
-    title: "CCF Methodology — Three Pillars: Reduce, Deploy, Finance",
+    title: "CCF Methodology — Three-pillar α/β/γ Coefficient Assessment Framework",
     description:
-      "Transparent, sector-weighted climate scoring. Aggregates existing frameworks into one coherent 0-100 score. Measures contribution, not just footprint.",
+      "Transparent, reproducible climate assessment methodology. Aggregates Reduce (α), Deploy (β), and Finance (γ) pillars into sector-weighted scores. Built on GHG Protocol, SBTi targets, avoided emissions standards, and climate finance disclosure principles.",
     keywords: [
-      "climate methodology",
-      "three pillar framework",
-      "reduce deploy finance",
-      "sector-weighted scoring",
-      "avoided emissions",
-      "climate solutions",
-      "carbon credits",
-      "scope 1 2 3",
-      "climate framework aggregation",
-      "net zero methodology",
-      "climate contribution measurement",
+      "climate assessment methodology",
+      "three-pillar climate framework",
+      "alpha beta gamma coefficients",
+      "sector materiality weighting",
+      "GHG Protocol integration",
+      "SBTi target validation",
+      "avoided emissions methodology",
+      "climate finance disclosure",
+      "scope 1 2 3 accounting",
+      "reproducible climate scoring",
+      "transparent climate methodology",
+      "science-based climate assessment",
     ],
     openGraph: {
-      title: "CCF Methodology — Three Pillars: Reduce, Deploy, Finance",
+      title: "CCF Methodology — Three-pillar α/β/γ Coefficient Assessment Framework",
       description:
-        "Three pillars. One equation. Sector-adjusted results. The CCF does not replace existing methodologies. It builds on them.",
+        "Transparent methodology built on established climate standards. Three-pillar assessment (Reduce/Deploy/Finance) with sector-specific materiality weighting. Designed to complement, not replace, existing disclosure frameworks.",
       type: "website",
       locale: "en_US",
       siteName: "Climate Contribution Framework",
@@ -127,9 +130,9 @@ export const PAGE_SEO_CONFIG: Record<string, Metadata> = {
     },
     twitter: {
       card: "summary_large_image",
-      title: "CCF Methodology — Three Pillars: Reduce, Deploy, Finance",
+      title: "CCF Methodology — Three-pillar α/β/γ Coefficient Assessment Framework",
       description:
-        "Three pillars. One equation. Sector-adjusted results. The CCF does not replace existing methodologies. It builds on them.",
+        "Transparent methodology built on established climate standards. Three-pillar assessment (Reduce/Deploy/Finance) with sector-specific materiality weighting. Designed to complement, not replace, existing disclosure frameworks.",
       images: ["/cover.jpg"],
     },
     robots: {
@@ -139,25 +142,26 @@ export const PAGE_SEO_CONFIG: Record<string, Metadata> = {
   },
 
   resources: {
-    title: "Resources & White Paper — CCF Documentation & FAQ",
+    title: "Resources — CCF Methodology Documentation & Technical Publications",
     description:
-      "Download the complete CCF methodology white paper. Access publications, FAQs, and resources for companies, investors, and climate analysts.",
+      "Access the complete CCF methodology white paper, technical documentation, and peer-reviewed publications. Resources for corporate sustainability officers, institutional investors, climate analysts, and policymakers. Includes FAQ and implementation guidance.",
     keywords: [
-      "climate white paper",
-      "CCF methodology download",
-      "climate framework FAQ",
-      "net zero resources",
-      "climate contribution documentation",
-      "climate publications",
-      "ESG resources",
-      "climate framework guide",
+      "climate methodology white paper",
+      "CCF technical documentation",
+      "climate framework publications",
+      "climate disclosure guidance",
+      "climate assessment documentation",
       "corporate climate resources",
+      "climate standard implementation",
+      "climate methodology FAQ",
+      "institutional investor climate resources",
       "climate accountability documentation",
+      "peer-reviewed climate framework",
     ],
     openGraph: {
-      title: "Resources & White Paper — CCF Documentation & FAQ",
+      title: "Resources — CCF Methodology Documentation & Technical Publications",
       description:
-        "Publications, methodology and updates. Resources for companies, investors, public decision-makers, and analysts.",
+        "Technical documentation, white papers, and implementation guidance. Resources developed for corporate sustainability professionals, institutional investors, climate analysts, and public decision-makers.",
       type: "website",
       locale: "en_US",
       siteName: "Climate Contribution Framework",
@@ -165,9 +169,9 @@ export const PAGE_SEO_CONFIG: Record<string, Metadata> = {
     },
     twitter: {
       card: "summary_large_image",
-      title: "Resources & White Paper — CCF Documentation & FAQ",
+      title: "Resources — CCF Methodology Documentation & Technical Publications",
       description:
-        "Publications, methodology and updates. Resources for companies, investors, public decision-makers, and analysts.",
+        "Technical documentation, white papers, and implementation guidance. Resources developed for corporate sustainability professionals, institutional investors, climate analysts, and public decision-makers.",
       images: ["/cover.jpg"],
     },
     robots: {
@@ -177,25 +181,25 @@ export const PAGE_SEO_CONFIG: Record<string, Metadata> = {
   },
 
   contact: {
-    title: "Contact CCF — Request Climate Contribution Assessment",
+    title: "Contact CCF — Inquiries & Climate Assessment Requests",
     description:
-      "Get in touch with the Climate Contribution Framework team. Request a scorecard assessment or learn how to participate in the beta program.",
+      "Contact the Climate Contribution Framework team for methodology inquiries, partnership opportunities, or assessment requests. Information on framework adoption, technical implementation, and collaborative development.",
     keywords: [
-      "contact CCF",
+      "CCF contact",
+      "climate framework inquiry",
       "climate assessment request",
-      "climate framework demo",
-      "CCF inquiry",
-      "beta program climate",
-      "climate scorecard request",
-      "corporate climate consultation",
-      "net zero assessment",
-      "climate contribution contact",
-      "CCF team contact",
+      "climate standard adoption",
+      "CCF partnership",
+      "climate methodology consultation",
+      "corporate climate assessment inquiry",
+      "climate framework implementation",
+      "institutional climate consultation",
+      "climate standard collaboration",
     ],
     openGraph: {
-      title: "Contact CCF — Request Climate Contribution Assessment",
+      title: "Contact CCF — Inquiries & Climate Assessment Requests",
       description:
-        "Any question? Just ask! Get in touch with our team to request an assessment or learn more about the Climate Contribution Framework.",
+        "Contact the Climate Contribution Framework team for methodology inquiries, partnership opportunities, or assessment requests. Information on framework adoption and technical implementation.",
       type: "website",
       locale: "en_US",
       siteName: "Climate Contribution Framework",
@@ -203,9 +207,9 @@ export const PAGE_SEO_CONFIG: Record<string, Metadata> = {
     },
     twitter: {
       card: "summary_large_image",
-      title: "Contact CCF — Request Climate Contribution Assessment",
+      title: "Contact CCF — Inquiries & Climate Assessment Requests",
       description:
-        "Any question? Just ask! Get in touch with our team to request an assessment or learn more about the Climate Contribution Framework.",
+        "Contact the Climate Contribution Framework team for methodology inquiries, partnership opportunities, or assessment requests. Information on framework adoption and technical implementation.",
       images: ["/cover.jpg"],
     },
     robots: {
@@ -215,24 +219,25 @@ export const PAGE_SEO_CONFIG: Record<string, Metadata> = {
   },
 
   "self-assessment": {
-    title: "Self-Assessment — Climate Contribution Framework",
+    title: "Self-Assessment Tool — Climate Contribution Preliminary Evaluation",
     description:
-      "Assess your organization's climate contribution with our free tool. Interactive questionnaire, detailed results, and personalized recommendations.",
+      "Preliminary climate contribution assessment based on CCF methodology. Structured questionnaire covering emissions reduction targets, climate solution deployment, and climate finance disclosure. Generates indicative scores across three pillars.",
     keywords: [
-      "climate self-assessment",
-      "corporate climate questionnaire",
-      "climate evaluation tool",
-      "free climate assessment",
-      "climate contribution scoring",
-      "ESG self-assessment",
-      "net zero evaluation",
-      "climate action assessment",
-      "sustainability questionnaire",
+      "climate self-assessment tool",
+      "preliminary climate evaluation",
+      "climate contribution questionnaire",
+      "corporate climate assessment tool",
+      "climate disclosure self-evaluation",
+      "emissions reduction assessment",
+      "climate solution evaluation",
+      "climate finance disclosure assessment",
+      "three-pillar climate evaluation",
+      "structured climate questionnaire",
     ],
     openGraph: {
-      title: "Self-Assessment — Climate Contribution Framework",
+      title: "Self-Assessment Tool — Climate Contribution Preliminary Evaluation",
       description:
-        "Assess your climate contribution with our free tool. Detailed results and recommendations to improve your climate action.",
+        "Preliminary assessment tool based on CCF methodology. Structured questionnaire evaluating climate action across three pillars: emissions reduction, solution deployment, climate finance disclosure.",
       type: "website",
       locale: "en_US",
       siteName: "Climate Contribution Framework",
@@ -240,9 +245,9 @@ export const PAGE_SEO_CONFIG: Record<string, Metadata> = {
     },
     twitter: {
       card: "summary_large_image",
-      title: "Self-Assessment — Climate Contribution Framework",
+      title: "Self-Assessment Tool — Climate Contribution Preliminary Evaluation",
       description:
-        "Assess your climate contribution with our free tool. Detailed results and recommendations to improve your climate action.",
+        "Preliminary assessment tool based on CCF methodology. Structured questionnaire evaluating climate action across three pillars: emissions reduction, solution deployment, climate finance disclosure.",
       images: ["/cover.jpg"],
     },
     robots: {
@@ -252,24 +257,25 @@ export const PAGE_SEO_CONFIG: Record<string, Metadata> = {
   },
 
   "self-assessment-report": {
-    title: "Self-Assessment Report — Climate Contribution Framework",
+    title: "Assessment Report — Climate Contribution Evaluation Results",
     description:
-      "View your detailed self-assessment report. Analysis of your climate contribution, score by category, and improvement recommendations.",
+      "Detailed climate contribution assessment report. Breakdown of scores across Reduce, Deploy, and Finance pillars with sector-weighted aggregation. Includes methodology references and disclosure gap analysis.",
     keywords: [
       "climate assessment report",
-      "climate scorecard",
-      "climate evaluation results",
-      "climate contribution score",
-      "ESG report",
-      "sustainability report",
-      "climate action results",
-      "net zero scorecard",
-      "climate performance report",
+      "climate contribution scorecard",
+      "three-pillar climate results",
+      "climate disclosure analysis",
+      "sector-weighted climate score",
+      "emissions reduction assessment report",
+      "climate solution deployment evaluation",
+      "climate finance disclosure report",
+      "corporate climate performance report",
+      "standardized climate scorecard",
     ],
     openGraph: {
-      title: "Self-Assessment Report — Climate Contribution Framework",
+      title: "Assessment Report — Climate Contribution Evaluation Results",
       description:
-        "Your detailed report: score, analysis, and recommendations to improve your climate contribution and climate action.",
+        "Detailed assessment report with scores across three pillars (Reduce/Deploy/Finance), sector-weighted aggregation, and disclosure gap analysis based on CCF methodology.",
       type: "website",
       locale: "en_US",
       siteName: "Climate Contribution Framework",
@@ -277,9 +283,9 @@ export const PAGE_SEO_CONFIG: Record<string, Metadata> = {
     },
     twitter: {
       card: "summary_large_image",
-      title: "Self-Assessment Report — Climate Contribution Framework",
+      title: "Assessment Report — Climate Contribution Evaluation Results",
       description:
-        "Your detailed report: score, analysis, and recommendations to improve your climate contribution and climate action.",
+        "Detailed assessment report with scores across three pillars (Reduce/Deploy/Finance), sector-weighted aggregation, and disclosure gap analysis based on CCF methodology.",
       images: ["/cover.jpg"],
     },
     robots: {
@@ -296,7 +302,7 @@ export const PAGE_SEO_CONFIG: Record<string, Metadata> = {
 export const DEFAULT_SEO: Metadata = {
   title: "Climate Contribution Framework",
   description:
-    "Measure and improve your organization's climate contribution with the meta-framework for corporate climate action.",
+    "A science-based meta-framework for standardized corporate climate accountability. Transparent methodology aggregating climate disclosure standards.",
   robots: {
     index: false,
     follow: true,
@@ -315,16 +321,19 @@ export const SITE_METADATA: Metadata = {
     template: "%s | Climate Contribution Framework",
   },
   description:
-    "The Climate Contribution Framework helps organizations measure, understand, and improve their climate contribution through transparent, sector-weighted scoring.",
+    "The Climate Contribution Framework provides a transparent, science-based methodology for corporate climate accountability through standardized, sector-weighted assessment built on established climate disclosure standards.",
   keywords: [
     "climate contribution framework",
-    "net zero measurement",
-    "corporate climate action",
-    "ESG scoring",
-    "carbon accounting",
-    "climate accountability",
-    "SBTi",
+    "corporate climate accountability",
+    "climate disclosure standards",
+    "science-based climate methodology",
+    "sector-weighted climate assessment",
+    "SBTi complementary framework",
+    "TCFD disclosure",
+    "GHG Protocol",
     "WBCSD",
+    "climate materiality",
+    "standardized climate scoring",
   ],
   authors: [{ name: "Climate Contribution Framework" }],
   creator: "Climate Contribution Framework",

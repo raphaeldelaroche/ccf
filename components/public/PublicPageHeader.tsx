@@ -250,7 +250,7 @@ export function PublicPageHeader() {
                       </div>
                     ) : item.asButton ? (
                       <SheetClose key={item.label} asChild>
-                        <Button size="sm" asChild className="theme-lime w-full justify-start">
+                        <Button size="sm" asChild className="font-normal theme-lime w-full justify-start">
                           <Link
                             href={item.href}
                             className="text-sm tracking-wider uppercase"
