@@ -47,14 +47,14 @@ export const PAGE_SEO_CONFIG: Record<string, Metadata> = {
       type: "website",
       locale: "en_US",
       siteName: "Climate Contribution Framework",
-      images: [{ url: "/cover.jpg" }],
+      images: [{ url: "/cover-home.jpg" }],
     },
     twitter: {
       card: "summary_large_image",
       title: "Climate Contribution Framework — Standardized Corporate Climate Assessment",
       description:
         "A science-based meta-framework for corporate climate accountability. Transparent methodology aggregating climate disclosure standards into reproducible sector-weighted assessments.",
-      images: ["/cover.jpg"],
+      images: ["/cover-home.jpg"],
     },
     robots: {
       index: true,
