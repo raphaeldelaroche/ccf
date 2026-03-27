@@ -20,9 +20,10 @@ const maisonNeueMono = localFont({
 
 const stixTwoText = STIX_Two_Text({
   weight: "400",
-  style: "italic",
+  style: ["normal", "italic"],
   subsets: ["latin"],
   variable: "--font-accent",
+  display: "swap",
 });
 
 export const metadata: Metadata = SITE_METADATA;
