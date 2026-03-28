@@ -7,9 +7,11 @@ import { useRouter } from "next/navigation";
 
 interface SectorNavigationProps {
   currentSectorId: string;
+  token?: string | null;
+  entryId?: string | null;
 }
 
-export function SectorNavigation({ currentSectorId }: SectorNavigationProps) {
+export function SectorNavigation({ currentSectorId, token, entryId }: SectorNavigationProps) {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const sectorsWithData = getSectorsWithData();
@@ -17,7 +19,14 @@ export function SectorNavigation({ currentSectorId }: SectorNavigationProps) {
   const currentSector = sectorsWithData.find(s => s.id === currentSectorId);
 
   const handleSectorChange = (sectorId: string) => {
-    router.push(`/self-assessment-report?sector=${sectorId}`);
+    // Build URL with preserved parameters
+    const params = new URLSearchParams();
+    params.set('sector', sectorId);
+    params.set('review', '1'); // Always keep review mode when navigating
+    if (token) params.set('token', token);
+    if (entryId) params.set('entry', entryId);
+
+    router.push(`/self-assessment-report?${params.toString()}`);
     setIsOpen(false);
   };
 

@@ -18,8 +18,7 @@ export async function GET(request: NextRequest) {
 
   // WordPress REST API endpoint for Gravity Forms entries
   // This requires the Gravity Forms REST API to be enabled
-  const WORDPRESS_REST_URL = process.env.WORDPRESS_REST_URL ||
-    'http://climate-contribution-framework.local/wp-json/gf/v2';
+  const WORDPRESS_REST_URL = `${process.env.NEXT_PUBLIC_WORDPRESS_API_URL}/wp-json/gf/v2`;
 
   try {
     // Fetch entry from GF REST API

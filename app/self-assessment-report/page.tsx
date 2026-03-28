@@ -46,15 +46,17 @@ export function DynamicData({ children }: { children: ReactNode }) {
 }
 
 function SelfAssessmentReportContent() {
-  const [isHighlighted, setIsHighlighted] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('ccf-highlight-dynamic');
-      return saved === 'true';
-    }
-    return false;
-  });
+  const [isHighlighted, setIsHighlighted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Load highlight state from localStorage after mount to avoid hydration mismatch
+  useEffect(() => {
+    const saved = localStorage.getItem('ccf-highlight-dynamic');
+    if (saved === 'true') {
+      setIsHighlighted(true);
+    }
+  }, []);
 
   const toggleHighlight = () => {
     setIsHighlighted(prev => {
@@ -68,6 +70,7 @@ function SelfAssessmentReportContent() {
   const token = searchParams.get("token");
   const entryId = searchParams.get("entry"); // Fallback for old links
   const sectorParam = searchParams.get("sector");
+  const isReviewMode = searchParams.get("review") === "1";
 
   const [sectorId, setSectorId] = useState<string | null>(sectorParam);
   const [_entryData, setEntryData] = useState<Record<string, unknown> | null>(null);
@@ -221,31 +224,33 @@ function SelfAssessmentReportContent() {
     <DynamicDataContext.Provider value={{ isHighlighted, toggleHighlight }}>
       <PublicPageHeader />
 
-      {/* Floating Development Zone - Will be removed in production */}
-      <div className="fixed top-4 left-4 z-50 flex flex-col gap-3">
-        <SectorNavigation currentSectorId={sectorId} />
+      {/* Floating Development Zone - Only visible in review mode (?review=1) */}
+      {isReviewMode && (
+        <div className="fixed top-4 left-4 z-50 flex flex-col gap-3">
+          <SectorNavigation currentSectorId={sectorId} token={token} entryId={entryId} />
 
-        {/* Dynamic Data Highlighter Toggle */}
-        <button
-          type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            toggleHighlight();
-          }}
-          className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border-2 border-yellow-400 rounded-lg shadow-lg hover:bg-yellow-50 dark:hover:bg-gray-700 transition-colors"
-          title={isHighlighted ? "Hide dynamic data" : "Show dynamic data"}
-        >
-          {isHighlighted ? (
-            <EyeOff className="size-5 text-yellow-600" />
-          ) : (
-            <Eye className="size-5 text-yellow-600" />
-          )}
-          <span className="text-sm font-medium">
-            {isHighlighted ? "Hide" : "Show"} Dynamic
-          </span>
-        </button>
-      </div>
+          {/* Dynamic Data Highlighter Toggle */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              toggleHighlight();
+            }}
+            className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border-2 border-yellow-400 rounded-lg shadow-lg hover:bg-yellow-50 dark:hover:bg-gray-700 transition-colors"
+            title={isHighlighted ? "Hide dynamic data" : "Show dynamic data"}
+          >
+            {isHighlighted ? (
+              <EyeOff className="size-5 text-yellow-600" />
+            ) : (
+              <Eye className="size-5 text-yellow-600" />
+            )}
+            <span className="text-sm font-medium">
+              {isHighlighted ? "Hide" : "Show"} Dynamic
+            </span>
+          </button>
+        </div>
+      )}
 
       <div className="min-h-screen">
         <main className="flex-1">

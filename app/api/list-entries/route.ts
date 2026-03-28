@@ -6,8 +6,7 @@ import { NextResponse } from 'next/server';
  * Lists all entries from form ID 3 for debugging
  */
 export async function GET() {
-  const WORDPRESS_GRAPHQL_URL = process.env.WORDPRESS_GRAPHQL_URL ||
-    'http://climate-contribution-framework.local/graphql';
+  const WORDPRESS_GRAPHQL_URL = `${process.env.NEXT_PUBLIC_WORDPRESS_API_URL}/graphql`;
 
   const query = `
     query {

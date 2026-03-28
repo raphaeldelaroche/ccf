@@ -60,16 +60,7 @@ export function useSelfAssessmentSubmission() {
         console.log('[Self-Assessment] Form submitted successfully!', result);
         console.log('[Self-Assessment] Entry ID:', entryId);
 
-        // Encode entry ID and redirect to report page with token
-        if (entryId) {
-          const token = encodeEntryToken(entryId);
-          window.location.href = `/self-assessment-report?token=${token}`;
-        } else {
-          // Fallback: redirect with sector only
-          console.warn('[Self-Assessment] No entry ID returned, using sector fallback');
-          window.location.href = `/self-assessment-report?sector=${answers.sector}`;
-        }
-
+        // Stay on confirmation page instead of redirecting
         setShowEmailDialog(false);
         setSubmitted(true);
       } else {

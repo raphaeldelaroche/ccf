@@ -31,8 +31,7 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const WORDPRESS_REST_URL = process.env.WORDPRESS_REST_URL ||
-    'http://climate-contribution-framework.local/wp-json';
+  const WORDPRESS_REST_URL = `${process.env.NEXT_PUBLIC_WORDPRESS_API_URL}/wp-json`;
 
   try {
     const response = await fetch(`${WORDPRESS_REST_URL}/ccf/v1/entry/${entryId}`, {

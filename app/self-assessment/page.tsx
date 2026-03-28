@@ -58,6 +58,16 @@ export default function SelfAssessmentPage() {
     }
   }, [currentStep]);
 
+  // Scroll to top when confirmation is shown
+  useEffect(() => {
+    if (submitted) {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+  }, [submitted]);
+
   const handleNext = () => {
     if (!canProceed) return;
 
